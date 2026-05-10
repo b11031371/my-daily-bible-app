@@ -11,12 +11,11 @@ export default async function NotesPage() {
   const today = todayString()
   const weekDates = getLastSevenDays()
 
-  const [user, supabase, passageRange, availableDates] = await Promise.all([
-    getUser(),
-    createClient(),
-    fetchPassageRange(today),
-    fetchAvailableDates(),
-  ])
+  // Fire GitHub fetches immediately — run concurrently with auth + Supabase
+  const passageRangePromise = fetchPassageRange(today)
+  const availableDatesPromise = fetchAvailableDates()
+
+  const [user, supabase] = await Promise.all([getUser(), createClient()])
 
   const [
     { data: todayCheckins, count: checkinCount },
@@ -40,15 +39,21 @@ export default async function NotesPage() {
     supabase.from('profiles').select('streak_current').eq('id', user!.id).single(),
   ])
 
+  const communityUserIds = (todayCheckins ?? []).slice(0, 4).map(c => c.user_id)
+
+  // Run communityProfiles in parallel with GitHub resolution — avoids a 3rd serial wave
+  const [passageRange, availableDates, { data: communityProfiles }] = await Promise.all([
+    passageRangePromise,
+    availableDatesPromise,
+    communityUserIds.length > 0
+      ? supabase.from('profiles').select('id, display_name, avatar_seed').in('id', communityUserIds)
+      : Promise.resolve({ data: [] as Pick<Profile, 'id' | 'display_name' | 'avatar_seed'>[] }),
+  ])
+
   const userCheckedIn = (todayCheckins ?? []).some(c => c.user_id === user!.id)
   const unearnedBadges = (allBadges?.length ?? 0) - (userBadges?.length ?? 0)
   const checkedDates = new Set((weekCheckins ?? []).map(c => c.note_date))
   const pastDates = availableDates.filter(d => d !== today).slice(0, 2)
-
-  const communityUserIds = (todayCheckins ?? []).slice(0, 4).map(c => c.user_id)
-  const { data: communityProfiles } = communityUserIds.length > 0
-    ? await supabase.from('profiles').select('id, display_name, avatar_seed').in('id', communityUserIds)
-    : { data: [] as Pick<Profile, 'id' | 'display_name' | 'avatar_seed'>[] }
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">

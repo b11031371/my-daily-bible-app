@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { cache } from 'react'
 import type { Database } from '@/types/database'
 
-export async function createClient() {
+export const createClient = cache(async () => {
   const cookieStore = await cookies()
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,7 +21,7 @@ export async function createClient() {
       },
     }
   )
-}
+})
 
 export const getUser = cache(async () => {
   const supabase = await createClient()

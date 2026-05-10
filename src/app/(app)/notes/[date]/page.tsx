@@ -4,6 +4,8 @@ import { fetchMarkdown, getPdfUrl } from '@/lib/github/api'
 import { formatDateZH } from '@/lib/utils'
 import NoteViewer from '@/components/notes/NoteViewer'
 
+export const revalidate = 3600
+
 interface Props {
   params: Promise<{ date: string }>
 }

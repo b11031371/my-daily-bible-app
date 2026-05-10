@@ -15,7 +15,7 @@ export default async function ProfilePage() {
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('badges').select('*').order('condition_value'),
     supabase.from('user_badges').select('*').eq('user_id', user.id),
-    supabase.from('checkins').select('*').eq('user_id', user.id).order('note_date', { ascending: false }).limit(30),
+    supabase.from('checkins').select('id, note_date, is_retro, points_earned').eq('user_id', user.id).order('note_date', { ascending: false }).limit(30),
   ])
 
   const badgesWithStatus: BadgeWithStatus[] = (badges ?? []).map(b => ({

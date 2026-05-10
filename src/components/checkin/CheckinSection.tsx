@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { todayString, formatDateZH } from '@/lib/utils'
 import { POINTS_BY_DAYS_LATE } from '@/lib/points'
-import { useCheckin } from '@/hooks/useCheckin'
 import StampCard from '@/components/checkin/StampCard'
 import { Fire, Star, Diamond } from '@phosphor-icons/react'
 
@@ -11,21 +10,21 @@ interface Props {
   streakMax: number
   totalPoints: number
   monthlyCount: number
+  initialCheckins: Record<string, number>
 }
 
-export default function CheckinSection({ streakCurrent, streakMax, totalPoints, monthlyCount }: Props) {
+export default function CheckinSection({ streakCurrent, streakMax, totalPoints, monthlyCount, initialCheckins }: Props) {
   const today = todayString()
   const monthLabel = `${today.slice(0, 4)}年${parseInt(today.slice(5, 7))}月`
-  const { checkin, mutate } = useCheckin(today)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ points: number; streak: number; badges: string[] } | null>(null)
   const [streak, setStreak] = useState(streakCurrent)
   const [points, setPoints] = useState(totalPoints)
+  const [checkedDates, setCheckedDates] = useState<Record<string, number>>(initialCheckins)
 
   const pastDays = [1, 2, 3].map(n => {
-    const d = new Date()
-    d.setDate(d.getDate() - n)
-    return d.toISOString().split('T')[0]
+    const [y, m, d] = today.split('-').map(Number)
+    return new Date(Date.UTC(y, m - 1, d - n)).toISOString().split('T')[0]
   })
 
   async function doCheckin(date: string) {
@@ -41,7 +40,7 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
       setResult({ points: data.points_earned, streak: data.streak_current, badges: data.badges_unlocked ?? [] })
       setStreak(data.streak_current)
       setPoints(p => p + data.points_earned)
-      mutate()
+      setCheckedDates(prev => ({ ...prev, [date]: data.points_earned }))
     }
   }
 
@@ -73,8 +72,8 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
               <p className="text-sm text-accent mt-1">解鎖徽章 {result.badges.join(' ')}</p>
             )}
           </div>
-        ) : checkin ? (
-          <div className="text-center py-4 text-gray-800 font-medium">✅ 今日已簽到 (+{checkin.points_earned} 分)</div>
+        ) : checkedDates[today] !== undefined ? (
+          <div className="text-center py-4 text-gray-800 font-medium">✅ 今日已簽到 (+{checkedDates[today]} 分)</div>
         ) : (
           <button
             onClick={() => doCheckin(today)}
@@ -91,13 +90,14 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
 
       {/* Retro checkins */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-700 mb-3">補簽（積分遞減）</p>
+        <p className="text-sm font-semibold text-gray-700 mb-3">補簽</p>
         <div className="space-y-2">
           {pastDays.map((date, i) => {
             const daysLate = i + 1
             const pts = POINTS_BY_DAYS_LATE[daysLate]
             return (
               <RetroRow key={date} date={date} daysLate={daysLate} points={pts}
+                isChecked={checkedDates[date] !== undefined}
                 onCheckin={() => doCheckin(date)} loading={loading} />
             )
           })}
@@ -107,17 +107,16 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
   )
 }
 
-function RetroRow({ date, daysLate, points, onCheckin, loading }: {
-  date: string; daysLate: number; points: number; onCheckin: () => void; loading: boolean
+function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked }: {
+  date: string; daysLate: number; points: number; onCheckin: () => void; loading: boolean; isChecked: boolean
 }) {
-  const { checkin } = useCheckin(date)
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
       <div>
         <p className="text-sm text-gray-900">{formatDateZH(date)}</p>
         <p className="text-xs text-gray-400">{daysLate} 天前 · +{points} 分</p>
       </div>
-      {checkin ? (
+      {isChecked ? (
         <span className="text-xs text-gray-600 font-medium">已補簽</span>
       ) : (
         <button
