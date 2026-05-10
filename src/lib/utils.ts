@@ -20,14 +20,14 @@ export function toDateString(date: Date): string {
 }
 
 export function todayString(): string {
-  return toDateString(new Date())
+  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' })
 }
 
 export function getLastSevenDays(): string[] {
+  const [y, m, d] = todayString().split('-').map(Number)
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date()
-    d.setDate(d.getDate() - (6 - i))
-    return toDateString(d)
+    const date = new Date(Date.UTC(y, m - 1, d - (6 - i)))
+    return toDateString(date)
   })
 }
 
