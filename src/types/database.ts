@@ -1,0 +1,210 @@
+export type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
+
+export interface Database {
+  public: {
+    Tables: {
+      profiles: {
+        Row: {
+          id: string
+          display_name: string
+          avatar_seed: string
+          role: 'user' | 'admin'
+          total_points: number
+          streak_current: number
+          streak_max: number
+          created_at: string
+        }
+        Insert: {
+          id: string
+          display_name: string
+          avatar_seed?: string
+          role?: 'user' | 'admin'
+          total_points?: number
+          streak_current?: number
+          streak_max?: number
+          created_at?: string
+        }
+        Update: {
+          display_name?: string
+          avatar_seed?: string
+          role?: 'user' | 'admin'
+          total_points?: number
+          streak_current?: number
+          streak_max?: number
+        }
+        Relationships: []
+      }
+      checkins: {
+        Row: {
+          id: string
+          user_id: string
+          note_date: string
+          checked_in_at: string
+          is_retro: boolean
+          days_late: number
+          points_earned: number
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          note_date: string
+          checked_in_at?: string
+          is_retro?: boolean
+          days_late?: number
+          points_earned: number
+        }
+        Update: {
+          points_earned?: number
+        }
+        Relationships: []
+      }
+      reflections: {
+        Row: {
+          id: string
+          user_id: string
+          note_date: string
+          content: string
+          is_anonymous: boolean
+          points_earned: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          note_date: string
+          content: string
+          is_anonymous?: boolean
+          points_earned?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          is_anonymous?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          id: string
+          name_zh: string
+          description_zh: string
+          icon: string
+          condition_type: 'streak' | 'total_checkins' | 'total_points' | 'reflection_count'
+          condition_value: number
+          points_bonus: number
+          is_active: boolean
+        }
+        Insert: {
+          id: string
+          name_zh: string
+          description_zh: string
+          icon: string
+          condition_type: 'streak' | 'total_checkins' | 'total_points' | 'reflection_count'
+          condition_value: number
+          points_bonus?: number
+          is_active?: boolean
+        }
+        Update: {
+          name_zh?: string
+          description_zh?: string
+          icon?: string
+          condition_type?: 'streak' | 'total_checkins' | 'total_points' | 'reflection_count'
+          condition_value?: number
+          points_bonus?: number
+          is_active?: boolean
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          id: string
+          user_id: string
+          badge_id: string
+          earned_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          badge_id: string
+          earned_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
+      leaderboard_snapshots: {
+        Row: {
+          id: string
+          period_type: 'weekly' | 'monthly'
+          period_label: string
+          user_id: string
+          points: number
+          checkin_count: number
+          rank: number
+        }
+        Insert: {
+          id?: string
+          period_type: 'weekly' | 'monthly'
+          period_label: string
+          user_id: string
+          points?: number
+          checkin_count?: number
+          rank: number
+        }
+        Update: {
+          points?: number
+          checkin_count?: number
+          rank?: number
+        }
+        Relationships: []
+      }
+      admin_log: {
+        Row: {
+          id: string
+          admin_id: string
+          action_type: string
+          target_user: string | null
+          payload: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          admin_id: string
+          action_type: string
+          target_user?: string | null
+          payload?: Json
+          created_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
+    }
+    Views: Record<string, never>
+    Functions: {
+      fn_checkin: {
+        Args: { p_note_date: string }
+        Returns: Json
+      }
+      fn_submit_reflection: {
+        Args: { p_note_date: string; p_content: string; p_anonymous: boolean }
+        Returns: Json
+      }
+      fn_evaluate_badges: {
+        Args: { p_user_id: string }
+        Returns: string[]
+      }
+      fn_rebuild_leaderboard: {
+        Args: { p_period_type: string; p_period_label: string }
+        Returns: undefined
+      }
+      fn_admin_checkin: {
+        Args: { p_user_id: string; p_note_date: string; p_points: number }
+        Returns: Json
+      }
+    }
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
+  }
+}

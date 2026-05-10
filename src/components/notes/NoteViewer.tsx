@@ -1,0 +1,63 @@
+'use client'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import MarkdownRenderer from './MarkdownRenderer'
+import ReflectionForm from '@/components/community/ReflectionForm'
+
+interface Props {
+  date: string
+  zhContent: string | null
+  enContent: string | null
+  zhPdfUrl: string
+  enPdfUrl: string
+}
+
+export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl }: Props) {
+  const [lang, setLang] = useState<'zh' | 'en'>('zh')
+  const content = lang === 'zh' ? zhContent : enContent
+  const pdfUrl = lang === 'zh' ? zhPdfUrl : enPdfUrl
+
+  return (
+    <div>
+      {/* Language tabs */}
+      <div className="flex gap-2 mb-4">
+        {(['zh', 'en'] as const).map(l => (
+          <button
+            key={l}
+            onClick={() => setLang(l)}
+            className={cn(
+              'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
+              lang === l
+                ? 'bg-[#4a7c59] text-white'
+                : 'bg-white text-gray-500 border border-gray-200'
+            )}
+          >
+            {l === 'zh' ? '中文' : 'English'}
+          </button>
+        ))}
+        <a
+          href={pdfUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="ml-auto flex items-center gap-1 text-sm text-[#4a7c59] font-medium px-3 py-1.5 border border-[#4a7c59] rounded-full hover:bg-[#4a7c59] hover:text-white transition-colors"
+        >
+          ↓ PDF
+        </a>
+      </div>
+
+      {/* Note content */}
+      <div className="bg-white rounded-2xl shadow-sm p-5 mb-4">
+        {content
+          ? <MarkdownRenderer content={content} />
+          : <p className="text-sm text-gray-400 text-center py-8">此語言版本無法取得</p>
+        }
+      </div>
+
+      {/* Reflection form */}
+      <div className="bg-white rounded-2xl shadow-sm p-5">
+        <h3 className="text-sm font-semibold text-[#4a7c59] mb-3">💬 分享你的想法</h3>
+        <ReflectionForm date={date} />
+      </div>
+    </div>
+  )
+}
