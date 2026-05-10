@@ -18,7 +18,8 @@ export default async function NotePage({ params }: Props) {
     fetchMarkdown(date, 'en'),
   ])
 
-  if (!zhContent && !enContent) notFound()
+  const zhPdfUrl = getPdfUrl(date, 'zh')
+  const enPdfUrl = getPdfUrl(date, 'en')
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
@@ -30,8 +31,8 @@ export default async function NotePage({ params }: Props) {
         date={date}
         zhContent={zhContent}
         enContent={enContent}
-        zhPdfUrl={getPdfUrl(date, 'zh')}
-        enPdfUrl={getPdfUrl(date, 'en')}
+        zhPdfUrl={zhPdfUrl}
+        enPdfUrl={enPdfUrl}
       />
     </div>
   )

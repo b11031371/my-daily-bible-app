@@ -16,10 +16,11 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
   const [lang, setLang] = useState<'zh' | 'en'>('zh')
   const content = lang === 'zh' ? zhContent : enContent
   const pdfUrl = lang === 'zh' ? zhPdfUrl : enPdfUrl
+  const hasMarkdown = zhContent || enContent
 
   return (
     <div>
-      {/* Language tabs */}
+      {/* Language tabs + PDF download */}
       <div className="flex gap-2 mb-4">
         {(['zh', 'en'] as const).map(l => (
           <button
@@ -46,11 +47,27 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       </div>
 
       {/* Note content */}
-      <div className="bg-white rounded-2xl shadow-sm p-5 mb-4">
-        {content
-          ? <MarkdownRenderer content={content} />
-          : <p className="text-sm text-gray-400 text-center py-8">此語言版本無法取得</p>
-        }
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+        {hasMarkdown && content ? (
+          <div className="p-5">
+            <MarkdownRenderer content={content} />
+          </div>
+        ) : hasMarkdown && !content ? (
+          <div className="p-5 text-center text-sm text-gray-400 py-8">此語言版本無法取得</div>
+        ) : (
+          /* PDF embed fallback when no markdown available */
+          <div>
+            <div className="bg-[#f5f3ee] px-4 py-2 text-xs text-gray-500 flex items-center gap-1.5">
+              <span>📄</span> 以 PDF 顯示
+            </div>
+            <iframe
+              src={`${pdfUrl}#toolbar=0`}
+              className="w-full"
+              style={{ height: '75vh' }}
+              title={`筆記 ${date}`}
+            />
+          </div>
+        )}
       </div>
 
       {/* Reflection form */}
