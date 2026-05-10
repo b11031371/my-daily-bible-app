@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/a11031371/Desktop/my_bible_notes/**)"
+    ]
+  }
+}
