@@ -18,6 +18,10 @@ export const metadata: Metadata = {
     title: 'Sproutiv',
     statusBarStyle: 'default',
   },
+  icons: {
+    icon: "/icons/icon.svg",
+    apple: "/icons/apple-touch-icon.png",
+  },
 }
 
 export const viewport: Viewport = {
@@ -33,3 +37,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+
