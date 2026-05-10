@@ -55,9 +55,9 @@ export default function AdminCheckinsPage() {
             <input type="number" value={points} onChange={e => setPoints(parseInt(e.target.value))}
               min={0} max={100} className="w-full border rounded-lg px-3 py-2 text-sm" />
           </div>
-          {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-[#4a7c59]' : 'text-red-500'}`}>{msg}</p>}
+          {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-gray-700' : 'text-red-500'}`}>{msg}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-[#4a7c59] text-white rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
+            className="w-full bg-primary text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
             {loading ? '處理中...' : '執行補簽'}
           </button>
         </form>

@@ -36,11 +36,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#faf9f6] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-theme-bg px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-2">📖</div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">加入每日讀經</h1>
+          <div className="flex justify-center mb-2">
+            <img src="/icons/icon.svg" alt="Sproutiv" className="w-14 h-14 rounded-2xl" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">加入 Sproutiv</h1>
           <p className="text-sm text-gray-500 mt-1">建立你的帳號</p>
         </div>
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
@@ -53,7 +55,7 @@ export default function RegisterPage() {
               type="text"
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="你想讓大家怎麼稱呼你？"
               required
             />
@@ -64,7 +66,7 @@ export default function RegisterPage() {
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="your@email.com"
               required
             />
@@ -75,7 +77,7 @@ export default function RegisterPage() {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="至少 6 個字元"
               required
             />
@@ -83,14 +85,14 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#4a7c59] text-white rounded-xl py-3 text-sm font-medium hover:bg-[#3d6b4a] transition-colors disabled:opacity-50"
+            className="w-full bg-primary text-gray-900 rounded-xl py-3 text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
             {loading ? '建立中...' : '建立帳號'}
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
           已有帳號？{' '}
-          <Link href="/login" className="text-[#4a7c59] font-medium">
+          <Link href="/login" className="text-gray-800 font-medium underline">
             登入
           </Link>
         </p>

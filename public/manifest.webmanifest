@@ -1,0 +1,17 @@
+{
+  "name": "Sproutiv",
+  "short_name": "Sproutiv",
+  "description": "每天讀聖經，一起成長",
+  "start_url": "/notes",
+  "display": "standalone",
+  "background_color": "#FFFDF5",
+  "theme_color": "#FFCC66",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

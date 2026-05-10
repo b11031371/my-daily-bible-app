@@ -25,7 +25,7 @@ export default async function CommunityPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
-      <h1 className="text-xl font-bold text-[#1a1a1a]">社群</h1>
+      <h1 className="text-xl font-bold text-gray-900">社群</h1>
 
       {/* Leaderboard */}
       <section>

@@ -23,6 +23,14 @@ export function todayString(): string {
   return toDateString(new Date())
 }
 
+export function getLastSevenDays(): string[] {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    return toDateString(d)
+  })
+}
+
 export function getPeriodLabel(type: 'weekly' | 'monthly', date = new Date()): string {
   if (type === 'monthly') {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`

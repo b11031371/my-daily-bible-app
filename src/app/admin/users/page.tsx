@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { formatDateZH } from '@/lib/utils'
+import BibleAvatar from '@/components/avatar/BibleAvatar'
 
 export default async function AdminUsersPage() {
   const supabase = await createClient()
@@ -25,14 +26,13 @@ export default async function AdminUsersPage() {
             {(users ?? []).map(u => (
               <tr key={u.id} className="border-t border-gray-50">
                 <td className="px-4 py-3 flex items-center gap-2">
-                  <img src={`https://api.dicebear.com/9.x/thumbs/svg?seed=${u.avatar_seed}`}
-                    className="w-7 h-7 rounded-full bg-gray-100" alt="" />
+                  <BibleAvatar seed={u.avatar_seed ?? 'alpha'} className="w-7 h-7" />
                   <span className="font-medium">{u.display_name}</span>
                   {u.role === 'admin' && (
-                    <span className="text-xs bg-[#4a7c59] text-white px-1.5 rounded">管理員</span>
+                    <span className="text-xs bg-primary text-gray-900 px-1.5 rounded">管理員</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-[#4a7c59]">{u.total_points}</td>
+                <td className="px-4 py-3 text-right font-semibold text-gray-900">{u.total_points}</td>
                 <td className="px-4 py-3 text-right text-gray-500">{u.streak_current} 天</td>
                 <td className="px-4 py-3 text-right text-gray-400">
                   {formatDateZH(u.created_at.split('T')[0])}

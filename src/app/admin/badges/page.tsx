@@ -32,7 +32,7 @@ export default function AdminBadgesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">徽章管理</h1>
-        {msg && <span className="text-sm text-[#4a7c59]">{msg}</span>}
+        {msg && <span className="text-sm text-gray-700">{msg}</span>}
       </div>
       {badges.map(b => (
         <div key={b.id} className="bg-white rounded-xl p-5 shadow-sm space-y-3">
@@ -45,7 +45,7 @@ export default function AdminBadgesPage() {
             />
             <div
               onClick={() => update(b.id, 'is_active', !b.is_active)}
-              className={`w-10 h-6 rounded-full flex items-center px-0.5 cursor-pointer transition-colors ${b.is_active ? 'bg-[#4a7c59]' : 'bg-gray-200'}`}
+              className={`w-10 h-6 rounded-full flex items-center px-0.5 cursor-pointer transition-colors ${b.is_active ? 'bg-primary' : 'bg-gray-200'}`}
             >
               <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${b.is_active ? 'translate-x-4' : ''}`} />
             </div>
@@ -78,7 +78,7 @@ export default function AdminBadgesPage() {
           <button
             onClick={() => save(b)}
             disabled={saving === b.id}
-            className="text-sm bg-[#4a7c59] text-white px-4 py-1.5 rounded-lg hover:bg-[#3d6b4a] disabled:opacity-50 transition-colors"
+            className="text-sm bg-primary text-gray-900 px-4 py-1.5 rounded-lg hover:bg-primary-dark disabled:opacity-50 transition-colors"
           >
             {saving === b.id ? '儲存中...' : '儲存'}
           </button>

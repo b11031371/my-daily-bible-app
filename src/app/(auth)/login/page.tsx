@@ -27,11 +27,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#faf9f6] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-theme-bg px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-2">📖</div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">每日讀經</h1>
+          <div className="flex justify-center mb-2">
+            <img src="/icons/icon.svg" alt="Sproutiv" className="w-14 h-14 rounded-2xl" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Sproutiv</h1>
           <p className="text-sm text-gray-500 mt-1">登入你的帳號</p>
         </div>
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
@@ -44,7 +46,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="your@email.com"
               required
             />
@@ -55,7 +57,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c59]"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="••••••••"
               required
             />
@@ -63,14 +65,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#4a7c59] text-white rounded-xl py-3 text-sm font-medium hover:bg-[#3d6b4a] transition-colors disabled:opacity-50"
+            className="w-full bg-primary text-gray-900 rounded-xl py-3 text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
             {loading ? '登入中...' : '登入'}
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
           還沒有帳號？{' '}
-          <Link href="/register" className="text-[#4a7c59] font-medium">
+          <Link href="/register" className="text-gray-800 font-medium underline">
             立即註冊
           </Link>
         </p>

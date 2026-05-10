@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="108" fill="#FFCC66"/>
+  <!-- Trunk -->
+  <line x1="256" y1="400" x2="256" y2="272" stroke="#3D2B1F" stroke-width="30" stroke-linecap="round"/>
+  <!-- Roots -->
+  <path d="M256 400 Q218 418 194 434" stroke="#3D2B1F" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M256 400 Q294 418 318 434" stroke="#3D2B1F" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <!-- Left branches -->
+  <path d="M256 320 Q200 292 154 286" stroke="#3D2B1F" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <path d="M256 288 Q192 250 144 234" stroke="#3D2B1F" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <!-- Right branches -->
+  <path d="M256 320 Q312 292 358 286" stroke="#3D2B1F" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <path d="M256 288 Q320 250 368 234" stroke="#3D2B1F" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <!-- Centre top -->
+  <line x1="256" y1="288" x2="256" y2="136" stroke="#3D2B1F" stroke-width="18" stroke-linecap="round"/>
+  <!-- Leaf clusters -->
+  <circle cx="144" cy="280" r="34" fill="#3D2B1F"/>
+  <circle cx="138" cy="228" r="30" fill="#3D2B1F"/>
+  <circle cx="368" cy="280" r="34" fill="#3D2B1F"/>
+  <circle cx="374" cy="228" r="30" fill="#3D2B1F"/>
+  <circle cx="256" cy="118" r="40" fill="#3D2B1F"/>
+  <circle cx="210" cy="146" r="28" fill="#3D2B1F"/>
+  <circle cx="302" cy="146" r="28" fill="#3D2B1F"/>
+  <circle cx="200" cy="198" r="22" fill="#3D2B1F"/>
+  <circle cx="312" cy="198" r="22" fill="#3D2B1F"/>
+</svg>

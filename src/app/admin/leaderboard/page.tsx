@@ -24,10 +24,10 @@ export default function AdminLeaderboardPage() {
       <h1 className="text-xl font-bold">排行榜管理</h1>
       <div className="bg-white rounded-xl p-5 shadow-sm space-y-3">
         <p className="text-sm text-gray-500">手動重新計算當前週榜或月榜。每次有人簽到或回答後建議更新一次。</p>
-        {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-[#4a7c59]' : 'text-red-500'}`}>{msg}</p>}
+        {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-gray-700' : 'text-red-500'}`}>{msg}</p>}
         <div className="flex gap-3">
           <button onClick={() => rebuild('weekly')} disabled={loading}
-            className="flex-1 bg-[#4a7c59] text-white rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
+            className="flex-1 bg-primary text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
             更新本週榜
           </button>
           <button onClick={() => rebuild('monthly')} disabled={loading}

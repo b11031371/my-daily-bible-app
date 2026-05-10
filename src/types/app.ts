@@ -20,6 +20,10 @@ export interface LeaderboardEntryWithProfile extends LeaderboardEntry {
   profiles: Pick<Profile, 'display_name' | 'avatar_seed'>
 }
 
+export interface CheckinWithProfile extends Checkin {
+  profiles: Pick<Profile, 'display_name' | 'avatar_seed'> | null
+}
+
 export interface CheckinResult {
   points_earned: number
   streak_current: number

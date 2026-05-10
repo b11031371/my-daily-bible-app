@@ -29,7 +29,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
             className={cn(
               'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
               lang === l
-                ? 'bg-[#4a7c59] text-white'
+                ? 'bg-primary text-gray-900'
                 : 'bg-white text-gray-500 border border-gray-200'
             )}
           >
@@ -40,7 +40,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           href={pdfUrl}
           target="_blank"
           rel="noreferrer"
-          className="ml-auto flex items-center gap-1 text-sm text-[#4a7c59] font-medium px-3 py-1.5 border border-[#4a7c59] rounded-full hover:bg-[#4a7c59] hover:text-white transition-colors"
+          className="ml-auto flex items-center gap-1 text-sm text-gray-700 font-medium px-3 py-1.5 border border-primary rounded-full hover:bg-primary hover:text-gray-900 transition-colors"
         >
           ↓ PDF
         </a>
@@ -72,7 +72,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
 
       {/* Reflection form */}
       <div className="bg-white rounded-2xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-[#4a7c59] mb-3">💬 分享你的想法</h3>
+        <h3 className="text-sm font-semibold text-gray-800 mb-3">💬 分享你的想法</h3>
         <ReflectionForm date={date} />
       </div>
     </div>

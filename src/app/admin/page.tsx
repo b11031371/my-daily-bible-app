@@ -16,11 +16,11 @@ export default async function AdminDashboard() {
       <h1 className="text-xl font-bold">後台首頁</h1>
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-xl p-5 shadow-sm">
-          <p className="text-3xl font-bold text-[#4a7c59]">{checkinCount ?? 0}</p>
+          <p className="text-3xl font-bold text-gray-900">{checkinCount ?? 0}</p>
           <p className="text-sm text-gray-500 mt-1">今日簽到人數</p>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm">
-          <p className="text-3xl font-bold text-[#c8a84b]">{reflectionCount ?? 0}</p>
+          <p className="text-3xl font-bold text-accent">{reflectionCount ?? 0}</p>
           <p className="text-sm text-gray-500 mt-1">今日反思回答</p>
         </div>
       </div>

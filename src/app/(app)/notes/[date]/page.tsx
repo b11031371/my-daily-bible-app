@@ -25,7 +25,7 @@ export default async function NotePage({ params }: Props) {
     <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
       <div className="flex items-center gap-3 mb-4">
         <Link href="/notes" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
-        <h1 className="text-base font-semibold text-[#1a1a1a]">{formatDateZH(date)}</h1>
+        <h1 className="text-base font-semibold text-gray-900">{formatDateZH(date)}</h1>
       </div>
       <NoteViewer
         date={date}
