@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -7,5 +7,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   revalidateTag('bible-notes', { expire: 0 })
+  revalidatePath('/notes')
+  revalidatePath('/notes/[date]', 'page')
   return NextResponse.json({ revalidated: true, at: new Date().toISOString() })
 }
