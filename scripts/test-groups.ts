@@ -61,17 +61,10 @@ type CheckinRow = { user_id: string; note_date: string; points_earned: number }
 type MemberRow  = { user_id: string; joined_at: string; left_at: string | null }
 
 function calcTreePoints(checkins: CheckinRow[], members: MemberRow[], monthStart: string): number {
+  const activeMemberIds = new Set(members.filter(m => m.left_at === null).map(m => m.user_id))
   return checkins
-    .filter(c => c.note_date >= monthStart)
-    .reduce((sum, c) => {
-      const m = members.find(m => m.user_id === c.user_id)
-      if (!m) return sum
-      const joined = m.joined_at.split('T')[0]
-      const left   = m.left_at ? m.left_at.split('T')[0] : null
-      if (c.note_date < joined) return sum
-      if (left && c.note_date > left) return sum
-      return sum + c.points_earned
-    }, 0)
+    .filter(c => c.note_date >= monthStart && activeMemberIds.has(c.user_id))
+    .reduce((sum, c) => sum + c.points_earned, 0)
 }
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
@@ -239,7 +232,7 @@ async function main() {
     check(active.length === 1,                                  'User2 離開後現任成員剩 1 人')
     check(active.length < TREE_CONFIG.minMembers,               `人數(${active.length}) < minMembers(${TREE_CONFIG.minMembers}) → 樹休眠`)
 
-    // Historical contribution must still count
+    // Tree points now only count current active members — User2's contribution drops out
     const { data: checkinsAfter } = await admin
       .from('checkins')
       .select('user_id, note_date, points_earned')
@@ -248,7 +241,8 @@ async function main() {
       .lte('note_date', currentMonthDate(25))
 
     const ptsAfter = calcTreePoints(checkinsAfter ?? [], afterLeave as MemberRow[], monthStart)
-    check(ptsAfter === 500, `User2 離開後歷史貢獻保留，樹點數仍 500 分`, `實際 ${ptsAfter}`)
+    const expectedAfter = 25 * 10  // User1 only: 25 days × 10 pts
+    check(ptsAfter === expectedAfter, `User2 離開後樹點數為現任成員積分 ${expectedAfter} 分`, `實際 ${ptsAfter}`)
 
     // ───────────────────────────────────────────────────────────────────────
     // 6. Config 數值確認

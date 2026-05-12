@@ -33,31 +33,22 @@ export default async function GroupDetailPage({ params }: Props) {
   const isMember = activeMembers.some(m => m.user_id === user.id)
   const dormant = activeMembers.length < TREE_CONFIG.minMembers
 
-  // Fetch all this-month checkins from any member (current or past)
-  const { data: allCheckins } = await supabase
-    .from('checkins')
-    .select('user_id, note_date, points_earned')
-    .in('user_id', members.map(m => m.user_id))
-    .gte('note_date', monthStart)
+  // Tree points: sum this month's checkins for current active members only
+  const activeMemberIds = activeMembers.map(m => m.user_id)
+  const { data: allCheckins } = activeMemberIds.length > 0
+    ? await supabase
+        .from('checkins')
+        .select('user_id, points_earned')
+        .in('user_id', activeMemberIds)
+        .gte('note_date', monthStart)
+    : { data: [] }
 
-  // Tree points: sum checkins within each member's active period
-  const treePoints = (allCheckins ?? []).reduce((sum, c) => {
-    const member = members.find(m => m.user_id === c.user_id)
-    if (!member) return sum
-    const joinedDate = member.joined_at.split('T')[0]
-    const leftDate = member.left_at ? member.left_at.split('T')[0] : null
-    if (c.note_date < joinedDate) return sum
-    if (leftDate && c.note_date > leftDate) return sum
-    return sum + c.points_earned
-  }, 0)
-
-  // Per-active-member contribution this month (for display)
   const contribMap = (allCheckins ?? []).reduce<Record<string, number>>((acc, c) => {
-    if (activeMembers.some(m => m.user_id === c.user_id)) {
-      acc[c.user_id] = (acc[c.user_id] ?? 0) + c.points_earned
-    }
+    acc[c.user_id] = (acc[c.user_id] ?? 0) + c.points_earned
     return acc
   }, {})
+
+  const treePoints = Object.values(contribMap).reduce((sum, v) => sum + v, 0)
 
   const stage = getTreeStage(treePoints)
   const fruitCount = getFruitCount(treePoints)

@@ -34,32 +34,29 @@ export default async function CommunityPage() {
     .map(m => m.groups)
     .filter(Boolean) as NonNullable<typeof myMemberships>[number]['groups'][]
 
-  // Collect all member IDs across all groups — single batch query instead of N queries
+  // Only active members per group — single batch query instead of N queries
   const allGroupMembers = (rawGroups as NonNullable<typeof rawGroups[number]>[]).map(g =>
     (g as unknown as { group_members: GroupMemberWithProfile[] }).group_members ?? []
   )
-  const allMemberIds = [...new Set(allGroupMembers.flat().map((m: GroupMemberWithProfile) => m.user_id))]
+  const allActiveMembers = allGroupMembers.map(members =>
+    members.filter((m: GroupMemberWithProfile) => m.left_at === null)
+  )
+  const allActiveMemberIds = [...new Set(allActiveMembers.flat().map((m: GroupMemberWithProfile) => m.user_id))]
 
-  const { data: allCheckins } = allMemberIds.length > 0
+  const { data: allCheckins } = allActiveMemberIds.length > 0
     ? await supabase
         .from('checkins')
-        .select('user_id, note_date, points_earned')
-        .in('user_id', allMemberIds)
+        .select('user_id, points_earned')
+        .in('user_id', allActiveMemberIds)
         .gte('note_date', monthStart)
     : { data: [] }
 
   const groupsWithPoints: GroupWithMembers[] = (rawGroups as NonNullable<typeof rawGroups[number]>[]).map((g, i) => {
-    const members = allGroupMembers[i]
-    const treePoints = (allCheckins ?? []).reduce((sum, c) => {
-      const member = members.find((m: GroupMemberWithProfile) => m.user_id === c.user_id)
-      if (!member) return sum
-      const joinedDate = member.joined_at.split('T')[0]
-      const leftDate = member.left_at ? member.left_at.split('T')[0] : null
-      if (c.note_date < joinedDate) return sum
-      if (leftDate && c.note_date > leftDate) return sum
-      return sum + c.points_earned
-    }, 0)
-    return { ...(g as unknown as GroupWithMembers), group_members: members, tree_points: treePoints }
+    const activeMemberIds = new Set(allActiveMembers[i].map((m: GroupMemberWithProfile) => m.user_id))
+    const treePoints = (allCheckins ?? [])
+      .filter(c => activeMemberIds.has(c.user_id))
+      .reduce((sum, c) => sum + c.points_earned, 0)
+    return { ...(g as unknown as GroupWithMembers), group_members: allGroupMembers[i], tree_points: treePoints }
   })
 
   const canCreateOrJoin = groupsWithPoints.length < TREE_CONFIG.maxGroups
