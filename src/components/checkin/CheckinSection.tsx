@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { todayString, formatDateZH } from '@/lib/utils'
 import { POINTS_BY_DAYS_LATE } from '@/lib/points'
 import StampCard from '@/components/checkin/StampCard'
 import { Fire, Star, Diamond } from '@phosphor-icons/react'
+import { useBadgeToast } from '@/components/layout/BadgeToast'
 
 interface Props {
   streakCurrent: number
@@ -16,6 +18,8 @@ interface Props {
 export default function CheckinSection({ streakCurrent, streakMax, totalPoints, monthlyCount, initialCheckins }: Props) {
   const today = todayString()
   const monthLabel = `${today.slice(0, 4)}年${parseInt(today.slice(5, 7))}月`
+  const router = useRouter()
+  const { showBadges } = useBadgeToast()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ points: number; streak: number; badges: string[] } | null>(null)
   const [streak, setStreak] = useState(streakCurrent)
@@ -41,6 +45,8 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
       setStreak(data.streak_current)
       setPoints(p => p + data.points_earned)
       setCheckedDates(prev => ({ ...prev, [date]: data.points_earned }))
+      if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
+      router.refresh()
     }
   }
 
@@ -75,13 +81,15 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
         ) : checkedDates[today] !== undefined ? (
           <div className="text-center py-4 text-gray-800 font-medium">✅ 今日已簽到 (+{checkedDates[today]} 分)</div>
         ) : (
-          <button
-            onClick={() => doCheckin(today)}
-            disabled={loading}
-            className="w-full bg-primary text-gray-900 rounded-xl py-4 text-base font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50"
-          >
-            {loading ? '簽到中...' : '✅ 立即簽到 (+10 分)'}
-          </button>
+          <div className="animated-border rounded-xl">
+            <button
+              onClick={() => doCheckin(today)}
+              disabled={loading}
+              className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
+            >
+              {loading ? '簽到中...' : '✅ 立即簽到 (+10 分)'}
+            </button>
+          </div>
         )}
       </div>
 

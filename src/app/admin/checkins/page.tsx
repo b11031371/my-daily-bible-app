@@ -57,7 +57,7 @@ export default function AdminCheckinsPage() {
           </div>
           {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-gray-700' : 'text-red-500'}`}>{msg}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-primary text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
+            className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
             {loading ? '處理中...' : '執行補簽'}
           </button>
         </form>

@@ -79,7 +79,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           <button
             onClick={saveName}
             disabled={loading === 'name' || !name.trim() || name.trim() === initialName}
-            className="bg-primary text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:bg-primary-dark transition-colors disabled:opacity-40"
+            className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
           >
             {loading === 'name' ? '儲存中...' : '儲存'}
           </button>
@@ -125,7 +125,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           <button
             onClick={savePassword}
             disabled={loading === 'pw' || !newPassword}
-            className="bg-primary text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:bg-primary-dark transition-colors disabled:opacity-40"
+            className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
           >
             {loading === 'pw' ? '更新中...' : '更新密碼'}
           </button>

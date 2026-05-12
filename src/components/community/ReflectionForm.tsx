@@ -1,13 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useBadgeToast } from '@/components/layout/BadgeToast'
 
-export default function ReflectionForm({ date }: { date: string }) {
+export default function ReflectionForm({ date, bibleRange }: { date: string; bibleRange: string | null }) {
   const [content, setContent] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [pointsEarned, setPointsEarned] = useState(0)
+  const { showBadges } = useBadgeToast()
   const MAX = 1000
 
   useEffect(() => {
@@ -36,11 +38,12 @@ export default function ReflectionForm({ date }: { date: string }) {
     const res = await fetch('/api/reflection', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ note_date: date, content, is_anonymous: isAnonymous }),
+      body: JSON.stringify({ note_date: date, content, is_anonymous: isAnonymous, bible_range: bibleRange }),
     })
     const data = await res.json()
     if (res.ok) {
       setPointsEarned(data.points_earned ?? 0)
+      if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
       setSubmitted(true)
     }
     setLoading(false)
@@ -90,7 +93,7 @@ export default function ReflectionForm({ date }: { date: string }) {
           <button
             type="submit"
             disabled={loading || content.trim().length === 0}
-            className="bg-primary text-gray-900 text-sm px-4 py-1.5 rounded-full font-medium disabled:opacity-40 hover:bg-primary-dark transition-colors"
+            className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-1.5 rounded-full font-medium disabled:opacity-40 hover:brightness-95 transition-[filter]"
           >
             {loading ? '送出中...' : '送出'}
           </button>

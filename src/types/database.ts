@@ -66,6 +66,7 @@ export interface Database {
           content: string
           is_anonymous: boolean
           points_earned: number
+          bible_range: string | null
           created_at: string
           updated_at: string
         }
@@ -76,14 +77,32 @@ export interface Database {
           content: string
           is_anonymous?: boolean
           points_earned?: number
+          bible_range?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           content?: string
           is_anonymous?: boolean
+          bible_range?: string | null
           updated_at?: string
         }
+        Relationships: []
+      }
+      reflection_likes: {
+        Row: {
+          id: string
+          reflection_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          reflection_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: Record<string, never>
         Relationships: []
       }
       badges: {
@@ -180,6 +199,51 @@ export interface Database {
         Update: Record<string, never>
         Relationships: []
       }
+      groups: {
+        Row: {
+          id: string
+          name: string
+          invite_code: string
+          fruit_order: string[]
+          created_by: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name?: string
+          invite_code: string
+          fruit_order: string[]
+          created_by: string
+          created_at?: string
+        }
+        Update: {
+          name?: string
+        }
+        Relationships: []
+      }
+      group_members: {
+        Row: {
+          id: string
+          group_id: string
+          user_id: string
+          joined_at: string
+          left_at: string | null
+          role: 'admin' | 'member'
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          user_id: string
+          joined_at?: string
+          left_at?: string | null
+          role?: 'admin' | 'member'
+        }
+        Update: {
+          left_at?: string | null
+          role?: 'admin' | 'member'
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -188,7 +252,7 @@ export interface Database {
         Returns: Json
       }
       fn_submit_reflection: {
-        Args: { p_note_date: string; p_content: string; p_anonymous: boolean }
+        Args: { p_note_date: string; p_content: string; p_anonymous: boolean; p_bible_range?: string | null }
         Returns: Json
       }
       fn_evaluate_badges: {

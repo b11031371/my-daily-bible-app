@@ -10,9 +10,10 @@ interface Props {
   enContent: string | null
   zhPdfUrl: string
   enPdfUrl: string
+  bibleRange?: string | null
 }
 
-export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl }: Props) {
+export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl, bibleRange }: Props) {
   const [lang, setLang] = useState<'zh' | 'en'>('zh')
   const content = lang === 'zh' ? zhContent : enContent
   const pdfUrl = lang === 'zh' ? zhPdfUrl : enPdfUrl
@@ -29,7 +30,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
             className={cn(
               'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
               lang === l
-                ? 'bg-primary text-gray-900'
+                ? 'bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900'
                 : 'bg-white text-gray-500 border border-gray-200'
             )}
           >
@@ -73,7 +74,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       {/* Reflection form */}
       <div className="bg-white rounded-2xl shadow-sm p-5">
         <h3 className="text-sm font-semibold text-gray-800 mb-3">💬 分享你的想法</h3>
-        <ReflectionForm date={date} />
+        <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
       </div>
     </div>
   )

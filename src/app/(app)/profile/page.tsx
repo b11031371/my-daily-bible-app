@@ -18,10 +18,11 @@ export default async function ProfilePage() {
     supabase.from('checkins').select('id, note_date, is_retro, points_earned').eq('user_id', user.id).order('note_date', { ascending: false }).limit(30),
   ])
 
+  const earnedMap = new Map((userBadges ?? []).map(ub => [ub.badge_id, ub.earned_at]))
   const badgesWithStatus: BadgeWithStatus[] = (badges ?? []).map(b => ({
     ...b,
-    earned: (userBadges ?? []).some(ub => ub.badge_id === b.id),
-    earned_at: (userBadges ?? []).find(ub => ub.badge_id === b.id)?.earned_at,
+    earned: earnedMap.has(b.id),
+    earned_at: earnedMap.get(b.id),
   }))
 
   async function handleSignOut() {

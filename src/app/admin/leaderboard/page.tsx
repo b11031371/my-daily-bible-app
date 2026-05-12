@@ -27,7 +27,7 @@ export default function AdminLeaderboardPage() {
         {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-gray-700' : 'text-red-500'}`}>{msg}</p>}
         <div className="flex gap-3">
           <button onClick={() => rebuild('weekly')} disabled={loading}
-            className="flex-1 bg-primary text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
+            className="flex-1 bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
             更新本週榜
           </button>
           <button onClick={() => rebuild('monthly')} disabled={loading}

@@ -23,6 +23,9 @@ export default async function NotePage({ params }: Props) {
   const zhPdfUrl = getPdfUrl(date, 'zh')
   const enPdfUrl = getPdfUrl(date, 'en')
 
+  const bibleRangeMatch = zhContent?.match(/\*\*和合本[：:]\*\*\s*(.+)/)
+  const bibleRange = bibleRangeMatch?.[1]?.trim() ?? null
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
       <div className="flex items-center gap-3 mb-4">
@@ -35,6 +38,7 @@ export default async function NotePage({ params }: Props) {
         enContent={enContent}
         zhPdfUrl={zhPdfUrl}
         enPdfUrl={enPdfUrl}
+        bibleRange={bibleRange}
       />
     </div>
   )

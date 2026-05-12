@@ -12,8 +12,14 @@ export interface BadgeWithStatus extends Badge {
   earned_at?: string
 }
 
+export interface ReflectionLike {
+  user_id: string
+  profiles: Pick<Profile, 'avatar_seed'> | null
+}
+
 export interface ReflectionWithProfile extends Reflection {
   profiles: Pick<Profile, 'display_name' | 'avatar_seed'>
+  reflection_likes: ReflectionLike[]
 }
 
 export interface LeaderboardEntryWithProfile extends LeaderboardEntry {
@@ -22,6 +28,18 @@ export interface LeaderboardEntryWithProfile extends LeaderboardEntry {
 
 export interface CheckinWithProfile extends Checkin {
   profiles: Pick<Profile, 'display_name' | 'avatar_seed'> | null
+}
+
+export type Group = Database['public']['Tables']['groups']['Row']
+export type GroupMember = Database['public']['Tables']['group_members']['Row']
+
+export interface GroupMemberWithProfile extends GroupMember {
+  profiles: Pick<Profile, 'id' | 'display_name' | 'avatar_seed'>
+}
+
+export interface GroupWithMembers extends Group {
+  group_members: GroupMemberWithProfile[]
+  tree_points: number
 }
 
 export interface CheckinResult {

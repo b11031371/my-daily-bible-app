@@ -1,5 +1,6 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
 import type { BadgeWithStatus } from '@/types/app'
 
 const CONDITION_LABELS: Record<string, (v: number) => string> = {
@@ -11,32 +12,19 @@ const CONDITION_LABELS: Record<string, (v: number) => string> = {
 
 function BadgeItem({ badge }: { badge: BadgeWithStatus }) {
   const [show, setShow] = useState(false)
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  function startPress() {
-    timer.current = setTimeout(() => setShow(true), 500)
-  }
-
-  function endPress() {
-    if (timer.current) clearTimeout(timer.current)
-  }
-
-  function dismiss() {
-    if (timer.current) clearTimeout(timer.current)
-    setShow(false)
-  }
 
   const unlockHint = CONDITION_LABELS[badge.condition_type]?.(badge.condition_value) ?? badge.description_zh
 
   return (
-    <div className="relative flex flex-col items-center gap-1 select-none">
+    <div className="relative flex flex-col items-center gap-1.5 select-none">
       <div
-        className={`text-3xl cursor-pointer transition-transform active:scale-90 ${!badge.earned ? 'opacity-30' : ''}`}
-        onMouseDown={startPress}
-        onMouseUp={endPress}
-        onMouseLeave={dismiss}
-        onTouchStart={startPress}
-        onTouchEnd={endPress}
+        className={cn(
+          'text-3xl cursor-pointer transition-all duration-200 rounded-full p-1.5 active:scale-95',
+          badge.earned
+            ? 'bg-amber-50 ring-1 ring-amber-200 hover:ring-amber-400 hover:bg-amber-100 hover:scale-110 hover:drop-shadow-[0_2px_10px_rgba(255,204,102,0.55)]'
+            : 'opacity-30 hover:scale-105 hover:opacity-40'
+        )}
+        onClick={() => setShow(v => !v)}
       >
         {badge.icon}
       </div>
@@ -44,7 +32,7 @@ function BadgeItem({ badge }: { badge: BadgeWithStatus }) {
 
       {show && (
         <>
-          <div className="fixed inset-0 z-40" onClick={dismiss} />
+          <div className="fixed inset-0 z-40" onClick={() => setShow(false)} />
           <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-36 bg-gray-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-lg text-center">
             <p className="font-semibold mb-1">{badge.name_zh}</p>
             <p className="text-white/70 leading-snug">

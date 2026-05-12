@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Eye, EyeSlash } from '@phosphor-icons/react'
 
@@ -16,10 +15,8 @@ const STRENGTH_COLOR = ['', 'bg-red-400', 'bg-amber-400', 'bg-green-500']
 const STRENGTH_LABEL = ['', '弱', '普通', '強']
 const STRENGTH_TEXT  = ['', 'text-red-500', 'text-amber-500', 'text-green-600']
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
   const router = useRouter()
-  const [displayName, setDisplayName] = useState('')
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [showPw, setShowPw] = useState(false)
@@ -37,16 +34,9 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { display_name: displayName },
-        emailRedirectTo: undefined,
-      },
-    })
+    const { error } = await supabase.auth.updateUser({ password })
     if (error) {
-      setError(error.message === 'User already registered' ? '此信箱已被註冊' : '註冊失敗，請再試一次')
+      setError('重設失敗，請重新嘗試或重寄重設信')
       setLoading(false)
     } else {
       router.push('/notes')
@@ -61,39 +51,15 @@ export default function RegisterPage() {
           <div className="flex justify-center mb-2">
             <img src="/icons/icon.svg" alt="Sproutiv" className="w-14 h-14 rounded-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">加入 Sproutiv</h1>
-          <p className="text-sm text-gray-500 mt-1">建立你的帳號</p>
+          <h1 className="text-2xl font-bold text-gray-900">設定新密碼</h1>
+          <p className="text-sm text-gray-500 mt-1">請輸入你的新密碼</p>
         </div>
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
           {error && (
             <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">暱稱</label>
-            <input
-              type="text"
-              value={displayName}
-              onChange={e => setDisplayName(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="你想讓大家怎麼稱呼你？"
-              autoComplete="nickname"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">電子郵件</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="your@email.com"
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">密碼</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">新密碼</label>
             <div className="relative">
               <input
                 type={showPw ? 'text' : 'password'}
@@ -131,7 +97,7 @@ export default function RegisterPage() {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">確認密碼</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">確認新密碼</label>
             <div className="relative">
               <input
                 type={showConfirm ? 'text' : 'password'}
@@ -165,15 +131,9 @@ export default function RegisterPage() {
             disabled={loading || confirmMismatch}
             className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
           >
-            {loading ? '建立中...' : '建立帳號'}
+            {loading ? '更新中...' : '確認更新密碼'}
           </button>
         </form>
-        <p className="text-center text-sm text-gray-500 mt-4">
-          已有帳號？{' '}
-          <Link href="/login" className="text-gray-800 font-medium underline">
-            登入
-          </Link>
-        </p>
       </div>
     </div>
   )

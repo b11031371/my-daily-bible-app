@@ -78,7 +78,7 @@ export default function AdminBadgesPage() {
           <button
             onClick={() => save(b)}
             disabled={saving === b.id}
-            className="text-sm bg-primary text-gray-900 px-4 py-1.5 rounded-lg hover:bg-primary-dark disabled:opacity-50 transition-colors"
+            className="text-sm bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-4 py-1.5 rounded-lg hover:brightness-95 disabled:opacity-50 transition-colors"
           >
             {saving === b.id ? '儲存中...' : '儲存'}
           </button>

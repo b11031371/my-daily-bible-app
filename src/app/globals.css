@@ -30,3 +30,18 @@ body {
 .pb-nav {
   padding-bottom: calc(4rem + env(safe-area-inset-bottom));
 }
+
+@keyframes gradient-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated gradient border wrapper — place inside the wrapping element,
+   inner content sits on top with its own background + slightly smaller border-radius */
+.animated-border {
+  background: linear-gradient(270deg, #FFCC66, #FFB870, #FFE08C, #E8A500, #FFB870, #FFCC66);
+  background-size: 400% 400%;
+  animation: gradient-flow 6s ease infinite;
+  padding: 2px;
+}
