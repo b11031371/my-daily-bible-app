@@ -37,7 +37,7 @@ export default function JoinGroupModal() {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40"
           onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
           <div className="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-2xl p-6 space-y-4">
