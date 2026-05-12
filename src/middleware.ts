@@ -21,7 +21,8 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
   const { pathname } = request.nextUrl
 
   const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/register')

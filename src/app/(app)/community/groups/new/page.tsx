@@ -20,6 +20,7 @@ export default function NewGroupPage() {
     const data = await res.json()
     setLoading(false)
     if (!res.ok) { setError(data.error); return }
+    router.refresh()
     router.push(`/community/groups/${data.id}`)
   }
 

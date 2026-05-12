@@ -22,6 +22,7 @@ export default function JoinGroupModal() {
     setLoading(false)
     if (!res.ok) { setError(data.error); return }
     setOpen(false)
+    router.refresh()
     router.push(`/community/groups/${data.id}`)
   }
 

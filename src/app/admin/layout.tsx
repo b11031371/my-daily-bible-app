@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: '/admin/checkins', label: '補簽' },
     { href: '/admin/badges', label: '徽章' },
     { href: '/admin/leaderboard', label: '排行榜' },
+    { href: '/admin/reflections', label: '留言' },
   ]
 
   return (
