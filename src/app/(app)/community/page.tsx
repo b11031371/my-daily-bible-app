@@ -7,7 +7,8 @@ import Link from 'next/link'
 import JoinGroupModal from '@/components/tree/JoinGroupModal'
 import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } from '@/types/app'
 
-export default async function CommunityPage() {
+export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ scrollTo?: string }> }) {
+  const { scrollTo } = await searchParams
   const [user, supabase] = await Promise.all([getUser(), createClient()])
   const monthStart = `${todayString().slice(0, 7)}-01`
 
@@ -108,6 +109,7 @@ export default async function CommunityPage() {
           reflections={(reflections ?? []) as unknown as ReflectionWithProfile[]}
           currentUserId={user?.id ?? null}
           currentUserAvatarSeed={myProfile?.avatar_seed ?? null}
+          scrollTo={scrollTo}
         />
       </section>
     </div>

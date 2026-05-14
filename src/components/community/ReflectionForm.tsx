@@ -1,9 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
 
 export default function ReflectionForm({ date, bibleRange }: { date: string; bibleRange: string | null }) {
+  const router = useRouter()
   const [content, setContent] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -45,6 +47,8 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
       setPointsEarned(data.points_earned ?? 0)
       if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
       setSubmitted(true)
+      router.refresh()
+      router.push(`/community?scrollTo=${date}`)
     }
     setLoading(false)
   }

@@ -72,7 +72,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       </div>
 
       {/* Reflection form */}
-      <div className="bg-white rounded-2xl shadow-sm p-5">
+      <div id="reflection" className="bg-white rounded-2xl shadow-sm p-5">
         <h3 className="text-sm font-semibold text-gray-800 mb-3">💬 分享你的想法</h3>
         <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
       </div>

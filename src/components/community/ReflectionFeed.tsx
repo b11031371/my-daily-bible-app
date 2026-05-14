@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Heart } from '@phosphor-icons/react'
+import { useRouter } from 'next/navigation'
+import { Heart, PencilSimple, Trash } from '@phosphor-icons/react'
+import Link from 'next/link'
 import { formatDateZH } from '@/lib/utils'
 import type { ReflectionWithProfile } from '@/types/app'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
@@ -20,6 +22,7 @@ interface Props {
   reflections: ReflectionWithProfile[]
   currentUserId: string | null
   currentUserAvatarSeed: string | null
+  scrollTo?: string
 }
 
 // sessionStorage helpers — key: `rl:<id>`, value: '1' | '0'
@@ -31,14 +34,22 @@ function ssSet(id: string, liked: boolean) {
 }
 
 function ReflectionCard({
-  r, currentUserId, currentUserAvatarSeed,
+  r, currentUserId, currentUserAvatarSeed, onDelete,
 }: {
   r: ReflectionWithProfile
   currentUserId: string | null
   currentUserAvatarSeed: string | null
+  onDelete: (id: string) => void
 }) {
-  const name = r.is_anonymous ? '匿名' : r.profiles?.display_name ?? '使用者'
-  const seed = r.is_anonymous ? 'anon' : (r.profiles?.avatar_seed ?? r.user_id)
+  const router = useRouter()
+  const isOwn = currentUserId === r.user_id
+
+  // Displayed content/anon can change after an inline edit
+  const [displayContent, setDisplayContent] = useState(r.content)
+  const [isAnonymous, setIsAnonymous] = useState(r.is_anonymous)
+
+  const name = isAnonymous ? '匿名' : r.profiles?.display_name ?? '使用者'
+  const seed = isAnonymous ? 'anon' : (r.profiles?.avatar_seed ?? r.user_id)
 
   const serverLiked = currentUserId ? r.reflection_likes.some(l => l.user_id === currentUserId) : false
   const serverCount = r.reflection_likes.length
@@ -48,12 +59,20 @@ function ReflectionCard({
   const [count, setCount] = useState(serverCount)
   const [displaySeeds, setDisplaySeeds] = useState(serverSeeds)
 
-  // Restore state from sessionStorage after mount (survives tab switching)
+  // Edit mode
+  const [editMode, setEditMode] = useState(false)
+  const [editContent, setEditContent] = useState(r.content)
+  const [editAnon, setEditAnon] = useState(r.is_anonymous)
+  const [editLoading, setEditLoading] = useState(false)
+
+  // Delete confirm
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  // Restore like state from sessionStorage after mount (survives tab switching)
   useEffect(() => {
     const stored = ssGet(r.id)
-    if (stored === null) return  // no user interaction yet — trust server
-    if (stored === serverLiked) return  // server already matches
-    // Server data is stale relative to user interaction — correct both liked and count
+    if (stored === null) return
+    if (stored === serverLiked) return
     setLiked(stored)
     setCount(serverCount + (stored ? 1 : -1))
     if (stored && currentUserAvatarSeed) {
@@ -72,8 +91,6 @@ function ReflectionCard({
     setLiked(next)
     setCount(c => c + (next ? 1 : -1))
     ssSet(r.id, next)
-
-    // Update visible avatar stack
     if (next && currentUserAvatarSeed) {
       setDisplaySeeds(prev =>
         prev.includes(currentUserAvatarSeed) ? prev : [currentUserAvatarSeed, ...prev].slice(0, 3)
@@ -81,8 +98,36 @@ function ReflectionCard({
     } else if (!next && currentUserAvatarSeed) {
       setDisplaySeeds(prev => prev.filter(s => s !== currentUserAvatarSeed))
     }
-
     await fetch(`/api/reflections/${r.id}/like`, { method: next ? 'POST' : 'DELETE' })
+  }
+
+  async function handleDelete() {
+    const res = await fetch(`/api/reflections/${r.id}`, { method: 'DELETE' })
+    if (res.ok) onDelete(r.id)
+    else setConfirmDelete(false)
+  }
+
+  async function handleSaveEdit() {
+    if (!editContent.trim()) return
+    setEditLoading(true)
+    const res = await fetch(`/api/reflections/${r.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: editContent.trim(), is_anonymous: editAnon }),
+    })
+    setEditLoading(false)
+    if (res.ok) {
+      setDisplayContent(editContent.trim())
+      setIsAnonymous(editAnon)
+      setEditMode(false)
+      router.refresh()
+    }
+  }
+
+  function startEdit() {
+    setEditContent(displayContent)
+    setEditAnon(isAnonymous)
+    setEditMode(true)
   }
 
   return (
@@ -94,43 +139,142 @@ function ReflectionCard({
         <span className="text-xs text-gray-400 ml-auto shrink-0">{formatDateZH(r.note_date)}</span>
       </div>
 
-      {/* Content */}
-      <p className="text-sm text-gray-700 leading-6 whitespace-pre-wrap mb-3">{r.content}</p>
-
-      {/* Like row */}
-      <div className="flex items-center justify-end gap-1.5">
-        {count > 0 && (
-          <div className="flex items-center -space-x-1.5">
-            {displaySeeds.map((s, i) => (
-              <BibleAvatar key={i} seed={s} className="w-5 h-5 ring-1 ring-white rounded-full" />
-            ))}
+      {editMode ? (
+        /* Inline edit form */
+        <div className="mt-2">
+          <textarea
+            value={editContent}
+            onChange={e => setEditContent(e.target.value)}
+            maxLength={1000}
+            rows={4}
+            autoFocus
+            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm leading-6 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <div className="flex items-center justify-between mt-2">
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
+              <div
+                onClick={() => setEditAnon(v => !v)}
+                className={`w-8 h-4 rounded-full flex items-center px-0.5 cursor-pointer transition-colors ${editAnon ? 'bg-primary' : 'bg-gray-200'}`}
+              >
+                <div className={`w-3 h-3 bg-white rounded-full shadow transition-transform ${editAnon ? 'translate-x-4' : ''}`} />
+              </div>
+              匿名
+            </label>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEditMode(false)}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={editLoading || !editContent.trim()}
+                className="text-xs font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-3 py-1 rounded-full disabled:opacity-40"
+              >
+                {editLoading ? '儲存中...' : '儲存'}
+              </button>
+            </div>
           </div>
-        )}
-        {count > 0 && (
-          <span className="text-xs text-gray-400 tabular-nums">{count}</span>
-        )}
-        <button
-          onClick={toggleLike}
-          disabled={!currentUserId}
-          className="p-1 rounded-full transition-colors disabled:cursor-default"
-          aria-label={liked ? '取消讚' : '讚'}
-        >
-          {liked
-            ? <GradientHeartFill size={18} />
-            : <Heart size={18} weight="regular" className="text-gray-300 hover:text-amber-400" />
-          }
-        </button>
-      </div>
+        </div>
+      ) : (
+        <>
+          {/* Content */}
+          <p className="text-sm text-gray-700 leading-6 whitespace-pre-wrap mb-3">{displayContent}</p>
+
+          {/* Action row */}
+          <div className="flex items-center justify-between">
+            {/* Left: own-reflection edit/delete */}
+            {isOwn ? (
+              confirmDelete ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400">確定刪除？</span>
+                  <button onClick={handleDelete} className="text-xs text-red-500 font-medium hover:text-red-600">刪除</button>
+                  <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-600">取消</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={startEdit}
+                    className="p-1 text-gray-300 hover:text-gray-500 transition-colors"
+                    aria-label="編輯"
+                  >
+                    <PencilSimple size={14} weight="regular" />
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(true)}
+                    className="p-1 text-gray-300 hover:text-red-400 transition-colors"
+                    aria-label="刪除"
+                  >
+                    <Trash size={14} weight="regular" />
+                  </button>
+                </div>
+              )
+            ) : (
+              <div />
+            )}
+
+            {/* Right: like */}
+            <div className="flex items-center gap-1.5">
+              {count > 0 && (
+                <div className="flex items-center -space-x-1.5">
+                  {displaySeeds.map((s, i) => (
+                    <BibleAvatar key={i} seed={s} className="w-5 h-5 ring-1 ring-white rounded-full" />
+                  ))}
+                </div>
+              )}
+              {count > 0 && (
+                <span className="text-xs text-gray-400 tabular-nums">{count}</span>
+              )}
+              <button
+                onClick={toggleLike}
+                disabled={!currentUserId}
+                className="p-1 rounded-full transition-colors disabled:cursor-default"
+                aria-label={liked ? '取消讚' : '讚'}
+              >
+                {liked
+                  ? <GradientHeartFill size={18} />
+                  : <Heart size={18} weight="regular" className="text-gray-300 hover:text-amber-400" />
+                }
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
 
-export default function ReflectionFeed({ reflections, currentUserId, currentUserAvatarSeed }: Props) {
-  if (reflections.length === 0) {
+export default function ReflectionFeed({ reflections, currentUserId, currentUserAvatarSeed, scrollTo }: Props) {
+  const router = useRouter()
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    if (!scrollTo) return
+    const el = document.getElementById(`date-${scrollTo}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [scrollTo])
+
+  function handleDelete(id: string) {
+    setDeletedIds(prev => new Set([...prev, id]))
+    router.refresh()
+  }
+
+  const visible = reflections.filter(r => !deletedIds.has(r.id))
+
+  if (visible.length === 0) {
     return <div className="text-center py-10 text-sm text-gray-400">還沒有人分享，來做第一個吧！</div>
   }
+
+  const grouped = visible.reduce<Record<string, ReflectionWithProfile[]>>((acc, r) => {
+    if (!acc[r.note_date]) acc[r.note_date] = []
+    acc[r.note_date].push(r)
+    return acc
+  }, {})
+  const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a))
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       {/* Gradient definition — referenced by GradientHeartFill via url(#rl-heart-grad) */}
       <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
         <defs>
@@ -140,14 +284,39 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
           </linearGradient>
         </defs>
       </svg>
-      {reflections.map(r => (
-        <ReflectionCard
-          key={r.id}
-          r={r}
-          currentUserId={currentUserId}
-          currentUserAvatarSeed={currentUserAvatarSeed}
-        />
-      ))}
+      {sortedDates.map(date => {
+        const group = grouped[date]
+        const bibleRange = group[0].bible_range
+        return (
+          <div key={date} id={`date-${date}`}>
+            <div className="flex items-center justify-between mb-2 px-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-semibold text-gray-700">{formatDateZH(date)}</span>
+                {bibleRange && (
+                  <span className="text-xs text-amber-600">📖 {bibleRange}</span>
+                )}
+              </div>
+              <Link
+                href={`/notes/${date}#reflection`}
+                className="text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2"
+              >
+                分享你的想法 →
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {group.map(r => (
+                <ReflectionCard
+                  key={r.id}
+                  r={r}
+                  currentUserId={currentUserId}
+                  currentUserAvatarSeed={currentUserAvatarSeed}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }

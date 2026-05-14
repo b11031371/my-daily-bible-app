@@ -18,6 +18,8 @@ export interface ReflectionLike {
 }
 
 export interface ReflectionWithProfile extends Reflection {
+  note_date: string
+  bible_range: string | null
   profiles: Pick<Profile, 'display_name' | 'avatar_seed'>
   reflection_likes: ReflectionLike[]
 }
