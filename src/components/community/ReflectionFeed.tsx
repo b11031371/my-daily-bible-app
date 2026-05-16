@@ -136,7 +136,6 @@ function ReflectionCard({
       <div className="flex items-center gap-2 mb-1">
         <BibleAvatar seed={seed} className="w-7 h-7 shrink-0" />
         <span className="text-sm font-medium text-gray-900 truncate">{name}</span>
-        <span className="text-xs text-gray-400 ml-auto shrink-0">{formatDateZH(r.note_date)}</span>
       </div>
 
       {editMode ? (

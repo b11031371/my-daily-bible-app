@@ -9,9 +9,10 @@ interface Props {
   isMember: boolean
   canInvite: boolean
   membersWarning: boolean
+  isLastMember: boolean
 }
 
-export default function GroupActions({ groupId, groupName, inviteCode, isMember, canInvite, membersWarning }: Props) {
+export default function GroupActions({ groupId, groupName, inviteCode, isMember, canInvite, membersWarning, isLastMember }: Props) {
   const router = useRouter()
   const [editingName, setEditingName] = useState(false)
   const [newName, setNewName] = useState(groupName)
@@ -46,8 +47,8 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
   async function handleLeave() {
     setLeaving(true)
     await fetch(`/api/groups/${groupId}/leave`, { method: 'DELETE' })
-    router.refresh()
     router.push('/community')
+    router.refresh()
   }
 
   return (
@@ -109,7 +110,9 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
         showLeaveConfirm ? (
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <p className="text-sm text-gray-700 mb-3 text-center">
-              {membersWarning ? '你離開後樹將進入休眠，確定要退出嗎？' : '確定退出群組？'}
+              {isLastMember
+                ? '你是最後一位成員，退出後此群組將會被刪除，確定要退出嗎？'
+                : membersWarning ? '退出後成員不足，樹會進入休眠，確定要退出嗎？' : '確定退出群組？'}
             </p>
             <div className="flex gap-2">
               <button

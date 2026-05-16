@@ -35,7 +35,7 @@ export default async function NotesPage() {
       .eq('note_date', today),
     supabase.from('badges').select('id').eq('is_active', true),
     supabase.from('user_badges').select('badge_id').eq('user_id', user!.id),
-    supabase.from('checkins').select('note_date').eq('user_id', user!.id).in('note_date', weekDates),
+    supabase.from('checkins').select('note_date, is_retro').eq('user_id', user!.id).in('note_date', weekDates),
     supabase.from('profiles').select('streak_current').eq('id', user!.id).single(),
   ])
 
@@ -53,6 +53,7 @@ export default async function NotesPage() {
   const userCheckedIn = (todayCheckins ?? []).some(c => c.user_id === user!.id)
   const unearnedBadges = (allBadges?.length ?? 0) - (userBadges?.length ?? 0)
   const checkedDates = new Set((weekCheckins ?? []).map(c => c.note_date))
+  const retroDates = new Set((weekCheckins ?? []).filter(c => c.is_retro).map(c => c.note_date))
   const pastDates = availableDates.filter(d => d !== today).slice(0, 2)
 
   return (
@@ -67,7 +68,6 @@ export default async function NotesPage() {
               <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">今日</span>
               <span className="text-sm text-gray-700">{formatDateZH(today)}</span>
             </div>
-            <p className="text-xs text-gray-600 mb-1">今日讀經範圍</p>
             <p className="text-xl font-bold leading-snug mb-4">
               {passageRange ?? '今日筆記尚未上傳'}
             </p>
@@ -92,10 +92,11 @@ export default async function NotesPage() {
           {weekDates.map(date => {
             const isToday = date === today
             const done = checkedDates.has(date)
+            const isRetro = retroDates.has(date)
             return (
               <div key={date} className="flex-1 flex flex-col items-center gap-1">
-                <div className={`w-full aspect-square rounded-lg flex items-center justify-center text-xs font-bold
-                  ${done ? 'bg-primary text-gray-900' : isToday ? 'border-2 border-primary text-gray-800' : 'bg-gray-100 text-gray-300'}`}>
+                <div className={`w-full aspect-square rounded-lg flex items-center justify-center text-sm
+                  ${done && !isRetro ? 'bg-primary text-gray-900 font-black' : done && isRetro ? 'bg-primary/40 text-gray-700 font-black' : isToday ? 'border-2 border-primary text-gray-800' : 'bg-gray-100 text-gray-300'}`}>
                   {done ? '✓' : ''}
                 </div>
                 <span className="text-[10px] text-gray-400">{date.slice(8)}</span>
@@ -150,7 +151,7 @@ export default async function NotesPage() {
       {/* Past notes */}
       {pastDates.length > 0 && (
         <div>
-          <h2 className="text-xs font-semibold text-gray-400 mb-2 px-1">過去筆記</h2>
+          <h2 className="text-xs font-semibold text-gray-400 mb-2 px-1">近期筆記</h2>
           <div className="space-y-2">
             {pastDates.map(date => (
               <Link

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -16,5 +18,21 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   if (error) return NextResponse.json({ error: '退出失敗' }, { status: 500 })
 
-  return NextResponse.json({ ok: true })
+  // Check if any active members remain
+  const { count } = await supabase
+    .from('group_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('group_id', id)
+    .is('left_at', null)
+
+  if (count === 0) {
+    const adminClient = createServiceClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    await adminClient.from('groups').delete().eq('id', id)
+    return NextResponse.json({ ok: true, groupDeleted: true })
+  }
+
+  return NextResponse.json({ ok: true, groupDeleted: false })
 }

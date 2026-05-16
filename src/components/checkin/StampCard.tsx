@@ -50,11 +50,7 @@ export default function StampCard({ monthlyCount, monthLabel }: Props) {
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-gray-700">本月集點</h3>
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-gray-400">{monthLabel}</span>
-          <span className="text-xs font-bold text-gray-900">{monthlyCount}</span>
-          <span className="text-xs text-gray-400">/ 10</span>
-        </div>
+        <span className="text-xs text-gray-400">{monthLabel}</span>
       </div>
 
       {/* Stamp grid */}

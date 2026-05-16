@@ -138,7 +138,15 @@ export default async function GroupDetailPage({ params }: Props) {
         isMember={isMember}
         canInvite={activeMembers.length < TREE_CONFIG.maxMembers}
         membersWarning={isMember && activeMembers.length <= TREE_CONFIG.minMembers}
+        isLastMember={isMember && activeMembers.length === 1}
       />
+
+      {!isMember && (
+        <div className="bg-gray-50 rounded-2xl p-4 text-center">
+          <p className="text-sm text-gray-600 font-medium">想加入這個群組？</p>
+          <p className="text-xs text-gray-400 mt-1">找上方成員要邀請碼，在社群頁點「加入」輸入即可</p>
+        </div>
+      )}
     </div>
   )
 }
