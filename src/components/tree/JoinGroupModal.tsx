@@ -30,7 +30,7 @@ export default function JoinGroupModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-xs font-medium bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors"
+        className="text-xs font-medium border border-gray-300 text-gray-700 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors shrink-0"
       >
         加入
       </button>

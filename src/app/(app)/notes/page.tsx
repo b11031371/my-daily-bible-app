@@ -61,23 +61,36 @@ export default async function NotesPage() {
       <h1 className="text-xl font-bold text-gray-900">每日筆記</h1>
 
       {/* Hero card */}
-      <Link href={`/notes/${today}`} className="block active:opacity-90 transition-opacity">
-        <div className="animated-border rounded-3xl shadow-lg">
-          <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-[22px] p-6 text-gray-900">
+      {passageRange ? (
+        <Link href={`/notes/${today}`} className="block active:opacity-90 transition-opacity">
+          <div className="animated-border rounded-3xl shadow-lg">
+            <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-[22px] p-6 text-gray-900">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">今日</span>
+                <span className="text-sm text-gray-700">{formatDateZH(today)}</span>
+              </div>
+              <p className="text-xl font-bold leading-snug mb-4">{passageRange}</p>
+              <div className="flex items-center gap-1 text-sm text-gray-700 font-medium">
+                <span>閱讀今日筆記</span>
+                <span>›</span>
+              </div>
+            </div>
+          </div>
+        </Link>
+      ) : (
+        <div className="rounded-3xl shadow-lg">
+          <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-3xl p-6 text-gray-900 opacity-60">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">今日</span>
               <span className="text-sm text-gray-700">{formatDateZH(today)}</span>
             </div>
-            <p className="text-xl font-bold leading-snug mb-4">
-              {passageRange ?? '今日筆記尚未上傳'}
-            </p>
+            <p className="text-xl font-bold leading-snug mb-4">今日筆記尚未上傳</p>
             <div className="flex items-center gap-1 text-sm text-gray-700 font-medium">
-              <span>閱讀今日筆記</span>
-              <span>›</span>
+              <span>稍後再來看看</span>
             </div>
           </div>
         </div>
-      </Link>
+      )}
 
       {/* Streak + week progress */}
       <div className="bg-white rounded-2xl p-4 shadow-sm">

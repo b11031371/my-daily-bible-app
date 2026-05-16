@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import GroupTreeCard from './GroupTreeCard'
 import JoinGroupModal from './JoinGroupModal'
+import { MagnifyingGlass } from '@phosphor-icons/react'
 import type { GroupWithMembers } from '@/types/app'
 
 interface Props {
@@ -29,30 +30,30 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
 
   return (
     <section className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-500">種樹群組</h2>
+      {/* Search + actions */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
+          <MagnifyingGlass size={16} className="text-gray-400 shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="搜尋群組"
+            className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+          />
+        </div>
         {canCreateOrJoin && (
-          <div className="flex gap-2">
+          <>
             <JoinGroupModal />
             <Link
               href="/community/groups/new"
-              className="text-xs font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-3 py-1.5 rounded-full hover:brightness-95 transition-[filter]"
+              className="text-xs font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-3 py-2.5 rounded-xl hover:brightness-95 transition-[filter] shrink-0"
             >
               ＋ 建立
             </Link>
-          </div>
+          </>
         )}
       </div>
-
-      {/* Search */}
-      <input
-        type="text"
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="搜尋群組名稱"
-        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-      />
 
       {/* Unified scrollable group list */}
       {myGroups.length === 0 && otherGroups.length === 0 ? (
@@ -70,7 +71,7 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
           </div>
         </div>
       ) : (
-        <div className="h-52 overflow-y-auto space-y-2 pr-0.5 pb-2">
+        <div className="space-y-2">
           {filteredMine.length > 0 && (
             <>
               <p className="text-xs font-medium text-gray-400 px-1">我的群組</p>

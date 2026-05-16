@@ -30,7 +30,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
-    await adminClient.from('groups').delete().eq('id', id)
+    const { error: deleteError } = await adminClient.from('groups').delete().eq('id', id)
+    if (deleteError) return NextResponse.json({ error: '群組刪除失敗' }, { status: 500 })
     return NextResponse.json({ ok: true, groupDeleted: true })
   }
 

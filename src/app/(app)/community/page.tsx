@@ -1,6 +1,5 @@
 import { createClient, getUser } from '@/lib/supabase/server'
-import ReflectionFeed from '@/components/community/ReflectionFeed'
-import GroupsPanel from '@/components/tree/GroupsPanel'
+import CommunityTabs from '@/components/community/CommunityTabs'
 import { todayString } from '@/lib/utils'
 import { TREE_CONFIG } from '@/lib/tree'
 import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } from '@/types/app'
@@ -59,10 +58,13 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     return { ...(g as unknown as GroupWithMembers), group_members: allGroupMembers[i], tree_points: treePoints }
   })
 
-  groupsWithPoints.sort((a, b) => b.tree_points - a.tree_points)
+  const activeGroupsWithPoints = groupsWithPoints.filter(g =>
+    (g.group_members as GroupMemberWithProfile[]).some(m => m.left_at === null)
+  )
+  activeGroupsWithPoints.sort((a, b) => b.tree_points - a.tree_points)
 
-  const myGroups = groupsWithPoints.filter(g => myGroupIds.has(g.id))
-  const otherGroups = groupsWithPoints.filter(g => !myGroupIds.has(g.id))
+  const myGroups = activeGroupsWithPoints.filter(g => myGroupIds.has(g.id))
+  const otherGroups = activeGroupsWithPoints.filter(g => !myGroupIds.has(g.id))
 
   const canCreateOrJoin = myGroups.length < TREE_CONFIG.maxGroups
 
@@ -70,21 +72,15 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
       <h1 className="text-xl font-bold text-gray-900">社群</h1>
 
-      {/* Groups panel */}
-      <GroupsPanel myGroups={myGroups} otherGroups={otherGroups} canCreateOrJoin={canCreateOrJoin} />
-
-      {/* Reflection feed */}
-      <section>
-        <h2 className="text-sm font-semibold text-gray-500 mb-3">最新反思回答</h2>
-        <div className="max-h-[60vh] overflow-y-auto">
-          <ReflectionFeed
-            reflections={(reflections ?? []) as unknown as ReflectionWithProfile[]}
-            currentUserId={user?.id ?? null}
-            currentUserAvatarSeed={myProfile?.avatar_seed ?? null}
-            scrollTo={scrollTo}
-          />
-        </div>
-      </section>
+      <CommunityTabs
+        myGroups={myGroups}
+        otherGroups={otherGroups}
+        canCreateOrJoin={canCreateOrJoin}
+        reflections={(reflections ?? []) as unknown as ReflectionWithProfile[]}
+        currentUserId={user?.id ?? null}
+        currentUserAvatarSeed={myProfile?.avatar_seed ?? null}
+        scrollTo={scrollTo}
+      />
     </div>
   )
 }
