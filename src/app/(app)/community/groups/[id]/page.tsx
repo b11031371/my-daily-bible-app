@@ -5,6 +5,7 @@ import { TREE_CONFIG, getTreeStage, getFruitCount } from '@/lib/tree'
 import GroupTree from '@/components/tree/GroupTree'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import GroupActions from '@/components/tree/GroupActions'
+import GroupJoinForm from '@/components/tree/GroupJoinForm'
 import type { GroupMemberWithProfile } from '@/types/app'
 
 interface Props { params: Promise<{ id: string }> }
@@ -18,12 +19,17 @@ export default async function GroupDetailPage({ params }: Props) {
 
   const monthStart = `${todayString().slice(0, 7)}-01`
 
-  const [{ data: group }, { data: rawMembers }] = await Promise.all([
+  const [{ data: group }, { data: rawMembers }, { count: myGroupCount }] = await Promise.all([
     supabase.from('groups').select('*').eq('id', id).maybeSingle(),
     supabase
       .from('group_members')
       .select('*, profiles(id, display_name, avatar_seed)')
       .eq('group_id', id),
+    supabase
+      .from('group_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .is('left_at', null),
   ])
 
   if (!group) notFound()
@@ -142,10 +148,7 @@ export default async function GroupDetailPage({ params }: Props) {
       />
 
       {!isMember && (
-        <div className="bg-gray-50 rounded-2xl p-4 text-center">
-          <p className="text-sm text-gray-600 font-medium">想加入這個群組？</p>
-          <p className="text-xs text-gray-400 mt-1">找上方成員要邀請碼，在社群頁點「加入」輸入即可</p>
-        </div>
+        <GroupJoinForm canJoin={(myGroupCount ?? 0) < TREE_CONFIG.maxGroups} />
       )}
     </div>
   )

@@ -2,8 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import GroupTreeCard from './GroupTreeCard'
-import JoinGroupModal from './JoinGroupModal'
-import { MagnifyingGlass } from '@phosphor-icons/react'
+import { MagnifyingGlass, Plus } from '@phosphor-icons/react'
 import type { GroupWithMembers } from '@/types/app'
 
 interface Props {
@@ -30,28 +29,20 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
 
   return (
     <section className="space-y-4">
-      {/* Search + actions */}
-      <div className="flex items-center gap-2">
-        <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
-          <MagnifyingGlass size={16} className="text-gray-400 shrink-0" />
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="搜尋群組"
-            className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
-          />
-        </div>
+      {/* Search + create */}
+      <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
+        <MagnifyingGlass size={16} className="text-gray-400 shrink-0" />
+        <input
+          type="text"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="搜尋群組"
+          className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+        />
         {canCreateOrJoin && (
-          <>
-            <JoinGroupModal />
-            <Link
-              href="/community/groups/new"
-              className="text-xs font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-3 py-2.5 rounded-xl hover:brightness-95 transition-[filter] shrink-0"
-            >
-              ＋ 建立
-            </Link>
-          </>
+          <Link href="/community/groups/new" className="text-gray-400 hover:text-gray-600 shrink-0 transition-colors">
+            <Plus size={18} />
+          </Link>
         )}
       </div>
 
@@ -59,16 +50,7 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
       {myGroups.length === 0 && otherGroups.length === 0 ? (
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center space-y-3">
           <p className="text-gray-500 text-sm">還沒有加入任何群組</p>
-          <p className="text-xs text-gray-400">邀請至少一位朋友，一起種一棵樹 🌱</p>
-          <div className="flex gap-2 justify-center">
-            <JoinGroupModal />
-            <Link
-              href="/community/groups/new"
-              className="text-sm font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-4 py-2 rounded-xl hover:brightness-95 transition-[filter]"
-            >
-              建立群組
-            </Link>
-          </div>
+          <p className="text-xs text-gray-400">點選任意群組並輸入邀請碼即可加入，或點右上角 ＋ 建立新群組 🌱</p>
         </div>
       ) : (
         <div className="space-y-2">
