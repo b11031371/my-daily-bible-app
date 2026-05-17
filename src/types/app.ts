@@ -17,11 +17,21 @@ export interface ReflectionLike {
   profiles: Pick<Profile, 'avatar_seed'> | null
 }
 
+export interface ReflectionComment {
+  id: string
+  reflection_id: string
+  user_id: string
+  content: string
+  created_at: string
+  profiles: Pick<Profile, 'display_name' | 'avatar_seed'>
+}
+
 export interface ReflectionWithProfile extends Reflection {
   note_date: string
   bible_range: string | null
   profiles: Pick<Profile, 'display_name' | 'avatar_seed'>
   reflection_likes: ReflectionLike[]
+  reflection_comments: ReflectionComment[]
 }
 
 export interface LeaderboardEntryWithProfile extends LeaderboardEntry {

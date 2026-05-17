@@ -12,7 +12,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const [{ data: reflections }, { data: allGroupsRaw }, { data: myMemberships }, { data: myProfile }] = await Promise.all([
     supabase
       .from('reflections')
-      .select('*, profiles(display_name, avatar_seed), reflection_likes(user_id, profiles(avatar_seed))')
+      .select('*, profiles(display_name, avatar_seed), reflection_likes(user_id, profiles(avatar_seed)), reflection_comments(id, user_id, content, created_at, profiles(display_name, avatar_seed))')
       .order('created_at', { ascending: false })
       .limit(20),
     supabase
@@ -25,7 +25,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
       .is('left_at', null),
     supabase
       .from('profiles')
-      .select('avatar_seed')
+      .select('avatar_seed, role')
       .eq('id', user!.id)
       .single(),
   ])
@@ -68,6 +68,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
 
   const canCreateOrJoin = myGroups.length < TREE_CONFIG.maxGroups
 
+  const currentUserIsAdmin = myProfile?.role === 'admin'
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
       <h1 className="text-xl font-bold text-gray-900">社群</h1>
@@ -79,6 +81,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         reflections={(reflections ?? []) as unknown as ReflectionWithProfile[]}
         currentUserId={user?.id ?? null}
         currentUserAvatarSeed={myProfile?.avatar_seed ?? null}
+        currentUserIsAdmin={currentUserIsAdmin}
         scrollTo={scrollTo}
       />
     </div>

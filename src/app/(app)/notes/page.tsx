@@ -28,7 +28,8 @@ export default async function NotesPage() {
     supabase
       .from('checkins')
       .select('user_id', { count: 'exact' })
-      .eq('note_date', today),
+      .eq('note_date', today)
+      .order('created_at', { ascending: false }),
     supabase
       .from('reflections')
       .select('*', { count: 'exact', head: true })
@@ -49,6 +50,10 @@ export default async function NotesPage() {
       ? supabase.from('profiles').select('id, display_name, avatar_seed').in('id', communityUserIds)
       : Promise.resolve({ data: [] as Pick<Profile, 'id' | 'display_name' | 'avatar_seed'>[] }),
   ])
+
+  // Re-sort profiles to match checkin time order (newest first)
+  const profileMap = new Map((communityProfiles ?? []).map(p => [p.id, p]))
+  const orderedProfiles = communityUserIds.map(id => profileMap.get(id)).filter((p): p is NonNullable<typeof p> => !!p)
 
   const userCheckedIn = (todayCheckins ?? []).some(c => c.user_id === user!.id)
   const unearnedBadges = (allBadges?.length ?? 0) - (userBadges?.length ?? 0)
@@ -125,15 +130,15 @@ export default async function NotesPage() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: <Users size={22} weight="fill" />, value: checkinCount ?? 0, label: '今日簽到' },
-          { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: '今日留言' },
-          { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: '待蒐集徽章' },
+          { icon: <Users size={22} weight="fill" />, value: checkinCount ?? 0, label: '今日簽到', href: '/checkin' },
+          { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: '今日留言', href: '/community' },
+          { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: '待蒐集徽章', href: '/profile' },
         ].map(s => (
-          <div key={s.label} className="bg-white rounded-2xl p-3 shadow-sm text-center">
+          <Link key={s.label} href={s.href} className="bg-white rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
             <div className="flex justify-center mb-0.5 text-gray-700">{s.icon}</div>
             <div className="font-bold text-gray-900 text-base">{s.value}</div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -141,7 +146,7 @@ export default async function NotesPage() {
       {(checkinCount ?? 0) > 0 && (
         <div className="bg-white rounded-2xl px-4 py-3 shadow-sm flex items-center gap-3">
           <div className="flex -space-x-2 shrink-0">
-            {(communityProfiles ?? []).map((p) => (
+            {orderedProfiles.map((p) => (
               <BibleAvatar
                 key={p.id}
                 seed={p.avatar_seed ?? 'alpha'}
@@ -151,10 +156,10 @@ export default async function NotesPage() {
           </div>
           <p className="text-xs text-gray-500 leading-snug">
             {(() => {
-              const names = (communityProfiles ?? []).map(p => p.display_name).slice(0, 2).join('、')
+              const names = orderedProfiles.map(p => p.display_name).slice(0, 2).join('、')
               const total = checkinCount ?? 0
               if (total === 1) return `${names} 今天已簽到 🎉`
-              if (total <= (communityProfiles?.length ?? 0)) return `${names} 今天已簽到`
+              if (total === 2) return `${names} 今天已簽到`
               return `${names} 等 ${total} 人今天已簽到`
             })()}
           </p>

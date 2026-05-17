@@ -11,32 +11,33 @@ interface Props {
   reflections: ReflectionWithProfile[]
   currentUserId: string | null
   currentUserAvatarSeed: string | null
+  currentUserIsAdmin: boolean
   scrollTo?: string
 }
 
 export default function CommunityTabs({
   myGroups, otherGroups, canCreateOrJoin,
-  reflections, currentUserId, currentUserAvatarSeed, scrollTo,
+  reflections, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, scrollTo,
 }: Props) {
-  const [tab, setTab] = useState<'groups' | 'feed'>(scrollTo ? 'feed' : 'groups')
+  const [tab, setTab] = useState<'groups' | 'feed'>('feed')
 
   return (
     <>
       {/* Tab bar */}
       <div className="flex bg-gray-100 rounded-2xl p-1">
         <button
-          onClick={() => setTab('groups')}
-          className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
-            ${tab === 'groups' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
-        >
-          種樹群組
-        </button>
-        <button
           onClick={() => setTab('feed')}
           className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
             ${tab === 'feed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
         >
           反思留言
+        </button>
+        <button
+          onClick={() => setTab('groups')}
+          className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
+            ${tab === 'groups' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+        >
+          種樹群組
         </button>
       </div>
 
@@ -52,6 +53,7 @@ export default function CommunityTabs({
           reflections={reflections}
           currentUserId={currentUserId}
           currentUserAvatarSeed={currentUserAvatarSeed}
+          currentUserIsAdmin={currentUserIsAdmin}
           scrollTo={scrollTo}
         />
       )}

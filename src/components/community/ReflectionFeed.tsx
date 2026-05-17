@@ -1,11 +1,19 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Heart, PencilSimple, Trash } from '@phosphor-icons/react'
+import { Heart, PencilSimple, Trash, ChatCircle, Check, X } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { formatDateZH } from '@/lib/utils'
-import type { ReflectionWithProfile } from '@/types/app'
+import type { ReflectionWithProfile, ReflectionComment } from '@/types/app'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
+
+function relativeTime(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (diff < 60) return '剛剛'
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分鐘前`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小時前`
+  return `${Math.floor(diff / 86400)} 天前`
+}
 
 // Phosphor Heart fill path at viewBox="0 0 256 256"
 const HEART_FILL_PATH = 'M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z'
@@ -22,6 +30,7 @@ interface Props {
   reflections: ReflectionWithProfile[]
   currentUserId: string | null
   currentUserAvatarSeed: string | null
+  currentUserIsAdmin: boolean
   scrollTo?: string
 }
 
@@ -33,12 +42,86 @@ function ssSet(id: string, liked: boolean) {
   try { sessionStorage.setItem(`rl:${id}`, liked ? '1' : '0') } catch {}
 }
 
+function CommentItem({
+  reflectionId, comment, isOwn, canDelete, onDelete, onSaved,
+}: {
+  reflectionId: string
+  comment: ReflectionComment
+  isOwn: boolean
+  canDelete: boolean
+  onDelete: (id: string) => void
+  onSaved: () => void
+}) {
+  const [editMode, setEditMode] = useState(false)
+  const [editContent, setEditContent] = useState(comment.content)
+  const [saving, setSaving] = useState(false)
+
+  async function handleSave() {
+    if (!editContent.trim() || saving) return
+    setSaving(true)
+    const res = await fetch(`/api/reflections/${reflectionId}/comments/${comment.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: editContent.trim() }),
+    })
+    setSaving(false)
+    if (res.ok) { setEditMode(false); onSaved() }
+  }
+
+  return (
+    <div className="flex gap-2">
+      <BibleAvatar seed={comment.profiles?.avatar_seed ?? comment.user_id} className="w-6 h-6 shrink-0 mt-0.5" />
+      <div className="flex-1 min-w-0">
+        {editMode ? (
+          <div className="flex items-center gap-1">
+            <input
+              type="text"
+              value={editContent}
+              onChange={e => setEditContent(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSave()}
+              autoFocus
+              className="flex-1 bg-gray-100 rounded-xl px-3 py-1 text-xs text-gray-900 focus:outline-none"
+            />
+            <button onClick={handleSave} disabled={saving || !editContent.trim()} className="p-1 text-primary disabled:opacity-40">
+              <Check size={14} weight="bold" />
+            </button>
+            <button onClick={() => { setEditMode(false); setEditContent(comment.content) }} className="p-1 text-gray-400">
+              <X size={14} weight="bold" />
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-xs font-medium text-gray-800">{comment.profiles?.display_name ?? '使用者'}</span>
+              <span className="text-[10px] text-gray-400">{relativeTime(comment.created_at)}</span>
+              <div className="ml-auto flex items-center gap-1">
+                {isOwn && (
+                  <button onClick={() => setEditMode(true)} className="p-0.5 text-gray-300 hover:text-gray-500 transition-colors">
+                    <PencilSimple size={11} />
+                  </button>
+                )}
+                {canDelete && (
+                  <button onClick={() => onDelete(comment.id)} className="p-0.5 text-gray-300 hover:text-red-400 transition-colors">
+                    <Trash size={11} />
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 leading-5">{comment.content}</p>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ReflectionCard({
-  r, currentUserId, currentUserAvatarSeed, onDelete,
+  r, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, onDelete,
 }: {
   r: ReflectionWithProfile
   currentUserId: string | null
   currentUserAvatarSeed: string | null
+  currentUserIsAdmin: boolean
   onDelete: (id: string) => void
 }) {
   const router = useRouter()
@@ -67,6 +150,29 @@ function ReflectionCard({
 
   // Delete confirm
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  // Comments
+  const [commentsOpen, setCommentsOpen] = useState(false)
+  const [commentInput, setCommentInput] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  async function handleAddComment() {
+    if (!commentInput.trim() || submitting) return
+    setSubmitting(true)
+    await fetch(`/api/reflections/${r.id}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: commentInput.trim() }),
+    })
+    setCommentInput('')
+    setSubmitting(false)
+    router.refresh()
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    await fetch(`/api/reflections/${r.id}/comments/${commentId}`, { method: 'DELETE' })
+    router.refresh()
+  }
 
   // Restore like state from sessionStorage after mount (survives tab switching)
   useEffect(() => {
@@ -213,38 +319,92 @@ function ReflectionCard({
               <div />
             )}
 
-            {/* Right: like */}
-            <div className="flex items-center gap-1.5">
-              {count > 0 && (
-                <div className="flex items-center -space-x-1.5">
-                  {displaySeeds.map((s, i) => (
-                    <BibleAvatar key={i} seed={s} className="w-5 h-5 ring-1 ring-white rounded-full" />
-                  ))}
-                </div>
-              )}
-              {count > 0 && (
-                <span className="text-xs text-gray-400 tabular-nums">{count}</span>
-              )}
+            {/* Right: comment toggle + like */}
+            <div className="flex items-center gap-2">
               <button
-                onClick={toggleLike}
-                disabled={!currentUserId}
-                className="p-1 rounded-full transition-colors disabled:cursor-default"
-                aria-label={liked ? '取消讚' : '讚'}
+                onClick={() => setCommentsOpen(v => !v)}
+                className="flex items-center gap-1 p-1 text-gray-300 hover:text-gray-500 transition-colors"
+                aria-label="回覆"
               >
-                {liked
-                  ? <GradientHeartFill size={18} />
-                  : <Heart size={18} weight="regular" className="text-gray-300 hover:text-amber-400" />
-                }
+                <ChatCircle size={18} weight="regular" />
+                {r.reflection_comments.length > 0 && (
+                  <span className="text-xs tabular-nums">{r.reflection_comments.length}</span>
+                )}
               </button>
+              <div className="flex items-center gap-1.5">
+                {count > 0 && (
+                  <div className="flex items-center -space-x-1.5">
+                    {displaySeeds.map((s, i) => (
+                      <BibleAvatar key={i} seed={s} className="w-5 h-5 ring-1 ring-white rounded-full" />
+                    ))}
+                  </div>
+                )}
+                {count > 0 && (
+                  <span className="text-xs text-gray-400 tabular-nums">{count}</span>
+                )}
+                <button
+                  onClick={toggleLike}
+                  disabled={!currentUserId}
+                  className="p-1 rounded-full transition-colors disabled:cursor-default"
+                  aria-label={liked ? '取消讚' : '讚'}
+                >
+                  {liked
+                    ? <GradientHeartFill size={18} />
+                    : <Heart size={18} weight="regular" className="text-gray-300 hover:text-amber-400" />
+                  }
+                </button>
+              </div>
             </div>
           </div>
+
+          {/* Comments section */}
+          {commentsOpen && (
+            <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
+              {r.reflection_comments.length === 0 && (
+                <p className="text-xs text-gray-400">還沒有回覆，來第一個留言吧</p>
+              )}
+              {r.reflection_comments.map((c: ReflectionComment) => (
+                <CommentItem
+                  key={c.id}
+                  reflectionId={r.id}
+                  comment={c}
+                  isOwn={c.user_id === currentUserId}
+                  canDelete={currentUserIsAdmin || c.user_id === currentUserId}
+                  onDelete={handleDeleteComment}
+                  onSaved={() => router.refresh()}
+                />
+              ))}
+              {currentUserId && (
+                <div className="flex gap-2 pt-1">
+                  <BibleAvatar seed={currentUserAvatarSeed ?? currentUserId} className="w-6 h-6 shrink-0 mt-1" />
+                  <div className="flex-1 flex gap-2">
+                    <input
+                      type="text"
+                      value={commentInput}
+                      onChange={e => setCommentInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
+                      placeholder="留下回覆…"
+                      className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                    />
+                    <button
+                      onClick={handleAddComment}
+                      disabled={submitting || !commentInput.trim()}
+                      className="text-xs font-medium text-primary disabled:opacity-40"
+                    >
+                      送出
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
   )
 }
 
-export default function ReflectionFeed({ reflections, currentUserId, currentUserAvatarSeed, scrollTo }: Props) {
+export default function ReflectionFeed({ reflections, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, scrollTo }: Props) {
   const router = useRouter()
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set())
 
@@ -299,7 +459,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
                 href={`/notes/${date}#reflection`}
                 className="text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2"
               >
-                分享你的想法 →
+                前往筆記 →
               </Link>
             </div>
             <div className="space-y-3">
@@ -309,6 +469,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
                   r={r}
                   currentUserId={currentUserId}
                   currentUserAvatarSeed={currentUserAvatarSeed}
+                  currentUserIsAdmin={currentUserIsAdmin}
                   onDelete={handleDelete}
                 />
               ))}
