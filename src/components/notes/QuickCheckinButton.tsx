@@ -1,14 +1,22 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { todayString } from '@/lib/utils'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
+
+const SS_KEY = `checkin:${todayString()}`
 
 export default function QuickCheckinButton({ initialCheckedIn }: { initialCheckedIn: boolean }) {
   const [checkedIn, setCheckedIn] = useState(initialCheckedIn)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { showBadges } = useBadgeToast()
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(SS_KEY) === '1') setCheckedIn(true)
+    } catch {}
+  }, [])
 
   if (checkedIn) {
     return (
@@ -29,12 +37,14 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
     setLoading(false)
     if (res.ok) {
       const data = await res.json()
+      try { sessionStorage.setItem(SS_KEY, '1') } catch {}
       setCheckedIn(true)
       if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
       router.refresh()
     } else {
       const data = await res.json()
       if (data.error?.includes('已經簽到')) {
+        try { sessionStorage.setItem(SS_KEY, '1') } catch {}
         setCheckedIn(true)
         router.refresh()
       }
