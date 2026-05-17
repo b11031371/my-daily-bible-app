@@ -32,6 +32,12 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
       setCheckedIn(true)
       if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
       router.refresh()
+    } else {
+      const data = await res.json()
+      if (data.error?.includes('已經簽到')) {
+        setCheckedIn(true)
+        router.refresh()
+      }
     }
   }
 
