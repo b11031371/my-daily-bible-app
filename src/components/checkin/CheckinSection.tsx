@@ -125,7 +125,7 @@ function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked }: {
         <p className="text-xs text-gray-400">{daysLate} 天前 · +{points} 分</p>
       </div>
       {isChecked ? (
-        <span className="text-xs text-gray-600 font-medium">已補簽</span>
+        <span className="text-xs text-gray-600 font-medium">已簽</span>
       ) : (
         <button
           onClick={onCheckin}
