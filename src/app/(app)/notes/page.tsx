@@ -29,7 +29,7 @@ export default async function NotesPage() {
       .from('checkins')
       .select('user_id', { count: 'exact' })
       .eq('note_date', today)
-      .order('created_at', { ascending: false }),
+      .order('checked_in_at', { ascending: false }),
     supabase
       .from('reflections')
       .select('*', { count: 'exact', head: true })
