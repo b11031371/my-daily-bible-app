@@ -8,22 +8,22 @@ import { Fire, Star, Diamond } from '@phosphor-icons/react'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
 
 interface Props {
-  streakCurrent: number
-  streakMax: number
-  totalPoints: number
+  monthlyCheckinDays: number
+  monthlyMaxStreak: number
+  monthlyPoints: number
   monthlyCount: number
   initialCheckins: Record<string, number>
 }
 
-export default function CheckinSection({ streakCurrent, streakMax, totalPoints, monthlyCount, initialCheckins }: Props) {
+export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, monthlyPoints, monthlyCount, initialCheckins }: Props) {
   const today = todayString()
   const monthLabel = `${today.slice(0, 4)}年${parseInt(today.slice(5, 7))}月`
   const router = useRouter()
   const { showBadges } = useBadgeToast()
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<{ points: number; streak: number; badges: string[] } | null>(null)
-  const [streak, setStreak] = useState(streakCurrent)
-  const [points, setPoints] = useState(totalPoints)
+  const [result, setResult] = useState<{ points: number; badges: string[] } | null>(null)
+  const [checkinDays, setCheckinDays] = useState(monthlyCheckinDays)
+  const [points, setPoints] = useState(monthlyPoints)
   const [checkedDates, setCheckedDates] = useState<Record<string, number>>(initialCheckins)
 
   const pastDays = [1, 2, 3].map(n => {
@@ -41,8 +41,8 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
     const data = await res.json()
     setLoading(false)
     if (res.ok) {
-      setResult({ points: data.points_earned, streak: data.streak_current, badges: data.badges_unlocked ?? [] })
-      setStreak(data.streak_current)
+      setResult({ points: data.points_earned, badges: data.badges_unlocked ?? [] })
+      setCheckinDays(d => d + 1)
       setPoints(p => p + data.points_earned)
       setCheckedDates(prev => ({ ...prev, [date]: data.points_earned }))
       if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
@@ -55,9 +55,9 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: '連續天數', value: `${streak} 天`, icon: <Fire size={28} weight="fill" /> },
-          { label: '最長連續', value: `${streakMax} 天`, icon: <Star size={28} weight="fill" /> },
-          { label: '總積分', value: `${points}`, icon: <Diamond size={28} weight="fill" /> },
+          { label: '本月簽到天數', value: `${checkinDays} 天`, icon: <Fire size={28} weight="fill" /> },
+          { label: '本月最長連續', value: `${monthlyMaxStreak} 天`, icon: <Star size={28} weight="fill" /> },
+          { label: '本月積分', value: `${points}`, icon: <Diamond size={28} weight="fill" /> },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl p-4 text-center shadow-sm">
             <div className="flex justify-center mb-1 text-gray-700">{s.icon}</div>
@@ -73,7 +73,7 @@ export default function CheckinSection({ streakCurrent, streakMax, totalPoints, 
         {result ? (
           <div className="text-center py-4">
             <div className="text-3xl mb-2">🎉</div>
-            <p className="font-bold text-gray-900">+{result.points} 分！連續 {result.streak} 天</p>
+            <p className="font-bold text-gray-900">+{result.points} 分！本月 {checkinDays} 天</p>
             {result.badges.length > 0 && (
               <p className="text-sm text-accent mt-1">解鎖徽章 {result.badges.join(' ')}</p>
             )}

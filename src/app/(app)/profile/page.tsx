@@ -1,24 +1,61 @@
 import { createClient, getUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { formatDateZH } from '@/lib/utils'
+import { formatDateZH, todayString } from '@/lib/utils'
 import type { BadgeWithStatus } from '@/types/app'
 import BadgeGrid from '@/components/profile/BadgeGrid'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { Gear, Diamond, Fire, Star, SealCheck } from '@phosphor-icons/react/dist/ssr'
 
+type PointEntry = { date: string; label: string; points: number; tag?: string }
+
 export default async function ProfilePage() {
   const [user, supabase] = await Promise.all([getUser(), createClient()])
   if (!user) redirect('/login')
 
-  const [{ data: profile }, { data: badges }, { data: userBadges }, { data: checkins }] = await Promise.all([
+  const today = todayString()
+  const [y, m] = today.slice(0, 7).split('-').map(Number)
+  const monthStart = `${today.slice(0, 7)}-01`
+  const monthEnd = new Date(Date.UTC(y, m, 1)).toISOString().split('T')[0]
+  const monthLabel = `${y}年${m}月`
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any
+
+  const [{ data: profile }, { data: badges }, { data: userBadges }, { data: checkins }, { data: reflections }, { data: earnedBadges }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('badges').select('*').order('condition_value'),
     supabase.from('user_badges').select('*').eq('user_id', user.id),
-    supabase.from('checkins').select('id, note_date, is_retro, points_earned').eq('user_id', user.id).order('note_date', { ascending: false }).limit(30),
+    supabase.from('checkins').select('note_date, is_retro, points_earned').eq('user_id', user.id).gte('note_date', monthStart).lt('note_date', monthEnd).order('note_date', { ascending: true }),
+    sb.from('reflections').select('note_date, points_earned').eq('user_id', user.id).gt('points_earned', 0).gte('note_date', monthStart).lt('note_date', monthEnd).order('note_date', { ascending: true }),
+    sb.from('user_badges').select('earned_at, badges(name_zh, points_bonus)').eq('user_id', user.id).gte('earned_at', monthStart).lt('earned_at', monthEnd).order('earned_at', { ascending: true }),
   ])
 
-  const earnedMap = new Map((userBadges ?? []).map(ub => [ub.badge_id, ub.earned_at]))
+  const earnedMap = new Map((userBadges ?? []).map((ub: { badge_id: string; earned_at: string }) => [ub.badge_id, ub.earned_at]))
+
+  const pointEntries: PointEntry[] = [
+    ...(checkins ?? []).map((c: { note_date: string; is_retro: boolean; points_earned: number }) => ({
+      date: c.note_date,
+      label: c.is_retro ? '補簽' : '每日簽到',
+      points: c.points_earned,
+      tag: c.is_retro ? '補簽' : undefined,
+    })),
+    ...(reflections ?? []).map((r: { note_date: string; points_earned: number }) => ({
+      date: r.note_date,
+      label: '反思留言',
+      points: r.points_earned,
+    })),
+    ...(earnedBadges ?? [])
+      .filter((ub: { badges: { points_bonus: number } | null }) => (ub.badges?.points_bonus ?? 0) > 0)
+      .map((ub: { earned_at: string; badges: { name_zh: string; points_bonus: number } }) => ({
+        date: ub.earned_at.split('T')[0],
+        label: `徽章：${ub.badges.name_zh}`,
+        points: ub.badges.points_bonus,
+        tag: '徽章',
+      })),
+  ].sort((a, b) => a.date.localeCompare(b.date))
+
+  const monthlyTotal = pointEntries.reduce((sum, e) => sum + e.points, 0)
   const badgesWithStatus: BadgeWithStatus[] = (badges ?? []).map(b => ({
     ...b,
     earned: earnedMap.has(b.id),
@@ -78,20 +115,26 @@ export default async function ProfilePage() {
         <BadgeGrid badges={badgesWithStatus} />
       </div>
 
-      {/* Checkin history */}
+      {/* Point history */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">簽到紀錄</h2>
-        <div className="space-y-2">
-          {(checkins ?? []).map(c => (
-            <div key={c.id} className="flex items-center justify-between text-sm">
-              <span className="text-gray-900">{formatDateZH(c.note_date)}</span>
-              <div className="flex items-center gap-2">
-                {c.is_retro && <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">補簽</span>}
-                <span className="text-gray-800 font-medium">+{c.points_earned}</span>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-700">{monthLabel} 得分紀錄</h2>
+          <span className="text-xs text-gray-400">共 +{monthlyTotal} 分</span>
+        </div>
+        <div className="space-y-2.5">
+          {pointEntries.map((e, i) => (
+            <div key={i} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-gray-900 shrink-0">{formatDateZH(e.date)}</span>
+                {e.tag && (
+                  <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full shrink-0">{e.tag}</span>
+                )}
+                <span className="text-gray-500 text-xs truncate">{e.label}</span>
               </div>
+              <span className="text-gray-800 font-medium shrink-0 ml-2">+{e.points}</span>
             </div>
           ))}
-          {!checkins?.length && <p className="text-sm text-gray-400 text-center py-4">還沒有簽到紀錄</p>}
+          {pointEntries.length === 0 && <p className="text-sm text-gray-400 text-center py-4">還沒有得分紀錄</p>}
         </div>
       </div>
     </div>

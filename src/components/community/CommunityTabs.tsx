@@ -13,13 +13,14 @@ interface Props {
   currentUserAvatarSeed: string | null
   currentUserIsAdmin: boolean
   scrollTo?: string
+  initialTab?: 'groups' | 'feed'
 }
 
 export default function CommunityTabs({
   myGroups, otherGroups, canCreateOrJoin,
-  reflections, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, scrollTo,
+  reflections, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, scrollTo, initialTab,
 }: Props) {
-  const [tab, setTab] = useState<'groups' | 'feed'>('feed')
+  const [tab, setTab] = useState<'groups' | 'feed'>(initialTab ?? 'feed')
 
   return (
     <>

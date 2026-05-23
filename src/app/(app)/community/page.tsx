@@ -4,10 +4,16 @@ import { todayString } from '@/lib/utils'
 import { TREE_CONFIG } from '@/lib/tree'
 import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } from '@/types/app'
 
-export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ scrollTo?: string }> }) {
-  const { scrollTo } = await searchParams
+export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ scrollTo?: string; tab?: string }> }) {
+  const { scrollTo, tab } = await searchParams
+  const initialTab = tab === 'groups' ? 'groups' : 'feed'
   const [user, supabase] = await Promise.all([getUser(), createClient()])
-  const monthStart = `${todayString().slice(0, 7)}-01`
+  const today = todayString()
+  const monthStart = `${today.slice(0, 7)}-01`
+  const [y, m] = today.slice(0, 7).split('-').map(Number)
+  const monthEnd = new Date(Date.UTC(y, m, 1)).toISOString().split('T')[0]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any
 
   const [{ data: reflections }, { data: allGroupsRaw }, { data: myMemberships }, { data: myProfile }] = await Promise.all([
     supabase
@@ -42,19 +48,25 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   )
   const allActiveMemberIds = [...new Set(allActiveMembers.flat().map((m: GroupMemberWithProfile) => m.user_id))]
 
-  const { data: allCheckins } = allActiveMemberIds.length > 0
-    ? await supabase
-        .from('checkins')
-        .select('user_id, points_earned')
-        .in('user_id', allActiveMemberIds)
-        .gte('note_date', monthStart)
-    : { data: [] }
+  const [{ data: allCheckins }, { data: allReflections }, { data: allBadges }] = allActiveMemberIds.length > 0
+    ? await Promise.all([
+        supabase.from('checkins').select('user_id, points_earned').in('user_id', allActiveMemberIds).gte('note_date', monthStart).lt('note_date', monthEnd),
+        sb.from('reflections').select('user_id, points_earned').in('user_id', allActiveMemberIds).gt('points_earned', 0).gte('note_date', monthStart).lt('note_date', monthEnd),
+        sb.from('user_badges').select('user_id, badges(points_bonus)').in('user_id', allActiveMemberIds).gte('earned_at', monthStart).lt('earned_at', monthEnd),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }]
+
+  const memberPointsMap: Record<string, number> = {}
+  for (const c of (allCheckins ?? [])) memberPointsMap[c.user_id] = (memberPointsMap[c.user_id] ?? 0) + c.points_earned
+  for (const r of (allReflections ?? [])) memberPointsMap[r.user_id] = (memberPointsMap[r.user_id] ?? 0) + r.points_earned
+  for (const ub of (allBadges ?? [])) {
+    const bonus = (ub as { user_id: string; badges: { points_bonus: number } | null }).badges?.points_bonus ?? 0
+    if (bonus > 0) memberPointsMap[(ub as { user_id: string }).user_id] = (memberPointsMap[(ub as { user_id: string }).user_id] ?? 0) + bonus
+  }
 
   const groupsWithPoints: GroupWithMembers[] = rawGroups.map((g, i) => {
     const activeMemberIds = new Set(allActiveMembers[i].map((m: GroupMemberWithProfile) => m.user_id))
-    const treePoints = (allCheckins ?? [])
-      .filter(c => activeMemberIds.has(c.user_id))
-      .reduce((sum, c) => sum + c.points_earned, 0)
+    const treePoints = [...activeMemberIds].reduce((sum, uid) => sum + (memberPointsMap[uid] ?? 0), 0)
     return { ...(g as unknown as GroupWithMembers), group_members: allGroupMembers[i], tree_points: treePoints }
   })
 
@@ -83,6 +95,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         currentUserAvatarSeed={myProfile?.avatar_seed ?? null}
         currentUserIsAdmin={currentUserIsAdmin}
         scrollTo={scrollTo}
+        initialTab={initialTab}
       />
     </div>
   )

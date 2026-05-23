@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import GroupTree from './GroupTree'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
-import { TREE_CONFIG, getTreeStage } from '@/lib/tree'
+import { TREE_CONFIG, getTreeStage, getFruitCount } from '@/lib/tree'
 import type { GroupWithMembers } from '@/types/app'
 
 interface Props {
@@ -16,6 +16,7 @@ export default function GroupTreeCard({ group }: Props) {
   const dormant = activeMembers.length < TREE_CONFIG.minMembers
   const stage = getTreeStage(tree_points)
   const pct = Math.round(Math.min(tree_points / TREE_CONFIG.fullGrowthPoints, 1) * 100)
+  const fruitCount = getFruitCount(tree_points)
 
   return (
     <Link href={`/community/groups/${id}`} className="block bg-white rounded-2xl shadow-sm overflow-hidden active:opacity-90 transition-opacity">
@@ -47,7 +48,7 @@ export default function GroupTreeCard({ group }: Props) {
               <span className="text-[10px] text-gray-400">{pct}%</span>
             </div>
           ) : (
-            <p className="text-[10px] text-accent mt-1">{tree_points - TREE_CONFIG.fullGrowthPoints} 分結果中</p>
+            <p className="text-[10px] text-accent mt-1">每 {TREE_CONFIG.fruit.interval} 分可結一顆果子，已結 {fruitCount}/{TREE_CONFIG.fruit.max} 顆</p>
           )}
         </div>
 

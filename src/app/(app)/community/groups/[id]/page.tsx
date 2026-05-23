@@ -17,7 +17,13 @@ export default async function GroupDetailPage({ params }: Props) {
   const [user, supabase] = await Promise.all([getUser(), createClient()])
   if (!user) redirect('/login')
 
-  const monthStart = `${todayString().slice(0, 7)}-01`
+  const today = todayString()
+  const monthStart = `${today.slice(0, 7)}-01`
+  const [y, m] = today.slice(0, 7).split('-').map(Number)
+  const monthEnd = new Date(Date.UTC(y, m, 1)).toISOString().split('T')[0]
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any
 
   const [{ data: group }, { data: rawMembers }, { count: myGroupCount }] = await Promise.all([
     supabase.from('groups').select('*').eq('id', id).maybeSingle(),
@@ -39,20 +45,23 @@ export default async function GroupDetailPage({ params }: Props) {
   const isMember = activeMembers.some(m => m.user_id === user.id)
   const dormant = activeMembers.length < TREE_CONFIG.minMembers
 
-  // Tree points: sum this month's checkins for current active members only
   const activeMemberIds = activeMembers.map(m => m.user_id)
-  const { data: allCheckins } = activeMemberIds.length > 0
-    ? await supabase
-        .from('checkins')
-        .select('user_id, points_earned')
-        .in('user_id', activeMemberIds)
-        .gte('note_date', monthStart)
-    : { data: [] }
 
-  const contribMap = (allCheckins ?? []).reduce<Record<string, number>>((acc, c) => {
-    acc[c.user_id] = (acc[c.user_id] ?? 0) + c.points_earned
-    return acc
-  }, {})
+  const [{ data: allCheckins }, { data: allReflections }, { data: allBadges }] = activeMemberIds.length > 0
+    ? await Promise.all([
+        supabase.from('checkins').select('user_id, points_earned').in('user_id', activeMemberIds).gte('note_date', monthStart).lt('note_date', monthEnd),
+        sb.from('reflections').select('user_id, points_earned').in('user_id', activeMemberIds).gt('points_earned', 0).gte('note_date', monthStart).lt('note_date', monthEnd),
+        sb.from('user_badges').select('user_id, badges(points_bonus)').in('user_id', activeMemberIds).gte('earned_at', monthStart).lt('earned_at', monthEnd),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }]
+
+  const contribMap: Record<string, number> = {}
+  for (const c of (allCheckins ?? [])) contribMap[c.user_id] = (contribMap[c.user_id] ?? 0) + c.points_earned
+  for (const r of (allReflections ?? [])) contribMap[r.user_id] = (contribMap[r.user_id] ?? 0) + r.points_earned
+  for (const ub of (allBadges ?? [])) {
+    const bonus = (ub as { user_id: string; badges: { points_bonus: number } | null }).badges?.points_bonus ?? 0
+    if (bonus > 0) contribMap[(ub as { user_id: string }).user_id] = (contribMap[(ub as { user_id: string }).user_id] ?? 0) + bonus
+  }
 
   const treePoints = Object.values(contribMap).reduce((sum, v) => sum + v, 0)
 
@@ -65,7 +74,7 @@ export default async function GroupDetailPage({ params }: Props) {
     <div className="max-w-lg mx-auto px-4 pt-4 pb-8 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <a href="/community" className="text-gray-400 hover:text-gray-600 text-lg">‹</a>
+        <a href="/community?tab=groups" className="text-gray-400 hover:text-gray-600 text-lg">‹</a>
         <h1 className="text-base font-semibold text-gray-900 flex-1 truncate">{group.name}</h1>
       </div>
 

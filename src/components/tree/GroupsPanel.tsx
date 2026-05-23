@@ -30,17 +30,19 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
   return (
     <section className="space-y-4">
       {/* Search + create */}
-      <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
-        <MagnifyingGlass size={16} className="text-gray-400 shrink-0" />
-        <input
-          type="text"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          placeholder="搜尋群組"
-          className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
-        />
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5 min-w-0">
+          <MagnifyingGlass size={16} className="text-gray-400 shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="搜尋群組"
+            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+          />
+        </div>
         {canCreateOrJoin && (
-          <Link href="/community/groups/new" className="text-gray-400 hover:text-gray-600 shrink-0 transition-colors">
+          <Link href="/community/groups/new" className="shrink-0 bg-gray-100 rounded-xl p-2.5 text-gray-400 hover:text-gray-600 transition-colors">
             <Plus size={18} />
           </Link>
         )}
