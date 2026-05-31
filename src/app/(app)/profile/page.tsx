@@ -22,13 +22,14 @@ export default async function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any
 
-  const [{ data: profile }, { data: badges }, { data: userBadges }, { data: checkins }, { data: reflections }, { data: earnedBadges }] = await Promise.all([
+  const [{ data: profile }, { data: badges }, { data: userBadges }, { data: checkins }, { data: reflections }, { data: earnedBadges }, { count: totalCheckinCount }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('badges').select('*').order('condition_value'),
     supabase.from('user_badges').select('*').eq('user_id', user.id),
     supabase.from('checkins').select('note_date, is_retro, points_earned').eq('user_id', user.id).gte('note_date', monthStart).lt('note_date', monthEnd).order('note_date', { ascending: true }),
     sb.from('reflections').select('note_date, points_earned').eq('user_id', user.id).gt('points_earned', 0).gte('note_date', monthStart).lt('note_date', monthEnd).order('note_date', { ascending: true }),
     sb.from('user_badges').select('earned_at, badges(name_zh, points_bonus)').eq('user_id', user.id).gte('earned_at', monthStart).lt('earned_at', monthEnd).order('earned_at', { ascending: true }),
+    supabase.from('checkins').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
   ])
 
   const earnedMap = new Map((userBadges ?? []).map((ub: { badge_id: string; earned_at: string }) => [ub.badge_id, ub.earned_at]))
@@ -97,7 +98,7 @@ export default async function ProfilePage() {
           { label: '總積分', value: profile?.total_points ?? 0, icon: <Diamond size={26} weight="fill" /> },
           { label: '連續天數', value: `${profile?.streak_current ?? 0} 天`, icon: <Fire size={26} weight="fill" /> },
           { label: '最長連續', value: `${profile?.streak_max ?? 0} 天`, icon: <Star size={26} weight="fill" /> },
-          { label: '累計簽到', value: `${checkins?.length ?? 0} 次`, icon: <SealCheck size={26} weight="fill" /> },
+          { label: '累計簽到', value: `${totalCheckinCount ?? 0} 次`, icon: <SealCheck size={26} weight="fill" /> },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
             <span className="text-gray-700">{s.icon}</span>
