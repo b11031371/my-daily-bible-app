@@ -8,19 +8,34 @@ import GroupActions from '@/components/tree/GroupActions'
 import GroupJoinForm from '@/components/tree/GroupJoinForm'
 import type { GroupMemberWithProfile } from '@/types/app'
 
-interface Props { params: Promise<{ id: string }> }
+interface Props {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ month?: string }>
+}
 
 const STAGE_LABEL = ['', '種子發芽', '幼苗成長', '小樹茁壯', '大樹展葉', '種植完成'] as const
 
-export default async function GroupDetailPage({ params }: Props) {
+export default async function GroupDetailPage({ params, searchParams }: Props) {
   const { id } = await params
+  const { month } = await searchParams
   const [user, supabase] = await Promise.all([getUser(), createClient()])
   if (!user) redirect('/login')
 
   const today = todayString()
-  const monthStart = `${today.slice(0, 7)}-01`
-  const [y, m] = today.slice(0, 7).split('-').map(Number)
-  const monthEnd = new Date(Date.UTC(y, m, 1)).toISOString().split('T')[0]
+  const currentYM = today.slice(0, 7)
+  const selectedYM = (month && /^\d{4}-\d{2}$/.test(month) && month <= currentYM)
+    ? month
+    : currentYM
+  const isCurrentMonth = selectedYM === currentYM
+
+  const [sy, sm] = selectedYM.split('-').map(Number)
+  const monthStart = `${selectedYM}-01`
+  const monthEnd = new Date(Date.UTC(sy, sm, 1)).toISOString().split('T')[0]
+
+  const prevYM = new Date(Date.UTC(sy, sm - 2, 1)).toISOString().slice(0, 7)
+  const nextYM = new Date(Date.UTC(sy, sm, 1)).toISOString().slice(0, 7)
+
+  const monthLabel = `${sy}年${sm}月`
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any
@@ -39,6 +54,9 @@ export default async function GroupDetailPage({ params }: Props) {
   ])
 
   if (!group) notFound()
+
+  const groupCreatedYM = group.created_at.slice(0, 7)
+  const isFirstMonth = prevYM < groupCreatedYM
 
   const members = (rawMembers ?? []) as unknown as GroupMemberWithProfile[]
   const activeMembers = members.filter(m => m.left_at === null)
@@ -78,8 +96,36 @@ export default async function GroupDetailPage({ params }: Props) {
         <h1 className="text-base font-semibold text-gray-900 flex-1 truncate">{group.name}</h1>
       </div>
 
+      {/* Month navigator */}
+      <div className="flex items-center justify-center gap-4">
+        {isFirstMonth ? (
+          <span className="text-gray-200 px-2 py-1 cursor-default">←</span>
+        ) : (
+          <a
+            href={`/community/groups/${id}?month=${prevYM}`}
+            className="text-gray-400 hover:text-gray-600 px-2 py-1"
+          >
+            ←
+          </a>
+        )}
+        <span className="text-sm font-medium text-gray-700 w-24 text-center">{monthLabel}</span>
+        {isCurrentMonth ? (
+          <span className="text-gray-200 px-2 py-1 cursor-default">→</span>
+        ) : (
+          <a
+            href={nextYM <= currentYM ? `/community/groups/${id}?month=${nextYM}` : `/community/groups/${id}`}
+            className="text-gray-400 hover:text-gray-600 px-2 py-1"
+          >
+            →
+          </a>
+        )}
+      </div>
+
       {/* Tree */}
       <div className="bg-white rounded-3xl shadow-sm p-6 flex flex-col items-center">
+        {!isCurrentMonth && (
+          <p className="text-xs text-gray-400 mb-4">{monthLabel} 歷史紀錄</p>
+        )}
         <GroupTree
           treePoints={treePoints}
           fruitOrder={group.fruit_order}
@@ -100,7 +146,7 @@ export default async function GroupDetailPage({ params }: Props) {
             <p className="text-sm text-accent mt-1">已結出 {fruitCount} / {TREE_CONFIG.fruit.max} 顆果子</p>
           )}
         </div>
-        {dormant && (
+        {dormant && isCurrentMonth && (
           <p className="mt-3 text-xs text-gray-400 bg-gray-50 rounded-xl px-3 py-2 text-center">
             樹需要至少 2 位成員才能繼續生長
           </p>
