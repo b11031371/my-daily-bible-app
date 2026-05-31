@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import MarkdownRenderer from './MarkdownRenderer'
 import ReflectionForm from '@/components/community/ReflectionForm'
+import ApprovalBanner from './ApprovalBanner'
 
 interface Props {
   date: string
@@ -11,9 +12,12 @@ interface Props {
   zhPdfUrl: string
   enPdfUrl: string
   bibleRange?: string | null
+  isAdmin?: boolean
+  isApproved?: boolean
+  approvalMode?: boolean
 }
 
-export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl, bibleRange }: Props) {
+export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl, bibleRange, isAdmin, isApproved, approvalMode }: Props) {
   const [lang, setLang] = useState<'zh' | 'en'>('zh')
   const content = lang === 'zh' ? zhContent : enContent
   const pdfUrl = lang === 'zh' ? zhPdfUrl : enPdfUrl
@@ -21,6 +25,11 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
 
   return (
     <div>
+      {/* Approval banner (admin only, when approval mode is on) */}
+      {isAdmin && approvalMode && (
+        <ApprovalBanner date={date} isApproved={!!isApproved} />
+      )}
+
       {/* Language tabs + PDF download */}
       <div className="flex gap-2 mb-4">
         {(['zh', 'en'] as const).map(l => (

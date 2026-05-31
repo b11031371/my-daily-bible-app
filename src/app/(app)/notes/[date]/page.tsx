@@ -1,10 +1,9 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { fetchMarkdown, getPdfUrl } from '@/lib/github/api'
 import { formatDateZH } from '@/lib/utils'
+import { createClient, getUser } from '@/lib/supabase/server'
 import NoteViewer from '@/components/notes/NoteViewer'
-
-export const revalidate = 3600
 
 interface Props {
   params: Promise<{ date: string }>
@@ -15,10 +14,26 @@ export default async function NotePage({ params }: Props) {
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) notFound()
 
-  const [zhContent, enContent] = await Promise.all([
-    fetchMarkdown(date, 'zh'),
-    fetchMarkdown(date, 'en'),
+  const [user, supabase] = await Promise.all([getUser(), createClient()])
+  if (!user) redirect('/login')
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any
+
+  const [[zhContent, enContent], [{ data: profile }, { data: approval }, { data: setting }]] = await Promise.all([
+    Promise.all([fetchMarkdown(date, 'zh'), fetchMarkdown(date, 'en')]),
+    Promise.all([
+      supabase.from('profiles').select('role').eq('id', user.id).single(),
+      sb.from('note_approvals').select('date').eq('date', date).maybeSingle(),
+      sb.from('app_settings').select('value').eq('key', 'approval_mode').single(),
+    ]),
   ])
+
+  const isAdmin = profile?.role === 'admin'
+  const isApproved = !!approval
+  const approvalMode = setting?.value === 'true'
+
+  if (approvalMode && !isAdmin && !isApproved) notFound()
 
   const zhPdfUrl = getPdfUrl(date, 'zh')
   const enPdfUrl = getPdfUrl(date, 'en')
@@ -39,6 +54,9 @@ export default async function NotePage({ params }: Props) {
         zhPdfUrl={zhPdfUrl}
         enPdfUrl={enPdfUrl}
         bibleRange={bibleRange}
+        isAdmin={isAdmin}
+        isApproved={isApproved}
+        approvalMode={approvalMode}
       />
     </div>
   )

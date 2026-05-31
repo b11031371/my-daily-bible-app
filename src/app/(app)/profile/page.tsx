@@ -76,6 +76,9 @@ export default async function ProfilePage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-900">個人</h1>
         <div className="flex items-center gap-3">
+          {profile?.role === 'admin' && (
+            <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-2.5 py-1">後台</Link>
+          )}
           <Link href="/settings" className="text-gray-400 hover:text-gray-600"><Gear size={22} /></Link>
           <form action={handleSignOut}>
             <button type="submit" className="text-sm text-gray-400 hover:text-gray-600">登出</button>

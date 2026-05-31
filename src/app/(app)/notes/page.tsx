@@ -24,6 +24,8 @@ export default async function NotesPage() {
     { data: userBadges },
     { data: weekCheckins },
     { data: profile },
+    { data: approvalSetting },
+    { data: approvedDatesRaw },
   ] = await Promise.all([
     supabase
       .from('checkins')
@@ -37,8 +39,14 @@ export default async function NotesPage() {
     supabase.from('badges').select('id').eq('is_active', true),
     supabase.from('user_badges').select('badge_id').eq('user_id', user!.id),
     supabase.from('checkins').select('note_date, is_retro').eq('user_id', user!.id).in('note_date', weekDates),
-    supabase.from('profiles').select('streak_current').eq('id', user!.id).single(),
+    supabase.from('profiles').select('streak_current, role').eq('id', user!.id).single(),
+    (supabase as any).from('app_settings').select('value').eq('key', 'approval_mode').single(),
+    (supabase as any).from('note_approvals').select('date'),
   ])
+
+  const approvalMode = approvalSetting?.value === 'true'
+  const isAdmin = profile?.role === 'admin'
+  const approvedDates = new Set((approvedDatesRaw ?? []).map((r: { date: string }) => r.date))
 
   const communityUserIds = (todayCheckins ?? []).slice(0, 4).map(c => c.user_id)
 
@@ -59,14 +67,19 @@ export default async function NotesPage() {
   const unearnedBadges = (allBadges?.length ?? 0) - (userBadges?.length ?? 0)
   const checkedDates = new Set((weekCheckins ?? []).map(c => c.note_date))
   const retroDates = new Set((weekCheckins ?? []).filter(c => c.is_retro).map(c => c.note_date))
-  const pastDates = availableDates.filter(d => d !== today).slice(0, 2)
+  const todayApproved = approvedDates.has(today)
+  const showHeroCard = passageRange && (!approvalMode || isAdmin || todayApproved)
+  const allPastDates = availableDates.filter(d => d !== today)
+  const pastDates = (approvalMode && !isAdmin)
+    ? allPastDates.filter(d => approvedDates.has(d)).slice(0, 2)
+    : allPastDates.slice(0, 2)
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">
       <h1 className="text-xl font-bold text-gray-900">每日筆記</h1>
 
       {/* Hero card */}
-      {passageRange ? (
+      {showHeroCard ? (
         <Link href={`/notes/${today}`} className="block active:opacity-90 transition-opacity">
           <div className="animated-border rounded-3xl shadow-lg">
             <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-[22px] p-6 text-gray-900">
@@ -177,7 +190,12 @@ export default async function NotesPage() {
                 href={`/notes/${date}`}
                 className="flex items-center justify-between bg-white rounded-2xl px-5 py-3.5 shadow-sm"
               >
-                <span className="text-sm text-gray-900">{formatDateZH(date)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-900">{formatDateZH(date)}</span>
+                  {approvalMode && isAdmin && !approvedDates.has(date) && (
+                    <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">待審核</span>
+                  )}
+                </div>
                 <span className="text-gray-300 text-lg">›</span>
               </Link>
             ))}
