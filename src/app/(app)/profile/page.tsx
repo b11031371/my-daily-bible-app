@@ -6,6 +6,7 @@ import type { BadgeWithStatus } from '@/types/app'
 import BadgeGrid from '@/components/profile/BadgeGrid'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { Gear, Diamond, Fire, Star, SealCheck } from '@phosphor-icons/react/dist/ssr'
+import PushSubscribeButton from '@/components/PushSubscribeButton'
 
 type PointEntry = { date: string; label: string; points: number; tag?: string }
 
@@ -111,6 +112,12 @@ export default async function ProfilePage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Notification settings */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-gray-700 mb-4">通知設定</h2>
+        <PushSubscribeButton initialHour={(profile as any)?.notification_hour ?? 8} />
       </div>
 
       {/* Badges */}
