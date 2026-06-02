@@ -1,19 +1,40 @@
 import { createClient } from '@/lib/supabase/server'
 import { formatDateZH, todayString } from '@/lib/utils'
+import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { setApprovalMode } from './actions'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
   const today = todayString()
 
-  const [{ count: checkinCount }, { count: reflectionCount }, { data: recentReflections }, { data: approvalSetting }] = await Promise.all([
+  const [
+    { count: checkinCount },
+    { count: reflectionCount },
+    { data: approvalSetting },
+    { data: recentCheckins },
+  ] = await Promise.all([
     supabase.from('checkins').select('*', { count: 'exact', head: true }).eq('note_date', today),
     supabase.from('reflections').select('*', { count: 'exact', head: true }).eq('note_date', today),
-    supabase.from('reflections').select('*, profiles(display_name)').order('created_at', { ascending: false }).limit(10),
     (supabase as any).from('app_settings').select('value').eq('key', 'approval_mode').single(),
+    supabase
+      .from('checkins')
+      .select('note_date, is_retro, checked_in_at, profiles(display_name, avatar_seed)')
+      .order('note_date', { ascending: false })
+      .order('checked_in_at', { ascending: true })
+      .limit(100),
   ])
 
   const approvalMode = (approvalSetting as any)?.value === 'true'
+
+  // Group checkins by date
+  type CheckinRow = { note_date: string; is_retro: boolean; profiles: { display_name: string; avatar_seed: string } | null }
+  const grouped = new Map<string, CheckinRow[]>()
+  for (const c of (recentCheckins ?? []) as unknown as CheckinRow[]) {
+    const existing = grouped.get(c.note_date) ?? []
+    existing.push(c)
+    grouped.set(c.note_date, existing)
+  }
+  const dates = [...grouped.keys()].slice(0, 14)
 
   return (
     <div className="space-y-6">
@@ -37,6 +58,7 @@ export default async function AdminDashboard() {
         </form>
       </div>
 
+      {/* Today stats */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-xl p-5 shadow-sm">
           <p className="text-3xl font-bold text-gray-900">{checkinCount ?? 0}</p>
@@ -47,18 +69,32 @@ export default async function AdminDashboard() {
           <p className="text-sm text-gray-500 mt-1">今日反思回答</p>
         </div>
       </div>
+
+      {/* Daily checkin log */}
       <div className="bg-white rounded-xl p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">最新留言</h2>
-        <div className="space-y-3">
-          {((recentReflections ?? []) as any[]).map((r: any) => (
-            <div key={r.id} className="text-sm border-b border-gray-50 pb-3 last:border-0">
-              <div className="flex justify-between text-xs text-gray-400 mb-1">
-                <span>{r.is_anonymous ? '匿名' : r.profiles?.display_name}</span>
-                <span>{formatDateZH(r.note_date)}</span>
+        <h2 className="text-sm font-semibold text-gray-700 mb-4">每日簽到紀錄</h2>
+        <div className="space-y-4">
+          {dates.map(date => {
+            const entries = grouped.get(date)!
+            return (
+              <div key={date}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-gray-500">{formatDateZH(date)}</span>
+                  <span className="text-xs text-gray-400">{entries.length} 人</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {entries.map((c, i) => (
+                    <div key={i} className="flex items-center gap-1.5 bg-gray-50 rounded-full pl-1 pr-2.5 py-1">
+                      <BibleAvatar seed={c.profiles?.avatar_seed ?? 'alpha'} className="w-5 h-5" />
+                      <span className="text-xs text-gray-700">{c.profiles?.display_name ?? '—'}</span>
+                      {c.is_retro && <span className="text-[10px] text-gray-400">補</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <p className="text-gray-700 line-clamp-2">{r.content}</p>
-            </div>
-          ))}
+            )
+          })}
+          {dates.length === 0 && <p className="text-sm text-gray-400 text-center py-4">尚無簽到紀錄</p>}
         </div>
       </div>
     </div>

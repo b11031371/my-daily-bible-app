@@ -1,8 +1,10 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { getPeriodLabel } from '@/lib/utils'
 
 export default function RebuildButtons() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('')
 
@@ -15,7 +17,12 @@ export default function RebuildButtons() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ period_type, period_label }),
     })
-    setMsg(res.ok ? `✅ ${period_type === 'weekly' ? '週榜' : '月榜'}已更新（${period_label}）` : '❌ 更新失敗')
+    if (res.ok) {
+      setMsg(`✅ ${period_type === 'weekly' ? '週榜' : '月榜'}已更新（${period_label}）`)
+      router.refresh()
+    } else {
+      setMsg('❌ 更新失敗')
+    }
     setLoading(false)
   }
 

@@ -1,5 +1,6 @@
 import { createClient, getUser } from '@/lib/supabase/server'
 import CommunityTabs from '@/components/community/CommunityTabs'
+import CommunityInfoButton from '@/components/community/CommunityInfoButton'
 import { todayString } from '@/lib/utils'
 import { TREE_CONFIG } from '@/lib/tree'
 import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } from '@/types/app'
@@ -84,7 +85,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">社群</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-xl font-bold text-gray-900">社群</h1>
+        <CommunityInfoButton />
+      </div>
 
       <CommunityTabs
         myGroups={myGroups}
