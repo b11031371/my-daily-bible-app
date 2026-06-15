@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient, getUser } from '@/lib/supabase/server'
 import ProfileSettingsForm from '@/components/settings/ProfileSettingsForm'
+import FontSizeSwitcher from '@/components/settings/FontSizeSwitcher'
 
 export default async function SettingsPage() {
   const [user, supabase] = await Promise.all([getUser(), createClient()])
@@ -19,6 +20,7 @@ export default async function SettingsPage() {
         <Link href="/profile" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
         <h1 className="text-xl font-bold text-gray-900">設定</h1>
       </div>
+      <FontSizeSwitcher />
       <ProfileSettingsForm
         userId={user.id}
         initialName={profile?.display_name ?? ''}
