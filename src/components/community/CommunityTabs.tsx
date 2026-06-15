@@ -120,7 +120,7 @@ export default function CommunityTabs({
   const displayReflections = filteredReflections ?? baseReflections
 
   return (
-    <>
+    <div className="w-full overflow-x-hidden space-y-4">
       {/* Tab bar */}
       <div className="flex bg-gray-100 rounded-2xl p-1">
         <button
@@ -176,6 +176,6 @@ export default function CommunityTabs({
           )}
         </>
       )}
-    </>
+    </div>
   )
 }

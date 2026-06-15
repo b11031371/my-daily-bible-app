@@ -255,9 +255,9 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
   return (
     <div className="w-full min-w-0">
       {/* Header row */}
-      <div className="flex items-center justify-between mb-3 gap-2 min-w-0">
-        <span className="text-sm font-semibold text-gray-700 shrink-0">反思留言</span>
-        <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <span className="text-sm font-semibold text-gray-700">反思留言</span>
+        <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {isFiltered && (
             <>
               <button
