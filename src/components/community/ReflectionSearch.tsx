@@ -286,7 +286,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
       {/* Collapsible search panel */}
       {isOpen && (
-        <div className="mb-4 w-full bg-white rounded-2xl p-4 shadow-sm border border-gray-100 overflow-hidden">
+        <div className="mb-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           {/* Panel header */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-500">✨ AI 搜尋 ＆ 整理</span>
@@ -465,7 +465,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   onCompositionEnd={() => { setTimeout(() => { composingRef.current = false }, 0) }}
                   onKeyDown={e => e.key === 'Enter' && !composingRef.current && !isLoading && handleSubmit()}
                   placeholder="用AI搜尋/整理留言摘要"
-                  className="flex-1 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+                  className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
                 />
                 <button
                   onClick={handleSubmit}
