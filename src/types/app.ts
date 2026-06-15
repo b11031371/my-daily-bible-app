@@ -54,6 +54,14 @@ export interface GroupWithMembers extends Group {
   tree_points: number
 }
 
+export interface ReflectionFilters {
+  month?: string
+  user_name?: string
+  selfOnly?: boolean
+  bible_book?: string
+  keyword?: string
+}
+
 export interface CheckinResult {
   points_earned: number
   streak_current: number

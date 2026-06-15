@@ -3,6 +3,7 @@ import CommunityTabs from '@/components/community/CommunityTabs'
 import CommunityInfoButton from '@/components/community/CommunityInfoButton'
 import { todayString } from '@/lib/utils'
 import { TREE_CONFIG } from '@/lib/tree'
+import { fetchPassageRange } from '@/lib/github/api'
 import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } from '@/types/app'
 
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ scrollTo?: string; tab?: string }> }) {
@@ -16,7 +17,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any
 
-  const [{ data: reflections }, { data: allGroupsRaw }, { data: myMemberships }, { data: myProfile }] = await Promise.all([
+  const [{ data: reflections }, { data: allGroupsRaw }, { data: myMemberships }, { data: myProfile }, todayBibleRange] = await Promise.all([
     supabase
       .from('reflections')
       .select('*, profiles(display_name, avatar_seed), reflection_likes(user_id, profiles(avatar_seed)), reflection_comments(id, user_id, content, created_at, profiles(display_name, avatar_seed))')
@@ -35,6 +36,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
       .select('avatar_seed, role')
       .eq('id', user!.id)
       .single(),
+    fetchPassageRange(today),
   ])
 
   const myGroupIds = new Set((myMemberships ?? []).map(m => m.group_id))
@@ -100,6 +102,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
         currentUserIsAdmin={currentUserIsAdmin}
         scrollTo={scrollTo}
         initialTab={initialTab}
+        todayBibleRange={todayBibleRange ?? null}
       />
     </div>
   )
