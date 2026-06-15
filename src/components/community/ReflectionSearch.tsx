@@ -253,22 +253,22 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
   const showInput = step !== 'filter_done'
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       {/* Header row */}
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-semibold text-gray-700">反思留言</span>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-3 gap-2 min-w-0">
+        <span className="text-sm font-semibold text-gray-700 shrink-0">反思留言</span>
+        <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
           {isFiltered && (
             <>
               <button
                 onClick={handleAISummaryFromFilter}
-                className="text-xs text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1"
+                className="shrink-0 text-xs text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1"
               >
                 <Sparkle size={10} weight="fill" /> AI摘要
               </button>
               <button
                 onClick={handleClearFilter}
-                className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200 flex items-center gap-1"
+                className="shrink-0 text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200 flex items-center gap-1"
               >
                 篩選中 <X size={10} weight="bold" />
               </button>
@@ -286,7 +286,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
       {/* Collapsible search panel */}
       {isOpen && (
-        <div className="mb-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <div className="mb-4 w-full bg-white rounded-2xl p-4 shadow-sm border border-gray-100 overflow-hidden">
           {/* Panel header */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-500">✨ AI 搜尋 ＆ 整理</span>
