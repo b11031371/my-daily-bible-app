@@ -32,7 +32,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-Hant" className={`h-full ${wenkai.className}`}>
+    <html lang="zh-Hant" className={`h-full ${wenkai.className}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `try{var s=localStorage.getItem('bible-font-size');if(s)document.documentElement.style.fontSize=s;}catch(e){}` }} />
       </head>
