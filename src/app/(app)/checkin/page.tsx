@@ -1,9 +1,10 @@
 import CheckinSection from '@/components/checkin/CheckinSection'
 import { createClient, getUser } from '@/lib/supabase/server'
+import { getServerI18n } from '@/lib/i18n/server'
 import { todayString } from '@/lib/utils'
 
 export default async function CheckinPage() {
-  const [user, supabase] = await Promise.all([getUser(), createClient()])
+  const [user, supabase, { t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   const today = todayString()
   const monthStart = `${today.slice(0, 7)}-01`
   const [y, m] = today.slice(0, 7).split('-').map(Number)
@@ -79,7 +80,7 @@ export default async function CheckinPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6">
-      <h1 className="text-xl font-bold text-gray-900 mb-6">每日簽到</h1>
+      <h1 className="text-xl font-bold text-gray-900 mb-6">{t('checkin.pageTitle')}</h1>
       <CheckinSection
         monthlyCheckinDays={monthlyCheckinDays}
         monthlyMaxStreak={monthlyMaxStreak}

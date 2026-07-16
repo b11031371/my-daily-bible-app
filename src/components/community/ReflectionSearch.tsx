@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { MagnifyingGlass, X, DownloadSimple, ListBullets, Sparkle, Copy, Check, Plus } from '@phosphor-icons/react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import type { ReflectionFilters } from '@/types/app'
 
 const CUSTOM_FILTER_CHIPS_KEY = 'reflection_custom_filter_chips'
@@ -69,6 +70,7 @@ type Step =
   | 'summary_done'
 
 export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
+  const { t } = useI18n()
   const defaultFilterChips = getDefaultFilterChips(todayBibleRange)
   const defaultSummaryChips = getDefaultSummaryChips(todayBibleRange)
 
@@ -138,7 +140,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? '解析失敗，請再試一次')
+        setError(data.error ?? t('community.parseFail'))
         setStep('choose')
         return
       }
@@ -154,7 +156,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
       setIsFiltered(true)
       setStep('filter_done')
     } catch {
-      setError('網路錯誤，請稍後再試')
+      setError(t('community.networkError'))
       setStep(chipQuery ? 'input' : 'choose')
     }
   }
@@ -198,14 +200,14 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? '搜尋失敗，請再試一次')
+        setError(data.error ?? t('community.searchFail'))
         setStep('choose')
       } else {
         setAnswer(data.answer)
         setStep('summary_done')
       }
     } catch {
-      setError('網路錯誤，請稍後再試')
+      setError(t('community.networkError'))
       setStep('choose')
     }
   }
@@ -256,7 +258,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
     <div className="w-full min-w-0">
       {/* Header row */}
       <div className="flex items-center justify-between mb-3 gap-2">
-        <span className="text-sm font-semibold text-gray-700">反思留言</span>
+        <span className="text-sm font-semibold text-gray-700">{t('community.tabFeed')}</span>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {isFiltered && (
             <>
@@ -264,20 +266,20 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                 onClick={handleAISummaryFromFilter}
                 className="shrink-0 text-xs text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1"
               >
-                <Sparkle size={10} weight="fill" /> AI摘要
+                <Sparkle size={10} weight="fill" /> {t('community.aiSummary')}
               </button>
               <button
                 onClick={handleClearFilter}
                 className="shrink-0 text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200 flex items-center gap-1"
               >
-                篩選中 <X size={10} weight="bold" />
+                {t('community.filtering')} <X size={10} weight="bold" />
               </button>
             </>
           )}
           <button
             onClick={() => isOpen ? handleClose() : setIsOpen(true)}
             className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
-            aria-label="AI 搜尋反思"
+            aria-label={t('community.aiSearchAria')}
           >
             <MagnifyingGlass size={18} weight="regular" />
           </button>
@@ -289,7 +291,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
         <div className="mb-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           {/* Panel header */}
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-gray-500">✨ AI 搜尋 ＆ 整理</span>
+            <span className="text-xs font-semibold text-gray-500">{t('community.aiSearchTitle')}</span>
             <button onClick={handleClose} className="p-0.5 text-gray-300 hover:text-gray-500 transition-colors">
               <X size={15} weight="bold" />
             </button>
@@ -303,7 +305,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   {/* List query chips */}
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-400 mb-1.5 flex items-center gap-1">
-                      <ListBullets size={11} weight="bold" /> 條件查詢
+                      <ListBullets size={11} weight="bold" /> {t('community.listQuery')}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {defaultFilterChips.map(chip => (
@@ -370,7 +372,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         onClick={() => setAddingFilterChip(true)}
                         className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
                       >
-                        <Plus size={11} /> 新增問句
+                        <Plus size={11} /> {t('community.addQuestion')}
                       </button>
                     )}
                   </div>
@@ -378,7 +380,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   {/* AI summary chips */}
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-500 mb-1.5 flex items-center gap-1">
-                      <Sparkle size={11} weight="fill" /> AI 整理
+                      <Sparkle size={11} weight="fill" /> {t('community.aiOrganize')}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {defaultSummaryChips.map(chip => (
@@ -445,7 +447,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         onClick={() => setAddingSummaryChip(true)}
                         className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
                       >
-                        <Plus size={11} /> 新增問句
+                        <Plus size={11} /> {t('community.addQuestion')}
                       </button>
                     )}
                   </div>
@@ -464,7 +466,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   onCompositionStart={() => { composingRef.current = true }}
                   onCompositionEnd={() => { setTimeout(() => { composingRef.current = false }, 0) }}
                   onKeyDown={e => e.key === 'Enter' && !composingRef.current && !isLoading && handleSubmit()}
-                  placeholder="用AI搜尋/整理留言摘要"
+                  placeholder={t('community.searchPlaceholder')}
                   className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
                 />
                 <button
@@ -472,7 +474,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   disabled={isLoading || !query.trim()}
                   className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium disabled:opacity-40 shrink-0"
                 >
-                  搜尋
+                  {t('community.search')}
                 </button>
               </div>
             </>
@@ -481,15 +483,15 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
           {/* Mode choice */}
           {step === 'choose' && (
             <div className="mt-3 space-y-2">
-              <p className="text-xs text-gray-500 mb-2">請選擇查詢方式：</p>
+              <p className="text-xs text-gray-500 mb-2">{t('community.chooseMode')}</p>
               <button
                 onClick={() => handleChooseFilter()}
                 className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors text-left"
               >
                 <ListBullets size={20} className="text-gray-500 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-gray-800">列表查詢</p>
-                  <p className="text-xs text-gray-400">在下方顯示符合條件的留言卡片</p>
+                  <p className="text-sm font-medium text-gray-800">{t('community.listMode')}</p>
+                  <p className="text-xs text-gray-400">{t('community.listModeDesc')}</p>
                 </div>
               </button>
               <button
@@ -498,8 +500,8 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               >
                 <Sparkle size={20} className="text-amber-500 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-gray-800">AI 整理</p>
-                  <p className="text-xs text-gray-400">由 AI 整理重點摘要，可下載</p>
+                  <p className="text-sm font-medium text-gray-800">{t('community.aiMode')}</p>
+                  <p className="text-xs text-gray-400">{t('community.aiModeDesc')}</p>
                 </div>
               </button>
             </div>
@@ -509,7 +511,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
           {step === 'summary_confirm' && parsedConditions !== null && (
             <div className="mt-3 space-y-3">
               <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
-                <p className="text-xs text-amber-700 font-medium mb-1">AI 將根據以下條件整理摘要：</p>
+                <p className="text-xs text-amber-700 font-medium mb-1">{t('community.summaryConfirm')}</p>
                 <p className="text-sm text-gray-700">{formatConditions(parsedConditions)}</p>
               </div>
               <div className="flex gap-2">
@@ -517,13 +519,13 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   onClick={() => executeSummary()}
                   className="flex-1 bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm py-2 rounded-xl font-medium"
                 >
-                  確認，開始整理
+                  {t('community.confirmStart')}
                 </button>
                 <button
                   onClick={() => { setStep('input'); setParsedConditions(null) }}
                   className="px-4 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
                 >
-                  修改描述
+                  {t('community.editDescription')}
                 </button>
               </div>
             </div>
@@ -531,24 +533,24 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
           {/* Loading states */}
           {step === 'filter_loading' && (
-            <p className="mt-4 text-sm text-gray-400 animate-pulse">正在解析篩選條件…</p>
+            <p className="mt-4 text-sm text-gray-400 animate-pulse">{t('community.parsingFilter')}</p>
           )}
           {step === 'summary_confirm_loading' && (
-            <p className="mt-4 text-sm text-gray-400 animate-pulse">正在解析查詢條件…</p>
+            <p className="mt-4 text-sm text-gray-400 animate-pulse">{t('community.parsingQuery')}</p>
           )}
           {step === 'summary_loading' && (
-            <p className="mt-4 text-sm text-gray-400 animate-pulse">AI 正在整理中…</p>
+            <p className="mt-4 text-sm text-gray-400 animate-pulse">{t('community.organizing')}</p>
           )}
 
           {/* Filter done */}
           {step === 'filter_done' && (
             <div className="space-y-2">
-              <p className="text-sm text-gray-600">✅ 已套用篩選條件，請查看下方留言</p>
+              <p className="text-sm text-gray-600">{t('community.filterApplied')}</p>
               <button
                 onClick={handleClearFilter}
                 className="text-xs text-gray-400 hover:text-gray-600 transition-colors underline"
               >
-                清除篩選
+                {t('community.clearFilter')}
               </button>
             </div>
           )}
@@ -570,7 +572,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   <DownloadSimple size={14} />
-                  分享 / 下載
+                  {t('community.shareDownload')}
                 </button>
                 <button
                   onClick={async () => {
@@ -581,13 +583,13 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-                  {copied ? '已複製' : '複製文字'}
+                  {copied ? t('community.copied') : t('community.copyText')}
                 </button>
                 <button
                   onClick={() => { setStep('input'); setAnswer(null); setQuery('') }}
                   className="text-xs text-gray-400 hover:text-gray-600 transition-colors underline ml-auto"
                 >
-                  重新描述
+                  {t('community.reDescribe')}
                 </button>
               </div>
             </div>

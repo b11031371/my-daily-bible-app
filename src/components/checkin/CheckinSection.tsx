@@ -1,11 +1,13 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { todayString, formatDateZH } from '@/lib/utils'
+import { todayString, formatDate, formatMonth } from '@/lib/utils'
 import { POINTS_BY_DAYS_LATE } from '@/lib/points'
 import StampCard from '@/components/checkin/StampCard'
 import { Fire, Star, Diamond } from '@phosphor-icons/react'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
+import { useI18n } from '@/components/i18n/I18nProvider'
+import type { Locale, TFunc } from '@/lib/i18n'
 
 interface Props {
   monthlyCheckinDays: number
@@ -16,8 +18,9 @@ interface Props {
 }
 
 export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, monthlyPoints, monthlyCount, initialCheckins }: Props) {
+  const { locale, t } = useI18n()
   const today = todayString()
-  const monthLabel = `${today.slice(0, 4)}年${parseInt(today.slice(5, 7))}月`
+  const monthLabel = formatMonth(today, locale)
   const router = useRouter()
   const { showBadges } = useBadgeToast()
   const [loading, setLoading] = useState(false)
@@ -55,11 +58,11 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: '本月簽到天數', value: `${checkinDays} 天`, icon: <Fire size={28} weight="fill" /> },
-          { label: '本月最長連續', value: `${monthlyMaxStreak} 天`, icon: <Star size={28} weight="fill" /> },
-          { label: '本月積分', value: `${points}`, icon: <Diamond size={28} weight="fill" /> },
+          { key: 'days', label: t('checkin.statCheckinDays'), value: t('checkin.daysValue', { count: checkinDays }), icon: <Fire size={28} weight="fill" /> },
+          { key: 'streak', label: t('checkin.statMaxStreak'), value: t('checkin.daysValue', { count: monthlyMaxStreak }), icon: <Star size={28} weight="fill" /> },
+          { key: 'points', label: t('checkin.statPoints'), value: `${points}`, icon: <Diamond size={28} weight="fill" /> },
         ].map(s => (
-          <div key={s.label} className="bg-white rounded-2xl p-4 text-center shadow-sm">
+          <div key={s.key} className="bg-white rounded-2xl p-4 text-center shadow-sm">
             <div className="flex justify-center mb-1 text-gray-700">{s.icon}</div>
             <div className="text-lg font-bold text-gray-900">{s.value}</div>
             <div className="text-xs text-gray-400">{s.label}</div>
@@ -69,17 +72,17 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
 
       {/* Today checkin */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <p className="text-sm font-medium text-gray-500 mb-3">今天 · {formatDateZH(today)}</p>
+        <p className="text-sm font-medium text-gray-500 mb-3">{t('checkin.todayLabel', { date: formatDate(today, locale) })}</p>
         {result ? (
           <div className="text-center py-4">
             <div className="text-3xl mb-2">🎉</div>
-            <p className="font-bold text-gray-900">+{result.points} 分！本月 {checkinDays} 天</p>
+            <p className="font-bold text-gray-900">{t('checkin.resultPoints', { points: result.points, days: checkinDays })}</p>
             {result.badges.length > 0 && (
-              <p className="text-sm text-accent mt-1">解鎖徽章 {result.badges.join(' ')}</p>
+              <p className="text-sm text-accent mt-1">{t('checkin.unlockedBadges', { badges: result.badges.join(' ') })}</p>
             )}
           </div>
         ) : checkedDates[today] !== undefined ? (
-          <div className="text-center py-4 text-gray-800 font-medium">✅ 今日已簽到 (+{checkedDates[today]} 分)</div>
+          <div className="text-center py-4 text-gray-800 font-medium">{t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}</div>
         ) : (
           <div className="animated-border rounded-xl">
             <button
@@ -87,7 +90,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
               disabled={loading}
               className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
             >
-              {loading ? '簽到中...' : '✅ 立即簽到 (+10 分)'}
+              {loading ? t('checkin.checkingIn') : t('checkin.checkInNow')}
             </button>
           </div>
         )}
@@ -98,7 +101,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
 
       {/* Retro checkins */}
       <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-700 mb-3">補簽</p>
+        <p className="text-sm font-semibold text-gray-700 mb-3">{t('checkin.retroTitle')}</p>
         <div className="space-y-2">
           {pastDays.map((date, i) => {
             const daysLate = i + 1
@@ -106,7 +109,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             return (
               <RetroRow key={date} date={date} daysLate={daysLate} points={pts}
                 isChecked={checkedDates[date] !== undefined}
-                onCheckin={() => doCheckin(date)} loading={loading} />
+                onCheckin={() => doCheckin(date)} loading={loading} locale={locale} t={t} />
             )
           })}
         </div>
@@ -115,24 +118,25 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
   )
 }
 
-function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked }: {
+function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, locale, t }: {
   date: string; daysLate: number; points: number; onCheckin: () => void; loading: boolean; isChecked: boolean
+  locale: Locale; t: TFunc
 }) {
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
       <div>
-        <p className="text-sm text-gray-900">{formatDateZH(date)}</p>
-        <p className="text-xs text-gray-400">{daysLate} 天前 · +{points} 分</p>
+        <p className="text-sm text-gray-900">{formatDate(date, locale)}</p>
+        <p className="text-xs text-gray-400">{t('checkin.daysAgo', { days: daysLate, points })}</p>
       </div>
       {isChecked ? (
-        <span className="text-xs text-gray-600 font-medium">已簽</span>
+        <span className="text-xs text-gray-600 font-medium">{t('checkin.checked')}</span>
       ) : (
         <button
           onClick={onCheckin}
           disabled={loading}
           className="text-xs bg-primary-light text-gray-700 font-medium px-3 py-1.5 rounded-full hover:bg-primary hover:text-gray-900 transition-colors disabled:opacity-40"
         >
-          補簽
+          {t('checkin.retroButton')}
         </button>
       )}
     </div>

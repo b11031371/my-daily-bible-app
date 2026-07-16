@@ -1,7 +1,9 @@
 import { notFound, redirect } from 'next/navigation'
 import { createClient, getUser } from '@/lib/supabase/server'
+import { getServerI18n } from '@/lib/i18n/server'
+import { formatMonth } from '@/lib/utils'
 import { todayString } from '@/lib/utils'
-import { TREE_CONFIG, getTreeStage, getFruitCount } from '@/lib/tree'
+import { TREE_CONFIG, getTreeStage, getFruitCount, FRUIT_I18N, type FruitKey } from '@/lib/tree'
 import GroupTree from '@/components/tree/GroupTree'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import GroupActions from '@/components/tree/GroupActions'
@@ -13,13 +15,14 @@ interface Props {
   searchParams: Promise<{ month?: string }>
 }
 
-const STAGE_LABEL = ['', '種子發芽', '幼苗成長', '小樹茁壯', '大樹展葉', '種植完成'] as const
+const STAGE_KEY = ['', 'group.stage1', 'group.stage2', 'group.stage3', 'group.stage4', 'group.stage5'] as const
 
 export default async function GroupDetailPage({ params, searchParams }: Props) {
   const { id } = await params
   const { month } = await searchParams
-  const [user, supabase] = await Promise.all([getUser(), createClient()])
+  const [user, supabase, { locale, t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   if (!user) redirect('/login')
+  const fruitName = (key: string) => FRUIT_I18N[locale][key as FruitKey]?.name ?? key
 
   const today = todayString()
   const currentYM = today.slice(0, 7)
@@ -35,7 +38,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
   const prevYM = new Date(Date.UTC(sy, sm - 2, 1)).toISOString().slice(0, 7)
   const nextYM = new Date(Date.UTC(sy, sm, 1)).toISOString().slice(0, 7)
 
-  const monthLabel = `${sy}年${sm}月`
+  const monthLabel = formatMonth(selectedYM, locale)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any
@@ -124,7 +127,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
       {/* Tree */}
       <div className="bg-white rounded-3xl shadow-sm p-6 flex flex-col items-center">
         {!isCurrentMonth && (
-          <p className="text-xs text-gray-400 mb-4">{monthLabel} 歷史紀錄</p>
+          <p className="text-xs text-gray-400 mb-4">{t('group.historyRecord', { month: monthLabel })}</p>
         )}
         <GroupTree
           treePoints={treePoints}
@@ -134,7 +137,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
           dormant={dormant}
         />
         <div className="mt-4 text-center">
-          <p className="font-bold text-gray-900">{STAGE_LABEL[stage]}</p>
+          <p className="font-bold text-gray-900">{stage > 0 ? t(STAGE_KEY[stage]) : ''}</p>
           {stage < 5 ? (
             <div className="mt-2 flex items-center gap-2 w-48">
               <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -143,12 +146,12 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
               <span className="text-xs text-gray-400 w-14 text-right">{treePoints}/{TREE_CONFIG.fullGrowthPoints}</span>
             </div>
           ) : (
-            <p className="text-sm text-accent mt-1">已結出 {fruitCount} / {TREE_CONFIG.fruit.max} 顆果子</p>
+            <p className="text-sm text-accent mt-1">{t('group.fruitsGrown', { count: fruitCount, max: TREE_CONFIG.fruit.max })}</p>
           )}
         </div>
         {dormant && isCurrentMonth && (
           <p className="mt-3 text-xs text-gray-400 bg-gray-50 rounded-xl px-3 py-2 text-center">
-            樹需要至少 2 位成員才能繼續生長
+            {t('group.dormantHintDetail')}
           </p>
         )}
       </div>
@@ -156,17 +159,17 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
       {/* Fruits legend */}
       {fruitCount > 0 && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 mb-3">已結出的聖靈果子</p>
+          <p className="text-xs font-semibold text-gray-500 mb-3">{t('group.grownFruits')}</p>
           <div className="flex flex-wrap gap-2">
             {group.fruit_order.slice(0, fruitCount).map((fruit, i) => (
               <span key={i} className="px-2.5 py-1 bg-accent-light text-accent text-xs font-medium rounded-full">
-                {fruit}
+                {fruitName(fruit)}
               </span>
             ))}
           </div>
           {fruitCount < TREE_CONFIG.fruit.max && (
             <p className="text-[10px] text-gray-400 mt-2">
-              再 {nextFruitPoints - treePoints} 分結出下一顆：{group.fruit_order[fruitCount]}
+              {t('group.nextFruit', { points: nextFruitPoints - treePoints, fruit: fruitName(group.fruit_order[fruitCount]) })}
             </p>
           )}
         </div>
@@ -175,7 +178,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
       {/* Members */}
       <div className="bg-white rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-semibold text-gray-500 mb-3">
-          成員 · {activeMembers.length}/{TREE_CONFIG.maxMembers} 人
+          {t('group.membersCount', { count: activeMembers.length, max: TREE_CONFIG.maxMembers })}
         </p>
         <div className="space-y-3">
           {activeMembers.map(m => (
@@ -183,9 +186,9 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
               <BibleAvatar seed={m.profiles.avatar_seed} className="w-8 h-8" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{m.profiles.display_name}</p>
-                {m.role === 'admin' && <p className="text-[10px] text-gray-400">建立者</p>}
+                {m.role === 'admin' && <p className="text-[10px] text-gray-400">{t('group.creator')}</p>}
               </div>
-              <span className="text-sm text-gray-700 font-medium">+{contribMap[m.user_id] ?? 0} 分</span>
+              <span className="text-sm text-gray-700 font-medium">{t('group.contribPoints', { points: contribMap[m.user_id] ?? 0 })}</span>
             </div>
           ))}
         </div>

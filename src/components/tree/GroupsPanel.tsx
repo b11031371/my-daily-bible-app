@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import GroupTreeCard from './GroupTreeCard'
 import { MagnifyingGlass, Plus } from '@phosphor-icons/react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import type { GroupWithMembers } from '@/types/app'
 
 interface Props {
@@ -22,6 +23,7 @@ function fuzzyMatch(name: string, query: string): boolean {
 }
 
 export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: Props) {
+  const { t } = useI18n()
   const [query, setQuery] = useState('')
 
   const filteredMine = query ? myGroups.filter(g => fuzzyMatch(g.name, query)) : myGroups
@@ -37,7 +39,7 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="搜尋群組"
+            placeholder={t('group.searchGroup')}
             className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
           />
         </div>
@@ -51,25 +53,25 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
       {/* Unified scrollable group list */}
       {myGroups.length === 0 && otherGroups.length === 0 ? (
         <div className="bg-white rounded-2xl p-6 shadow-sm text-center space-y-3">
-          <p className="text-gray-500 text-sm">還沒有加入任何群組</p>
-          <p className="text-xs text-gray-400">點選任意群組並輸入邀請碼即可加入，或點右上角 ＋ 建立新群組 🌱</p>
+          <p className="text-gray-500 text-sm">{t('group.noGroupsYet')}</p>
+          <p className="text-xs text-gray-400">{t('group.noGroupsHint')}</p>
         </div>
       ) : (
         <div className="space-y-2">
           {filteredMine.length > 0 && (
             <>
-              <p className="text-xs font-medium text-gray-400 px-1">我的群組</p>
+              <p className="text-xs font-medium text-gray-400 px-1">{t('group.myGroups')}</p>
               {filteredMine.map(g => <GroupTreeCard key={g.id} group={g} />)}
             </>
           )}
           {filteredOther.length > 0 && (
             <>
-              <p className="text-xs font-medium text-gray-400 px-1 pt-1">其他群組</p>
+              <p className="text-xs font-medium text-gray-400 px-1 pt-1">{t('group.otherGroups')}</p>
               {filteredOther.map(g => <GroupTreeCard key={g.id} group={g} />)}
             </>
           )}
           {query && filteredMine.length === 0 && filteredOther.length === 0 && (
-            <p className="text-xs text-gray-400 px-1">無符合結果</p>
+            <p className="text-xs text-gray-400 px-1">{t('group.noMatch')}</p>
           )}
         </div>
       )}

@@ -1,19 +1,23 @@
 'use client'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/components/i18n/I18nProvider'
+import { localize, type Locale, type TFunc } from '@/lib/i18n'
 import type { BadgeWithStatus } from '@/types/app'
 
-const CONDITION_LABELS: Record<string, (v: number) => string> = {
-  streak:           v => `連續簽到 ${v} 天`,
-  total_checkins:   v => `累計簽到 ${v} 次`,
-  total_points:     v => `累計獲得 ${v} 積分`,
-  reflection_count: v => `分享 ${v} 則反思`,
+const CONDITION_KEYS: Record<string, string> = {
+  streak:           'badge.condStreak',
+  total_checkins:   'badge.condCheckins',
+  total_points:     'badge.condPoints',
+  reflection_count: 'badge.condReflection',
 }
 
-function BadgeItem({ badge }: { badge: BadgeWithStatus }) {
+function BadgeItem({ badge, t, locale }: { badge: BadgeWithStatus; t: TFunc; locale: Locale }) {
   const [show, setShow] = useState(false)
 
-  const unlockHint = CONDITION_LABELS[badge.condition_type]?.(badge.condition_value) ?? badge.description_zh
+  const badgeName = localize(badge.name_i18n, locale, badge.name_zh)
+  const condKey = CONDITION_KEYS[badge.condition_type]
+  const unlockHint = condKey ? t(condKey, { count: badge.condition_value }) : localize(badge.description_i18n, locale, badge.description_zh)
 
   return (
     <div className="relative flex flex-col items-center gap-1.5 select-none">
@@ -28,15 +32,15 @@ function BadgeItem({ badge }: { badge: BadgeWithStatus }) {
       >
         {badge.icon}
       </div>
-      <span className="text-xs text-center text-gray-600 leading-tight">{badge.name_zh}</span>
+      <span className="text-xs text-center text-gray-600 leading-tight">{badgeName}</span>
 
       {show && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setShow(false)} />
           <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-36 bg-gray-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-lg text-center">
-            <p className="font-semibold mb-1">{badge.name_zh}</p>
+            <p className="font-semibold mb-1">{badgeName}</p>
             <p className="text-white/70 leading-snug">
-              {badge.earned ? '已解鎖 ✅' : `解鎖條件：${unlockHint}`}
+              {badge.earned ? t('badge.unlocked') : t('badge.unlockCondition', { hint: unlockHint })}
             </p>
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
           </div>
@@ -47,10 +51,11 @@ function BadgeItem({ badge }: { badge: BadgeWithStatus }) {
 }
 
 export default function BadgeGrid({ badges }: { badges: BadgeWithStatus[] }) {
+  const { t, locale } = useI18n()
   return (
     <div className="grid grid-cols-4 gap-3">
       {badges.map(b => (
-        <BadgeItem key={b.id} badge={b} />
+        <BadgeItem key={b.id} badge={b} t={t} locale={locale} />
       ))}
     </div>
   )

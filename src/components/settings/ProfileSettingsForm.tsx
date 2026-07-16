@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 const AVATAR_SEEDS = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu']
 
@@ -15,6 +16,7 @@ interface Props {
 export default function ProfileSettingsForm({ userId, initialName, initialSeed }: Props) {
   const supabase = createClient()
   const router = useRouter()
+  const { t } = useI18n()
 
   const [name, setName] = useState(initialName)
   const [seed, setSeed] = useState(initialSeed)
@@ -31,7 +33,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
     setLoading('name')
     const { error } = await supabase.from('profiles').update({ display_name: name.trim() }).eq('id', userId)
     setLoading(null)
-    setNameMsg(error ? '儲存失敗，請再試' : '已更新暱稱 ✓')
+    setNameMsg(error ? t('settings.saveFail') : t('settings.nameUpdated'))
     if (!error) router.refresh()
     setTimeout(() => setNameMsg(''), 3000)
   }
@@ -41,21 +43,21 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
     setLoading('avatar')
     const { error } = await supabase.from('profiles').update({ avatar_seed: newSeed }).eq('id', userId)
     setLoading(null)
-    setAvatarMsg(error ? '儲存失敗，請再試' : '已更新頭像 ✓')
+    setAvatarMsg(error ? t('settings.saveFail') : t('settings.avatarUpdated'))
     if (!error) router.refresh()
     setTimeout(() => setAvatarMsg(''), 3000)
   }
 
   async function savePassword() {
-    if (newPassword.length < 6) { setPwMsg('密碼至少需要 6 個字元'); return }
-    if (newPassword !== confirmPassword) { setPwMsg('兩次密碼不一致'); return }
+    if (newPassword.length < 6) { setPwMsg(t('auth.pwTooShort')); return }
+    if (newPassword !== confirmPassword) { setPwMsg(t('settings.pwMismatch')); return }
     setLoading('pw')
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     setLoading(null)
     if (error) {
-      setPwMsg('更新失敗，請再試')
+      setPwMsg(t('settings.updateFail'))
     } else {
-      setPwMsg('密碼已更新 ✓')
+      setPwMsg(t('settings.pwUpdated'))
       setNewPassword('')
       setConfirmPassword('')
     }
@@ -66,12 +68,14 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
     <div className="space-y-6">
       {/* 暱稱 */}
       <section className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700">暱稱</h2>
+        <div className="-mx-5 -mt-5 bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-5 py-3 rounded-t-2xl">
+          <h2 className="text-base font-bold text-gray-900">{t('settings.nickname')}</h2>
+        </div>
         <input
           value={name}
           onChange={e => setName(e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="你的暱稱"
+          placeholder={t('settings.nicknamePlaceholder')}
           maxLength={20}
         />
         <div className="flex items-center justify-between">
@@ -81,14 +85,16 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
             disabled={loading === 'name' || !name.trim() || name.trim() === initialName}
             className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
           >
-            {loading === 'name' ? '儲存中...' : '儲存'}
+            {loading === 'name' ? t('settings.saving') : t('common.save')}
           </button>
         </div>
       </section>
 
       {/* 頭像 */}
       <section className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700">頭像</h2>
+        <div className="-mx-5 -mt-5 bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-5 py-3 rounded-t-2xl">
+          <h2 className="text-base font-bold text-gray-900">{t('settings.avatar')}</h2>
+        </div>
         <div className="grid grid-cols-6 gap-2">
           {AVATAR_SEEDS.map(s => (
             <button
@@ -105,20 +111,22 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
 
       {/* 密碼 */}
       <section className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700">變更密碼</h2>
+        <div className="-mx-5 -mt-5 bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-5 py-3 rounded-t-2xl">
+          <h2 className="text-base font-bold text-gray-900">{t('settings.changePassword')}</h2>
+        </div>
         <input
           type="password"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="新密碼（至少 6 個字元）"
+          placeholder={t('settings.newPwPlaceholder')}
         />
         <input
           type="password"
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="確認新密碼"
+          placeholder={t('settings.confirmPwPlaceholder')}
         />
         <div className="flex items-center justify-between">
           {pwMsg ? <span className="text-xs text-gray-700">{pwMsg}</span> : <span />}
@@ -127,7 +135,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
             disabled={loading === 'pw' || !newPassword}
             className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
           >
-            {loading === 'pw' ? '更新中...' : '更新密碼'}
+            {loading === 'pw' ? t('settings.updating') : t('settings.updatePassword')}
           </button>
         </div>
       </section>

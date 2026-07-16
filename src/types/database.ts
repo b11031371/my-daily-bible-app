@@ -110,6 +110,10 @@ export interface Database {
           id: string
           name_zh: string
           description_zh: string
+          // 多語翻譯（JSONB），例如 {"zh":"仁愛","en":"Love"}；加語言只需塞 key，不動表結構。
+          // 缺對應語言時退回 name_zh / description_zh。
+          name_i18n: Record<string, string> | null
+          description_i18n: Record<string, string> | null
           icon: string
           condition_type: 'streak' | 'total_checkins' | 'total_points' | 'reflection_count'
           condition_value: number
@@ -120,6 +124,8 @@ export interface Database {
           id: string
           name_zh: string
           description_zh: string
+          name_i18n?: Record<string, string> | null
+          description_i18n?: Record<string, string> | null
           icon: string
           condition_type: 'streak' | 'total_checkins' | 'total_points' | 'reflection_count'
           condition_value: number
@@ -129,6 +135,8 @@ export interface Database {
         Update: {
           name_zh?: string
           description_zh?: string
+          name_i18n?: Record<string, string> | null
+          description_i18n?: Record<string, string> | null
           icon?: string
           condition_type?: 'streak' | 'total_checkins' | 'total_points' | 'reflection_count'
           condition_value?: number

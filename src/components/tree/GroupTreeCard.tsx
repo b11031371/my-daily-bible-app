@@ -1,16 +1,19 @@
+'use client'
 import Link from 'next/link'
 import GroupTree from './GroupTree'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { TREE_CONFIG, getTreeStage, getFruitCount } from '@/lib/tree'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import type { GroupWithMembers } from '@/types/app'
 
 interface Props {
   group: GroupWithMembers
 }
 
-const STAGE_LABEL = ['', '種子發芽', '幼苗成長', '小樹茁壯', '大樹展葉', '種植完成'] as const
+const STAGE_KEY = ['', 'group.stage1', 'group.stage2', 'group.stage3', 'group.stage4', 'group.stage5'] as const
 
 export default function GroupTreeCard({ group }: Props) {
+  const { t } = useI18n()
   const { id, name, tree_points, fruit_order, group_members } = group
   const activeMembers = group_members.filter(m => m.left_at === null)
   const dormant = activeMembers.length < TREE_CONFIG.minMembers
@@ -34,7 +37,7 @@ export default function GroupTreeCard({ group }: Props) {
         {/* Info */}
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-900 text-sm truncate">{name}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{STAGE_LABEL[stage]}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{stage > 0 ? t(STAGE_KEY[stage]) : ''}</p>
 
           {/* Progress bar */}
           {stage < 5 ? (
@@ -48,7 +51,7 @@ export default function GroupTreeCard({ group }: Props) {
               <span className="text-[10px] text-gray-400">{pct}%</span>
             </div>
           ) : (
-            <p className="text-[10px] text-accent mt-1">每 {TREE_CONFIG.fruit.interval} 分可結一顆果子，已結 {fruitCount}/{TREE_CONFIG.fruit.max} 顆</p>
+            <p className="text-[10px] text-accent mt-1">{t('group.fruitProgress', { interval: TREE_CONFIG.fruit.interval, count: fruitCount, max: TREE_CONFIG.fruit.max })}</p>
           )}
         </div>
 
@@ -67,7 +70,7 @@ export default function GroupTreeCard({ group }: Props) {
 
       {dormant && (
         <div className="px-4 py-1.5 bg-gray-50 border-t border-gray-100">
-          <p className="text-[10px] text-gray-400 text-center">樹需要至少 2 位成員才能生長</p>
+          <p className="text-[10px] text-gray-400 text-center">{t('group.dormantHint')}</p>
         </div>
       )}
     </Link>

@@ -1,4 +1,5 @@
 import { createClient, getUser } from '@/lib/supabase/server'
+import { getServerI18n } from '@/lib/i18n/server'
 import CommunityTabs from '@/components/community/CommunityTabs'
 import CommunityInfoButton from '@/components/community/CommunityInfoButton'
 import { todayString } from '@/lib/utils'
@@ -9,7 +10,7 @@ import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } 
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ scrollTo?: string; tab?: string }> }) {
   const { scrollTo, tab } = await searchParams
   const initialTab = tab === 'groups' ? 'groups' : 'feed'
-  const [user, supabase] = await Promise.all([getUser(), createClient()])
+  const [user, supabase, { t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   const today = todayString()
   const monthStart = `${today.slice(0, 7)}-01`
   const [y, m] = today.slice(0, 7).split('-').map(Number)
@@ -88,7 +89,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
       <div className="flex items-center gap-2">
-        <h1 className="text-xl font-bold text-gray-900">社群</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t('nav.community')}</h1>
         <CommunityInfoButton />
       </div>
 

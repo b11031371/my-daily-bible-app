@@ -4,6 +4,7 @@ import GroupsPanel from '@/components/tree/GroupsPanel'
 import ReflectionFeed from '@/components/community/ReflectionFeed'
 import ReflectionSearch from '@/components/community/ReflectionSearch'
 import { createClient } from '@/lib/supabase/client'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import type { GroupWithMembers, ReflectionWithProfile, ReflectionFilters } from '@/types/app'
 
 interface Props {
@@ -28,6 +29,7 @@ export default function CommunityTabs({
   myGroups, otherGroups, canCreateOrJoin,
   reflections, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, scrollTo, initialTab, todayBibleRange,
 }: Props) {
+  const { t } = useI18n()
   const [tab, setTab] = useState<'groups' | 'feed'>(initialTab ?? 'feed')
 
   // Base (unfiltered) reflections with pagination
@@ -128,14 +130,14 @@ export default function CommunityTabs({
           className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
             ${tab === 'feed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
         >
-          反思留言
+          {t('community.tabFeed')}
         </button>
         <button
           onClick={() => setTab('groups')}
           className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
             ${tab === 'groups' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
         >
-          種樹群組
+          {t('community.tabGroups')}
         </button>
       </div>
 
@@ -150,7 +152,7 @@ export default function CommunityTabs({
         <>
           <ReflectionSearch todayBibleRange={todayBibleRange} onFilter={handleFilter} />
           {filterLoading ? (
-            <p className="text-sm text-gray-400 animate-pulse py-4 text-center">載入篩選結果…</p>
+            <p className="text-sm text-gray-400 animate-pulse py-4 text-center">{t('community.loadingFilter')}</p>
           ) : (
             <>
               <ReflectionFeed
@@ -165,10 +167,10 @@ export default function CommunityTabs({
                 <>
                   <div ref={sentinelRef} className="h-4" />
                   {loadingMore && (
-                    <p className="text-sm text-gray-400 animate-pulse py-3 text-center">載入更多…</p>
+                    <p className="text-sm text-gray-400 animate-pulse py-3 text-center">{t('community.loadingMore')}</p>
                   )}
                   {!hasMore && baseReflections.length > 0 && (
-                    <p className="text-xs text-gray-300 py-4 text-center">已顯示全部留言</p>
+                    <p className="text-xs text-gray-300 py-4 text-center">{t('community.allShown')}</p>
                   )}
                 </>
               )}

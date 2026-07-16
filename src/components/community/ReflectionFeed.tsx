@@ -3,16 +3,18 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Heart, PencilSimple, Trash, ChatCircle, Check, X } from '@phosphor-icons/react'
 import Link from 'next/link'
-import { formatDateZH } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+import { useI18n } from '@/components/i18n/I18nProvider'
+import type { TFunc } from '@/lib/i18n'
 import type { ReflectionWithProfile, ReflectionComment } from '@/types/app'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 
-function relativeTime(iso: string): string {
+function relativeTime(iso: string, t: TFunc): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
-  if (diff < 60) return '剛剛'
-  if (diff < 3600) return `${Math.floor(diff / 60)} 分鐘前`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} 小時前`
-  return `${Math.floor(diff / 86400)} 天前`
+  if (diff < 60) return t('community.justNow')
+  if (diff < 3600) return t('community.minutesAgo', { count: Math.floor(diff / 60) })
+  if (diff < 86400) return t('community.hoursAgo', { count: Math.floor(diff / 3600) })
+  return t('community.daysAgo', { count: Math.floor(diff / 86400) })
 }
 
 // Phosphor Heart fill path at viewBox="0 0 256 256"
@@ -52,6 +54,7 @@ function CommentItem({
   onDelete: (id: string) => void
   onSaved: () => void
 }) {
+  const { t } = useI18n()
   const [editMode, setEditMode] = useState(false)
   const [editContent, setEditContent] = useState(comment.content)
   const [saving, setSaving] = useState(false)
@@ -92,8 +95,8 @@ function CommentItem({
         ) : (
           <>
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xs font-medium text-gray-800">{comment.profiles?.display_name ?? '使用者'}</span>
-              <span className="text-[10px] text-gray-400">{relativeTime(comment.created_at)}</span>
+              <span className="text-xs font-medium text-gray-800">{comment.profiles?.display_name ?? t('community.user')}</span>
+              <span className="text-[10px] text-gray-400">{relativeTime(comment.created_at, t)}</span>
               <div className="ml-auto flex items-center gap-1">
                 {isOwn && (
                   <button onClick={() => setEditMode(true)} className="p-0.5 text-gray-300 hover:text-gray-500 transition-colors">
@@ -125,13 +128,14 @@ function ReflectionCard({
   onDelete: (id: string) => void
 }) {
   const router = useRouter()
+  const { t } = useI18n()
   const isOwn = currentUserId === r.user_id
 
   // Displayed content/anon can change after an inline edit
   const [displayContent, setDisplayContent] = useState(r.content)
   const [isAnonymous, setIsAnonymous] = useState(r.is_anonymous)
 
-  const name = isAnonymous ? '匿名' : r.profiles?.display_name ?? '使用者'
+  const name = isAnonymous ? t('community.anonymous') : r.profiles?.display_name ?? t('community.user')
   const seed = isAnonymous ? 'anon' : (r.profiles?.avatar_seed ?? r.user_id)
 
   const serverLiked = currentUserId ? r.reflection_likes.some(l => l.user_id === currentUserId) : false
@@ -263,21 +267,21 @@ function ReflectionCard({
               >
                 <div className={`w-3 h-3 bg-white rounded-full shadow transition-transform ${editAnon ? 'translate-x-4' : ''}`} />
               </div>
-              匿名
+              {t('community.anonymous')}
             </label>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setEditMode(false)}
                 className="text-xs text-gray-400 hover:text-gray-600"
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={editLoading || !editContent.trim()}
                 className="text-xs font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-3 py-1 rounded-full disabled:opacity-40"
               >
-                {editLoading ? '儲存中...' : '儲存'}
+                {editLoading ? t('settings.saving') : t('common.save')}
               </button>
             </div>
           </div>
@@ -293,23 +297,23 @@ function ReflectionCard({
             {isOwn ? (
               confirmDelete ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">確定刪除？</span>
-                  <button onClick={handleDelete} className="text-xs text-red-500 font-medium hover:text-red-600">刪除</button>
-                  <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-600">取消</button>
+                  <span className="text-xs text-gray-400">{t('community.confirmDelete')}</span>
+                  <button onClick={handleDelete} className="text-xs text-red-500 font-medium hover:text-red-600">{t('community.delete')}</button>
+                  <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-600">{t('common.cancel')}</button>
                 </div>
               ) : (
                 <div className="flex items-center gap-1">
                   <button
                     onClick={startEdit}
                     className="p-1 text-gray-300 hover:text-gray-500 transition-colors"
-                    aria-label="編輯"
+                    aria-label={t('community.edit')}
                   >
                     <PencilSimple size={14} weight="regular" />
                   </button>
                   <button
                     onClick={() => setConfirmDelete(true)}
                     className="p-1 text-gray-300 hover:text-red-400 transition-colors"
-                    aria-label="刪除"
+                    aria-label={t('community.delete')}
                   >
                     <Trash size={14} weight="regular" />
                   </button>
@@ -324,7 +328,7 @@ function ReflectionCard({
               <button
                 onClick={() => setCommentsOpen(v => !v)}
                 className="flex items-center gap-1 p-1 text-gray-300 hover:text-gray-500 transition-colors"
-                aria-label="回覆"
+                aria-label={t('community.reply')}
               >
                 <ChatCircle size={18} weight="regular" />
                 {r.reflection_comments.length > 0 && (
@@ -346,7 +350,7 @@ function ReflectionCard({
                   onClick={toggleLike}
                   disabled={!currentUserId}
                   className="p-1 rounded-full transition-colors disabled:cursor-default"
-                  aria-label={liked ? '取消讚' : '讚'}
+                  aria-label={liked ? t('community.unlike') : t('community.like')}
                 >
                   {liked
                     ? <GradientHeartFill size={18} />
@@ -361,7 +365,7 @@ function ReflectionCard({
           {commentsOpen && (
             <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
               {r.reflection_comments.length === 0 && (
-                <p className="text-xs text-gray-400">還沒有回覆，來第一個留言吧</p>
+                <p className="text-xs text-gray-400">{t('community.noComments')}</p>
               )}
               {r.reflection_comments.map((c: ReflectionComment) => (
                 <CommentItem
@@ -383,7 +387,7 @@ function ReflectionCard({
                       value={commentInput}
                       onChange={e => setCommentInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
-                      placeholder="留下回覆…"
+                      placeholder={t('community.commentPlaceholder')}
                       className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                     />
                     <button
@@ -391,7 +395,7 @@ function ReflectionCard({
                       disabled={submitting || !commentInput.trim()}
                       className="text-xs font-medium text-primary disabled:opacity-40"
                     >
-                      送出
+                      {t('community.submit')}
                     </button>
                   </div>
                 </div>
@@ -406,6 +410,7 @@ function ReflectionCard({
 
 export default function ReflectionFeed({ reflections, currentUserId, currentUserAvatarSeed, currentUserIsAdmin, scrollTo }: Props) {
   const router = useRouter()
+  const { locale, t } = useI18n()
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
@@ -422,7 +427,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
   const visible = reflections.filter(r => !deletedIds.has(r.id))
 
   if (visible.length === 0) {
-    return <div className="text-center py-10 text-sm text-gray-400">還沒有人分享，來做第一個吧！</div>
+    return <div className="text-center py-10 text-sm text-gray-400">{t('community.feedEmpty')}</div>
   }
 
   const grouped = visible.reduce<Record<string, ReflectionWithProfile[]>>((acc, r) => {
@@ -450,7 +455,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
           <div key={date} id={`date-${date}`}>
             <div className="flex items-center justify-between mb-2 px-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-semibold text-gray-700">{formatDateZH(date)}</span>
+                <span className="text-sm font-semibold text-gray-700">{formatDate(date, locale)}</span>
                 {bibleRange && (
                   <span className="text-xs text-amber-600">📖 {bibleRange}</span>
                 )}
@@ -459,7 +464,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
                 href={`/notes/${date}#reflection`}
                 className="text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2"
               >
-                前往筆記 →
+                {t('community.goToNote')}
               </Link>
             </div>
             <div className="space-y-3">

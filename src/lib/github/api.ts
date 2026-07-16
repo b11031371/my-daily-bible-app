@@ -17,11 +17,19 @@ export async function fetchAvailableDates(): Promise<string[]> {
     .sort((a, b) => b.localeCompare(a))
 }
 
-export async function fetchPassageRange(date: string): Promise<string | null> {
-  const md = await fetchMarkdown(date, 'zh')
-  if (!md) return null
-  const match = md.match(/\*\*和合本：\*\*\s*(.+)/)
-  return match ? match[1].trim() : null
+// 讀出經文範圍。noteLang='zh' 讀和合本欄位（中文書卷名），'en' 讀英文譯本
+// 欄位（NKJV/KJV，英文書卷名）。英文版缺檔或抓不到時退回中文。
+export async function fetchPassageRange(date: string, noteLang: 'zh' | 'en' = 'zh'): Promise<string | null> {
+  const md = await fetchMarkdown(date, noteLang)
+  if (!md) {
+    return noteLang === 'zh' ? null : fetchPassageRange(date, 'zh')
+  }
+  const re = noteLang === 'zh'
+    ? /\*\*和合本[：:]\*\*\s*(.+)/
+    : /\*\*(?:NKJV|KJV|NIV|NRSV|ESV)[：:]\*\*\s*(.+)/
+  const match = md.match(re)
+  if (match) return match[1].trim()
+  return noteLang === 'zh' ? null : fetchPassageRange(date, 'zh')
 }
 
 export async function fetchMarkdown(date: string, lang: 'zh' | 'en'): Promise<string | null> {

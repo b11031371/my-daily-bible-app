@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function JoinGroupModal() {
   const router = useRouter()
+  const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
@@ -32,7 +34,7 @@ export default function JoinGroupModal() {
         onClick={() => setOpen(true)}
         className="text-xs font-medium border border-gray-300 text-gray-700 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors shrink-0"
       >
-        加入
+        {t('group.join')}
       </button>
 
       {open && (
@@ -41,13 +43,13 @@ export default function JoinGroupModal() {
           onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
           <div className="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-2xl p-6 space-y-4">
-            <h2 className="text-base font-semibold text-gray-900">加入群組</h2>
+            <h2 className="text-base font-semibold text-gray-900">{t('group.joinGroupTitle')}</h2>
             <div>
-              <label className="text-sm text-gray-600 block mb-1.5">輸入邀請碼</label>
+              <label className="text-sm text-gray-600 block mb-1.5">{t('group.enterInviteCode')}</label>
               <input
                 value={code}
                 onChange={e => setCode(e.target.value.toUpperCase())}
-                placeholder="例：AB12CD"
+                placeholder={t('group.inviteCodeExample')}
                 maxLength={6}
                 autoFocus
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-lg font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary uppercase"
@@ -59,14 +61,14 @@ export default function JoinGroupModal() {
                 onClick={() => { setOpen(false); setCode(''); setError(null) }}
                 className="flex-1 text-sm text-gray-500 bg-gray-50 rounded-xl py-3"
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleJoin}
                 disabled={loading || code.length < 6}
                 className="flex-1 text-sm font-semibold bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-xl py-3 hover:brightness-95 transition-[filter] disabled:opacity-50"
               >
-                {loading ? '加入中...' : '加入'}
+                {loading ? t('group.joining') : t('group.join')}
               </button>
             </div>
           </div>

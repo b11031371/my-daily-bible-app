@@ -1,8 +1,10 @@
 'use client'
 import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useI18n } from '@/components/i18n/I18nProvider'
+import { localize } from '@/lib/i18n'
 
-interface Badge { id: string; name_zh: string; icon: string }
+interface Badge { id: string; name_zh: string; name_i18n: Record<string, string> | null; icon: string }
 interface Ctx { showBadges: (ids: string[]) => void }
 
 const ToastCtx = createContext<Ctx>({ showBadges: () => {} })
@@ -15,6 +17,7 @@ function BadgeToast({
 }: {
   badges: Badge[]; visible: boolean; onDismiss: () => void
 }) {
+  const { t, locale } = useI18n()
   const touchY = useRef(0)
 
   if (!badges.length) return null
@@ -28,11 +31,11 @@ function BadgeToast({
     >
       <div className="animated-border rounded-2xl shadow-xl">
         <div className="bg-white rounded-[14px] px-4 py-3 space-y-2.5">
-          <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">徽章解鎖</p>
+          <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">{t('badge.unlockedTitle')}</p>
           {badges.map(b => (
             <div key={b.id} className="flex items-center gap-3">
               <span className="text-3xl leading-none">{b.icon}</span>
-              <p className="flex-1 text-sm font-bold text-gray-900">{b.name_zh}</p>
+              <p className="flex-1 text-sm font-bold text-gray-900">{localize(b.name_i18n, locale, b.name_zh)}</p>
               <span className="text-xs text-gray-400 shrink-0">✓</span>
             </div>
           ))}
@@ -54,7 +57,7 @@ export function BadgeToastProvider({ children }: { children: React.ReactNode }) 
     const supabase = createClient()
     const { data } = await supabase
       .from('badges')
-      .select('id, name_zh, icon')
+      .select('id, name_zh, name_i18n, icon')
       .in('id', ids)
     if (!data?.length) return
 

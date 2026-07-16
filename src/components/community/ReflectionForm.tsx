@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 export default function ReflectionForm({ date, bibleRange }: { date: string; bibleRange: string | null }) {
   const router = useRouter()
+  const { t } = useI18n()
   const [content, setContent] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -57,7 +59,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
     return (
       <div>
         {pointsEarned > 0 && (
-          <div className="text-xs text-gray-700 font-medium mb-2">+{pointsEarned} 分！</div>
+          <div className="text-xs text-gray-700 font-medium mb-2">{t('community.pointsEarned', { points: pointsEarned })}</div>
         )}
         <div className="bg-[#f5f3ee] rounded-xl p-4 text-sm text-gray-700 leading-6 whitespace-pre-wrap">
           {content}
@@ -66,7 +68,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
           onClick={() => setSubmitted(false)}
           className="mt-2 text-xs text-gray-400 underline"
         >
-          編輯回答
+          {t('community.editAnswer')}
         </button>
       </div>
     )
@@ -79,7 +81,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
         onChange={e => setContent(e.target.value)}
         maxLength={MAX}
         rows={4}
-        placeholder="把你的想法寫下來..."
+        placeholder={t('community.thoughtPlaceholder')}
         className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm leading-6 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <div className="flex items-center justify-between mt-2">
@@ -90,7 +92,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
           >
             <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${isAnonymous ? 'translate-x-4' : ''}`} />
           </div>
-          匿名發布
+          {t('community.postAnonymously')}
         </label>
         <div className="flex items-center gap-3">
           <span className="text-xs text-gray-400">{content.length}/{MAX}</span>
@@ -99,7 +101,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
             disabled={loading || content.trim().length === 0}
             className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-1.5 rounded-full font-medium disabled:opacity-40 hover:brightness-95 transition-[filter]"
           >
-            {loading ? '送出中...' : '送出'}
+            {loading ? t('community.submitting') : t('community.submit')}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { getLocaleMeta, type Locale } from '@/lib/i18n'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -8,6 +9,29 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDateZH(dateStr: string): string {
   const [year, month, day] = dateStr.split('-')
   return `${year}年${parseInt(month)}月${parseInt(day)}日`
+}
+
+// 依 locale 以 Intl 格式化日期（'YYYY-MM-DD' → 例如 zh:2026年7月16日、
+// en:July 16, 2026、tl:Hulyo 16, 2026）。新增語言自動取得格式。
+export function formatDate(dateStr: string, locale: Locale): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  return new Intl.DateTimeFormat(getLocaleMeta(locale).htmlLang, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date)
+}
+
+// 依 locale 格式化年月（'YYYY-MM-DD' 或 'YYYY-MM' → 例如 zh:2026年7月、
+// en:July 2026）。
+export function formatMonth(dateStr: string, locale: Locale): string {
+  const [y, m] = dateStr.split('-').map(Number)
+  const date = new Date(y, (m || 1) - 1, 1)
+  return new Intl.DateTimeFormat(getLocaleMeta(locale).htmlLang, {
+    year: 'numeric',
+    month: 'long',
+  }).format(date)
 }
 
 export function formatDateShort(dateStr: string): string {

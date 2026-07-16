@@ -1,8 +1,10 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { fetchMarkdown, getPdfUrl } from '@/lib/github/api'
-import { formatDateZH } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { createClient, getUser } from '@/lib/supabase/server'
+import { getServerI18n } from '@/lib/i18n/server'
+import { noteLangFor } from '@/lib/i18n'
 import NoteViewer from '@/components/notes/NoteViewer'
 
 interface Props {
@@ -14,7 +16,7 @@ export default async function NotePage({ params }: Props) {
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) notFound()
 
-  const [user, supabase] = await Promise.all([getUser(), createClient()])
+  const [user, supabase, { locale }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   if (!user) redirect('/login')
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +47,7 @@ export default async function NotePage({ params }: Props) {
     <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
       <div className="flex items-center gap-3 mb-4">
         <Link href="/notes" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
-        <h1 className="text-base font-semibold text-gray-900">{formatDateZH(date)}</h1>
+        <h1 className="text-base font-semibold text-gray-900">{formatDate(date, locale)}</h1>
       </div>
       <NoteViewer
         date={date}
@@ -54,6 +56,7 @@ export default async function NotePage({ params }: Props) {
         zhPdfUrl={zhPdfUrl}
         enPdfUrl={enPdfUrl}
         bibleRange={bibleRange}
+        defaultLang={noteLangFor(locale)}
         isAdmin={isAdmin}
         isApproved={isApproved}
         approvalMode={approvalMode}

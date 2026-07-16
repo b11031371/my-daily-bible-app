@@ -1,14 +1,16 @@
 'use client'
 import { useState } from 'react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 const OPTIONS = [
-  { size: '14px', desc: '小',   textClass: 'text-xs'  },
-  { size: '16px', desc: '標準', textClass: 'text-sm'  },
-  { size: '18px', desc: '大',   textClass: 'text-base'},
-  { size: '20px', desc: '特大', textClass: 'text-lg'  },
+  { size: '14px', descKey: 'settings.fontSmall',    textClass: 'text-xs'  },
+  { size: '16px', descKey: 'settings.fontStandard', textClass: 'text-sm'  },
+  { size: '18px', descKey: 'settings.fontLarge',    textClass: 'text-base'},
+  { size: '20px', descKey: 'settings.fontXL',       textClass: 'text-lg'  },
 ]
 
 export default function FontSizeSwitcher() {
+  const { t } = useI18n()
   const [current, setCurrent] = useState<string>(() => {
     if (typeof window === 'undefined') return '16px'
     return localStorage.getItem('bible-font-size') ?? '16px'
@@ -21,9 +23,11 @@ export default function FontSizeSwitcher() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-4 space-y-3">
-      <p className="text-sm font-semibold text-gray-700">字體大小</p>
-      <div className="flex gap-2">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-4 py-3">
+        <p className="text-base font-bold text-gray-900">{t('settings.fontSize')}</p>
+      </div>
+      <div className="p-4 flex gap-2">
         {OPTIONS.map(opt => {
           const active = current === opt.size
           return (
@@ -37,7 +41,7 @@ export default function FontSizeSwitcher() {
               }`}
             >
               <span className={`${opt.textClass} font-bold leading-none`}>A</span>
-              <span className="text-[10px]">{opt.desc}</span>
+              <span className="text-[10px]">{t(opt.descKey)}</span>
             </button>
           )
         })}

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 interface Props {
   groupId: string
@@ -14,6 +15,7 @@ interface Props {
 
 export default function GroupActions({ groupId, groupName, inviteCode, isMember, canInvite, membersWarning, isLastMember }: Props) {
   const router = useRouter()
+  const { t } = useI18n()
   const [editingName, setEditingName] = useState(false)
   const [newName, setNewName] = useState(groupName)
   const [copied, setCopied] = useState(false)
@@ -38,7 +40,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
   }
 
   function handleCopyShareText() {
-    const text = `加入我的讀經群組，一起種一棵樹！\n邀請碼：${inviteCode}\n（在 Sproutiv → 社群 → 加入群組）`
+    const text = t('group.shareText', { code: inviteCode })
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -56,7 +58,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
       {/* Rename */}
       {isMember && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 mb-2">群組名稱</p>
+          <p className="text-xs font-semibold text-gray-500 mb-2">{t('group.groupName')}</p>
           {editingName ? (
             <div className="flex gap-2">
               <input
@@ -66,8 +68,8 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
                 className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 autoFocus
               />
-              <button onClick={handleRename} className="text-sm font-medium text-primary-dark px-3 py-2">儲存</button>
-              <button onClick={() => setEditingName(false)} className="text-sm text-gray-400 px-2 py-2">取消</button>
+              <button onClick={handleRename} className="text-sm font-medium text-primary-dark px-3 py-2">{t('common.save')}</button>
+              <button onClick={() => setEditingName(false)} className="text-sm text-gray-400 px-2 py-2">{t('common.cancel')}</button>
             </div>
           ) : (
             <button
@@ -84,7 +86,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
       {/* Invite */}
       {isMember && canInvite && (
         <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 mb-3">邀請朋友加入</p>
+          <p className="text-xs font-semibold text-gray-500 mb-3">{t('group.inviteTitle')}</p>
           <div className="flex items-center gap-2 mb-3">
             <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 font-mono font-bold text-xl tracking-widest text-gray-900 text-center">
               {inviteCode}
@@ -93,14 +95,14 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               onClick={handleCopyCode}
               className="text-xs bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 font-medium px-3 py-3 rounded-xl hover:brightness-95 transition-[filter]"
             >
-              {copied ? '✓' : '複製'}
+              {copied ? '✓' : t('group.copy')}
             </button>
           </div>
           <button
             onClick={handleCopyShareText}
             className="w-full text-sm text-gray-500 hover:text-gray-700 py-1"
           >
-            複製分享文字
+            {t('group.copyShareText')}
           </button>
         </div>
       )}
@@ -111,8 +113,8 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <p className="text-sm text-gray-700 mb-3 text-center">
               {isLastMember
-                ? '你是最後一位成員，退出後此群組將會被刪除，確定要退出嗎？'
-                : membersWarning ? '退出後成員不足，樹會進入休眠，確定要退出嗎？' : '確定退出群組？'}
+                ? t('group.leaveLastMember')
+                : membersWarning ? t('group.leaveDormant') : t('group.leaveConfirm')}
             </p>
             <div className="flex gap-2">
               <button
@@ -120,13 +122,13 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
                 disabled={leaving}
                 className="flex-1 text-sm text-red-500 border border-red-200 rounded-xl py-2.5 hover:bg-red-50 transition-colors disabled:opacity-50"
               >
-                {leaving ? '退出中...' : '確定退出'}
+                {leaving ? t('group.leaving') : t('group.confirmLeave')}
               </button>
               <button
                 onClick={() => setShowLeaveConfirm(false)}
                 className="flex-1 text-sm text-gray-600 bg-gray-50 rounded-xl py-2.5"
               >
-                取消
+                {t('common.cancel')}
               </button>
             </div>
           </div>
@@ -135,7 +137,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
             onClick={() => setShowLeaveConfirm(true)}
             className="w-full text-sm text-gray-400 py-2"
           >
-            退出群組
+            {t('group.leaveGroup')}
           </button>
         )
       )}

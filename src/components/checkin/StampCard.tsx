@@ -1,3 +1,5 @@
+import { useI18n } from '@/components/i18n/I18nProvider'
+
 const ROTATIONS = [-2, 3, -1, 2, -3, 1, -2, 3, -1, 2]
 
 function TreeOfLife() {
@@ -46,10 +48,11 @@ interface Props {
 }
 
 export default function StampCard({ monthlyCount, monthLabel }: Props) {
+  const { t } = useI18n()
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-700">本月集點</h3>
+        <h3 className="text-sm font-semibold text-gray-700">{t('checkin.stampTitle')}</h3>
         <span className="text-xs text-gray-400">{monthLabel}</span>
       </div>
 
@@ -79,13 +82,13 @@ export default function StampCard({ monthlyCount, monthLabel }: Props) {
       </div>
 
       {monthlyCount >= 10 && (
-        <p className="text-center text-xs text-gray-900 font-semibold mt-3">🎉 本月集點已滿！</p>
+        <p className="text-center text-xs text-gray-900 font-semibold mt-3">{t('checkin.stampFull')}</p>
       )}
       {monthlyCount > 0 && monthlyCount < 10 && (
-        <p className="text-center text-xs text-gray-400 mt-3">還差 {10 - monthlyCount} 點集滿</p>
+        <p className="text-center text-xs text-gray-400 mt-3">{t('checkin.stampRemaining', { count: 10 - monthlyCount })}</p>
       )}
       {monthlyCount === 0 && (
-        <p className="text-center text-xs text-gray-400 mt-3">今天簽到就能蓋第一個印章！</p>
+        <p className="text-center text-xs text-gray-400 mt-3">{t('checkin.stampFirst')}</p>
       )}
     </div>
   )

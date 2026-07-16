@@ -3,12 +3,14 @@ import { createClient } from '@/lib/supabase/client'
 import useSWR from 'swr'
 import type { LeaderboardEntryWithProfile } from '@/types/app'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 interface Props {
   entries: LeaderboardEntryWithProfile[]
 }
 
 export default function LeaderboardTable({ entries }: Props) {
+  const { t } = useI18n()
   const supabase = createClient()
   const { data: me } = useSWR('me', async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -16,7 +18,7 @@ export default function LeaderboardTable({ entries }: Props) {
   })
 
   if (entries.length === 0) {
-    return <div className="bg-white rounded-2xl p-6 text-center text-sm text-gray-400 shadow-sm">本週排行榜尚未產生</div>
+    return <div className="bg-white rounded-2xl p-6 text-center text-sm text-gray-400 shadow-sm">{t('leaderboard.empty')}</div>
   }
 
   return (
@@ -34,11 +36,11 @@ export default function LeaderboardTable({ entries }: Props) {
             </span>
             <BibleAvatar seed={entry.profiles?.avatar_seed ?? 'alpha'} className="w-8 h-8" />
             <span className={`flex-1 text-sm font-medium ${isMe ? 'text-gray-900 font-bold' : 'text-gray-900'}`}>
-              {entry.profiles?.display_name ?? '使用者'}{isMe && ' (你)'}
+              {entry.profiles?.display_name ?? t('leaderboard.user')}{isMe && t('leaderboard.you')}
             </span>
             <div className="text-right">
-              <p className="text-sm font-bold text-gray-900">{entry.points} 分</p>
-              <p className="text-xs text-gray-400">{entry.checkin_count} 次</p>
+              <p className="text-sm font-bold text-gray-900">{t('leaderboard.pointsValue', { points: entry.points })}</p>
+              <p className="text-xs text-gray-400">{t('profile.timesValue', { count: entry.checkin_count })}</p>
             </div>
           </div>
         )

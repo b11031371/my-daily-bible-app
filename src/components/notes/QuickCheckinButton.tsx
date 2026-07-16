@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { todayString } from '@/lib/utils'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 const SS_KEY = `checkin:${todayString()}`
 
@@ -11,6 +12,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { showBadges } = useBadgeToast()
+  const { t } = useI18n()
 
   useEffect(() => {
     try {
@@ -22,7 +24,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
     return (
       <div className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
         <span className="text-xl">✅</span>
-        <span className="text-sm font-semibold text-gray-800">今日已簽到</span>
+        <span className="text-sm font-semibold text-gray-800">{t('checkin.quickDone')}</span>
       </div>
     )
   }
@@ -58,7 +60,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
         disabled={loading}
         className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-[14px] px-5 py-4 text-sm font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
       >
-        {loading ? '簽到中...' : '✅ 今日簽到 (+10 分)'}
+        {loading ? t('checkin.checkingIn') : t('checkin.quickButton')}
       </button>
     </div>
   )

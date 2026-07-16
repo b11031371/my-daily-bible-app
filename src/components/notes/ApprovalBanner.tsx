@@ -1,6 +1,7 @@
 'use client'
 import { useTransition } from 'react'
 import { approveNote, unapproveNote } from '@/app/(app)/notes/[date]/actions'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 interface Props {
   date: string
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function ApprovalBanner({ date, isApproved }: Props) {
+  const { t } = useI18n()
   const [pending, startTransition] = useTransition()
 
   const handleApprove = () => startTransition(() => approveNote(date))
@@ -18,7 +20,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
       <div className="flex items-center gap-2">
         <span className="text-sm">{isApproved ? '✅' : '🟡'}</span>
         <span className={`text-sm font-medium ${isApproved ? 'text-green-700' : 'text-amber-700'}`}>
-          {isApproved ? '已公開' : '待審核 · 此筆記尚未對外公開'}
+          {isApproved ? t('approval.approved') : t('approval.pending')}
         </span>
       </div>
       {isApproved ? (
@@ -27,7 +29,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
           disabled={pending}
           className="text-xs text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
         >
-          {pending ? '處理中…' : '取消審核'}
+          {pending ? t('approval.processing') : t('approval.unapprove')}
         </button>
       ) : (
         <button
@@ -35,7 +37,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
           disabled={pending}
           className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-full font-medium hover:bg-amber-600 transition-colors disabled:opacity-50"
         >
-          {pending ? '處理中…' : '審核通過'}
+          {pending ? t('approval.processing') : t('approval.approve')}
         </button>
       )}
     </div>

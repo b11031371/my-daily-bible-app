@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { getTreeProgress, getFruitCount, FRUIT_VERSES } from '@/lib/tree'
+import { getTreeProgress, getFruitCount, FRUIT_I18N, type FruitKey } from '@/lib/tree'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 interface Props {
   treePoints: number
@@ -28,6 +29,7 @@ const FRUIT_POSITIONS = [
 ]
 
 export default function GroupTree({ treePoints, fruitOrder, className, interactive = false, dormant = false }: Props) {
+  const { locale, t } = useI18n()
   const [selectedFruit, setSelectedFruit] = useState<number | null>(null)
 
   const p = getTreeProgress(treePoints)
@@ -56,8 +58,8 @@ export default function GroupTree({ treePoints, fruitOrder, className, interacti
 
   const dormantFilter = dormant ? 'saturate(0) opacity(0.55)' : undefined
 
-  const selectedFruitName = selectedFruit !== null ? (fruitOrder[selectedFruit] ?? null) : null
-  const selectedVerse = selectedFruitName ? FRUIT_VERSES[selectedFruitName] : null
+  const selectedFruitKey = selectedFruit !== null ? (fruitOrder[selectedFruit] ?? null) : null
+  const selectedFruit_ = selectedFruitKey ? FRUIT_I18N[locale][selectedFruitKey as FruitKey] ?? null : null
 
   return (
     <div
@@ -162,7 +164,7 @@ export default function GroupTree({ treePoints, fruitOrder, className, interacti
       </svg>
 
       {/* Fruit info card */}
-      {interactive && selectedFruit !== null && selectedFruitName && selectedVerse && (
+      {interactive && selectedFruit !== null && selectedFruit_ && (
         <div
           style={{
             position: 'absolute',
@@ -174,9 +176,9 @@ export default function GroupTree({ treePoints, fruitOrder, className, interacti
           className="bg-white rounded-2xl shadow-xl px-4 py-3 w-52 text-center"
           onClick={e => e.stopPropagation()}
         >
-          <p className="text-[10px] text-gray-400 mb-0.5">聖靈果子</p>
-          <p className="text-base font-bold text-gray-900 mb-2">{selectedFruitName}</p>
-          <p className="text-xs text-gray-500 leading-relaxed whitespace-pre-line">{selectedVerse}</p>
+          <p className="text-[10px] text-gray-400 mb-0.5">{t('tree.fruitOfSpirit')}</p>
+          <p className="text-base font-bold text-gray-900 mb-2">{selectedFruit_.name}</p>
+          <p className="text-xs text-gray-500 leading-relaxed whitespace-pre-line">{selectedFruit_.verse}</p>
         </div>
       )}
     </div>

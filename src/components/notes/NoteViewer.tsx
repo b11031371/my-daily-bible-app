@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/components/i18n/I18nProvider'
 import MarkdownRenderer from './MarkdownRenderer'
 import ReflectionForm from '@/components/community/ReflectionForm'
 import ApprovalBanner from './ApprovalBanner'
@@ -12,13 +13,15 @@ interface Props {
   zhPdfUrl: string
   enPdfUrl: string
   bibleRange?: string | null
+  defaultLang?: 'zh' | 'en'
   isAdmin?: boolean
   isApproved?: boolean
   approvalMode?: boolean
 }
 
-export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl, bibleRange, isAdmin, isApproved, approvalMode }: Props) {
-  const [lang, setLang] = useState<'zh' | 'en'>('zh')
+export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdfUrl, bibleRange, defaultLang = 'zh', isAdmin, isApproved, approvalMode }: Props) {
+  const { t } = useI18n()
+  const [lang, setLang] = useState<'zh' | 'en'>(defaultLang)
   const content = lang === 'zh' ? zhContent : enContent
   const pdfUrl = lang === 'zh' ? zhPdfUrl : enPdfUrl
   const hasMarkdown = zhContent || enContent
@@ -63,18 +66,18 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
             <MarkdownRenderer content={content} />
           </div>
         ) : hasMarkdown && !content ? (
-          <div className="p-5 text-center text-sm text-gray-400 py-8">此語言版本無法取得</div>
+          <div className="p-5 text-center text-sm text-gray-400 py-8">{t('noteView.unavailable')}</div>
         ) : (
           /* PDF embed fallback when no markdown available */
           <div>
             <div className="bg-[#f5f3ee] px-4 py-2 text-xs text-gray-500 flex items-center gap-1.5">
-              <span>📄</span> 以 PDF 顯示
+              <span>📄</span> {t('noteView.pdfDisplay')}
             </div>
             <iframe
               src={`${pdfUrl}#toolbar=0`}
               className="w-full"
               style={{ height: '75vh' }}
-              title={`筆記 ${date}`}
+              title={t('noteView.pdfTitle', { date })}
             />
           </div>
         )}
@@ -82,7 +85,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
 
       {/* Reflection form */}
       <div id="reflection" className="bg-white rounded-2xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-800 mb-3">💬 分享你的想法</h3>
+        <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('noteView.shareThoughts')}</h3>
         <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
       </div>
     </div>

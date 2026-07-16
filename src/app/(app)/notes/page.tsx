@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { fetchAvailableDates, fetchPassageRange } from '@/lib/github/api'
-import { formatDateZH, todayString, getLastSevenDays } from '@/lib/utils'
+import { formatDate, todayString, getLastSevenDays } from '@/lib/utils'
 import { createClient, getUser } from '@/lib/supabase/server'
+import { getServerI18n } from '@/lib/i18n/server'
+import { noteLangFor } from '@/lib/i18n'
 import QuickCheckinButton from '@/components/notes/QuickCheckinButton'
 import { Fire, Users, ChatCircle, Medal } from '@phosphor-icons/react/dist/ssr'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
@@ -11,8 +13,11 @@ export default async function NotesPage() {
   const today = todayString()
   const weekDates = getLastSevenDays()
 
+  // Resolve locale first so the passage range is fetched in the right language
+  const { locale, t } = await getServerI18n()
+
   // Fire GitHub fetches immediately — run concurrently with auth + Supabase
-  const passageRangePromise = fetchPassageRange(today)
+  const passageRangePromise = fetchPassageRange(today, noteLangFor(locale))
   const availableDatesPromise = fetchAvailableDates()
 
   const [user, supabase] = await Promise.all([getUser(), createClient()])
@@ -76,7 +81,7 @@ export default async function NotesPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">
-      <h1 className="text-xl font-bold text-gray-900">每日筆記</h1>
+      <h1 className="text-xl font-bold text-gray-900">{t('notesList.title')}</h1>
 
       {/* Hero card */}
       {showHeroCard ? (
@@ -84,12 +89,12 @@ export default async function NotesPage() {
           <div className="animated-border rounded-3xl shadow-lg">
             <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-[22px] p-6 text-gray-900">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">今日</span>
-                <span className="text-sm text-gray-700">{formatDateZH(today)}</span>
+                <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">{t('notesList.todayBadge')}</span>
+                <span className="text-sm text-gray-700">{formatDate(today, locale)}</span>
               </div>
               <p className="text-xl font-bold leading-snug mb-4">{passageRange}</p>
               <div className="flex items-center gap-1 text-sm text-gray-700 font-medium">
-                <span>閱讀今日筆記</span>
+                <span>{t('notesList.readToday')}</span>
                 <span>›</span>
               </div>
             </div>
@@ -99,12 +104,12 @@ export default async function NotesPage() {
         <div className="rounded-3xl shadow-lg">
           <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-3xl p-6 text-gray-900 opacity-60">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">今日</span>
-              <span className="text-sm text-gray-700">{formatDateZH(today)}</span>
+              <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">{t('notesList.todayBadge')}</span>
+              <span className="text-sm text-gray-700">{formatDate(today, locale)}</span>
             </div>
-            <p className="text-xl font-bold leading-snug mb-4">今日筆記尚未上傳</p>
+            <p className="text-xl font-bold leading-snug mb-4">{t('notesList.notUploaded')}</p>
             <div className="flex items-center gap-1 text-sm text-gray-700 font-medium">
-              <span>稍後再來看看</span>
+              <span>{t('notesList.checkBackLater')}</span>
             </div>
           </div>
         </div>
@@ -115,9 +120,9 @@ export default async function NotesPage() {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Fire size={20} weight="fill" className="text-gray-700" />
-            <span className="font-bold text-gray-900">{profile?.streak_current ?? 0} 天連續</span>
+            <span className="font-bold text-gray-900">{t('notesList.streak', { count: profile?.streak_current ?? 0 })}</span>
           </div>
-          <span className="text-xs text-gray-400">最近 7 天</span>
+          <span className="text-xs text-gray-400">{t('notesList.lastSevenDays')}</span>
         </div>
         <div className="flex gap-1.5">
           {weekDates.map(date => {
@@ -143,11 +148,11 @@ export default async function NotesPage() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: <Users size={22} weight="fill" />, value: checkinCount ?? 0, label: '今日簽到', href: '/checkin' },
-          { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: '今日留言', href: '/community' },
-          { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: '待蒐集徽章', href: '/profile' },
+          { icon: <Users size={22} weight="fill" />, value: checkinCount ?? 0, label: t('notesList.statCheckins'), href: '/checkin' },
+          { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: t('notesList.statComments'), href: '/community' },
+          { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: t('notesList.statBadges'), href: '/profile' },
         ].map(s => (
-          <Link key={s.label} href={s.href} className="bg-white rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
+          <Link key={s.href} href={s.href} className="bg-white rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
             <div className="flex justify-center mb-0.5 text-gray-700">{s.icon}</div>
             <div className="font-bold text-gray-900 text-base">{s.value}</div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
@@ -169,11 +174,11 @@ export default async function NotesPage() {
           </div>
           <p className="text-xs text-gray-500 leading-snug">
             {(() => {
-              const names = orderedProfiles.map(p => p.display_name).slice(0, 2).join('、')
+              const names = orderedProfiles.map(p => p.display_name).slice(0, 2).join(t('common.listSeparator'))
               const total = checkinCount ?? 0
-              if (total === 1) return `${names} 今天已簽到 🎉`
-              if (total === 2) return `${names} 今天已簽到`
-              return `${names} 等 ${total} 人今天已簽到`
+              if (total === 1) return t('notesList.checkedInOne', { names })
+              if (total === 2) return t('notesList.checkedInTwo', { names })
+              return t('notesList.checkedInMany', { names, count: total })
             })()}
           </p>
         </div>
@@ -182,7 +187,7 @@ export default async function NotesPage() {
       {/* Past notes */}
       {pastDates.length > 0 && (
         <div>
-          <h2 className="text-xs font-semibold text-gray-400 mb-2 px-1">近期筆記</h2>
+          <h2 className="text-xs font-semibold text-gray-400 mb-2 px-1">{t('notesList.recentNotes')}</h2>
           <div className="space-y-2">
             {pastDates.map(date => (
               <Link
@@ -191,9 +196,9 @@ export default async function NotesPage() {
                 className="flex items-center justify-between bg-white rounded-2xl px-5 py-3.5 shadow-sm"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-900">{formatDateZH(date)}</span>
+                  <span className="text-sm text-gray-900">{formatDate(date, locale)}</span>
                   {approvalMode && isAdmin && !approvedDates.has(date) && (
-                    <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">待審核</span>
+                    <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">{t('notesList.pendingReview')}</span>
                   )}
                 </div>
                 <span className="text-gray-300 text-lg">›</span>

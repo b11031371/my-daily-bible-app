@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export default function PushSubscribeButton({ initialHour }: Props) {
+  const { t } = useI18n()
   const [state, setState] = useState<State>('loading')
   const [busy, setBusy] = useState(false)
   const [hour, setHour] = useState(initialHour)
@@ -95,9 +97,9 @@ export default function PushSubscribeButton({ initialHour }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-900">每日讀經提醒</p>
+          <p className="text-sm font-medium text-gray-900">{t('push.title')}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {state === 'subscribed' ? `每天 ${formatHour(hour)} 提醒` : '開啟後每天定時提醒'}
+            {state === 'subscribed' ? t('push.remindAt', { time: formatHour(hour) }) : t('push.enableHint')}
           </p>
         </div>
         <button
@@ -111,7 +113,7 @@ export default function PushSubscribeButton({ initialHour }: Props) {
 
       {state === 'subscribed' && (
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-500">提醒時間</p>
+          <p className="text-xs text-gray-500">{t('push.reminderTime')}</p>
           <select
             value={hour}
             onChange={e => updateHour(Number(e.target.value))}
