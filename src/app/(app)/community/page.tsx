@@ -1,5 +1,6 @@
 import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
+import { noteLangFor } from '@/lib/i18n'
 import CommunityTabs from '@/components/community/CommunityTabs'
 import CommunityInfoButton from '@/components/community/CommunityInfoButton'
 import { todayString } from '@/lib/utils'
@@ -10,7 +11,7 @@ import type { ReflectionWithProfile, GroupMemberWithProfile, GroupWithMembers } 
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ scrollTo?: string; tab?: string }> }) {
   const { scrollTo, tab } = await searchParams
   const initialTab = tab === 'groups' ? 'groups' : 'feed'
-  const [user, supabase, { t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
+  const [user, supabase, { t, locale }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   const today = todayString()
   const monthStart = `${today.slice(0, 7)}-01`
   const [y, m] = today.slice(0, 7).split('-').map(Number)
@@ -37,7 +38,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
       .select('avatar_seed, role')
       .eq('id', user!.id)
       .single(),
-    fetchPassageRange(today),
+    fetchPassageRange(today, noteLangFor(locale)),
   ])
 
   const myGroupIds = new Set((myMemberships ?? []).map(m => m.group_id))

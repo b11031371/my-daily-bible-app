@@ -43,11 +43,11 @@ const GEMINI_PARSE_TOOL: FunctionDeclaration = {
 
 function buildSystemInstruction(today: string, displayName: string | null) {
   return `你是一個篩選條件解析器。今天是 ${today}。${displayName ? `目前登入用戶的顯示名稱是「${displayName}」。` : ''}
-根據用戶的自然語言查詢，呼叫 apply_filter 工具填入對應的篩選條件：
-- 用戶說「我的」、「我」時，設定 self_only: true（不設定 user_name）
+用戶可能以繁體中文或英文查詢。根據用戶的自然語言查詢，呼叫 apply_filter 工具填入對應的篩選條件：
+- 用戶說「我的」、「我」或 "my"、"me" 時，設定 self_only: true（不設定 user_name）
 - 用戶說其他人的名稱時，設定 user_name
-- 說「五月」、「上個月」等相對月份，請轉換為 YYYY-MM
-- 說到書卷名稱，設定 bible_book
+- 說「五月」、「上個月」或 "last month"、"this month" 等相對月份，請轉換為 YYYY-MM
+- 說到書卷名稱，設定 bible_book。資料庫以繁體中文（和合本）書卷名儲存，因此 bible_book 一律填和合本中文名；若用戶用英文書卷名（例如 "Ezekiel"、"Psalms"），請翻成中文（以西結書、詩篇）再填入
 - 其他關鍵字設定 keyword
 只呼叫工具，不輸出其他文字。`
 }

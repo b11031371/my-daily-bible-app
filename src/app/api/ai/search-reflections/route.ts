@@ -3,21 +3,25 @@ import OpenAI from 'openai'
 import { GoogleGenerativeAI, FunctionCallingMode, SchemaType, type FunctionDeclaration } from '@google/generative-ai'
 import { createClient, getUser } from '@/lib/supabase/server'
 
-function buildSystemInstruction(today: string, displayName: string | null) {
+function buildSystemInstruction(today: string, displayName: string | null, uiLangName: string) {
   const userLine = displayName
-    ? `目前登入的用戶顯示名稱是「${displayName}」。當用戶說「我的」、「我」時，請直接以此名稱作為 user_name 呼叫工具，不必詢問。`
+    ? `目前登入的用戶顯示名稱是「${displayName}」。當用戶說「我的」、「我」（或 "my"、"me"）時，請直接以此名稱作為 user_name 呼叫工具，不必詢問。`
     : ''
   return `你是一個聖經讀經社群的智慧助理。今天日期是 ${today}。${userLine}
-用戶會以繁體中文詢問關於社群反思留言的問題。
-請使用 search_reflections 工具來查詢資料，然後用溫暖、鼓勵的繁體中文回覆查詢結果。
-回覆中請包含：找到幾筆反思、重點摘要。匿名用戶請稱呼「匿名弟兄/姐妹」。
+
+【回覆語言】請務必以「與使用者提問相同的語言」回覆：用戶以英文提問就用英文回、以繁體中文提問就用繁體中文回。若語言不明確，預設使用${uiLangName}。下方模板中的所有標題與標籤，也一律翻成該回覆語言輸出，不要中英混雜。
+
+請使用 search_reflections 工具查詢資料，再用溫暖、鼓勵的語氣回覆。
+回覆中請包含：找到幾筆反思、重點摘要。匿名用戶請以回覆語言稱呼（中文用「匿名弟兄/姐妹」，英文用 "an anonymous member"）。
 若查無結果，請溫柔說明並鼓勵用戶繼續分享。
 
-用戶說「五月」、「上個月」、「本月」等相對月份時，請根據今天日期推算出正確的 YYYY-MM 格式再呼叫工具。
+【資料庫語言】反思的 bible_range 以繁體中文（和合本）書卷名儲存。呼叫工具時 bible_book 一律填和合本中文書卷名；若用戶以英文書卷名（例如 "Ezekiel"、"Psalms"）提問，請先翻成對應的和合本中文名（以西結書、詩篇）再填入。
+
+用戶說「五月」、「上個月」、「本月」或 "last month"、"this month" 等相對月份時，請根據今天日期推算出正確的 YYYY-MM 格式再呼叫工具。
 
 當用戶使用帶有評價意味的形容詞（例如「最讚」、「最好的」、「最有深度」、「最感動」、「推薦一則」等），請先用工具查出對應條件的反思，再從結果中自行挑選最符合該形容詞的一則，向用戶分享並說明挑選原因。
 
-當用戶要求「整理」或「摘要」時，請以以下結構輸出，方便下載閱讀：
+當用戶要求「整理」或「摘要」（或 "summarize"、"organize"）時，請以以下結構輸出，方便下載閱讀（**標籤一律翻成回覆語言**，下面只是中文範例）：
 
 📖 [書卷/月份]反思摘要｜[期間或範圍]
 共收錄 X 篇反思
@@ -206,15 +210,18 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: '請先登入' }, { status: 401 })
 
   let query: string
+  let locale = 'zh'
   try {
     const body = await req.json()
     query = typeof body?.query === 'string' ? body.query.trim() : ''
+    if (body?.locale === 'en' || body?.locale === 'zh') locale = body.locale
   } catch {
     return NextResponse.json({ error: '格式錯誤' }, { status: 400 })
   }
   if (!query || query.length > 200) {
     return NextResponse.json({ error: '請輸入有效的搜尋內容（1-200 字元）' }, { status: 400 })
   }
+  const uiLangName = locale === 'en' ? 'English' : '繁體中文'
 
   const openaiKey = process.env.OPENAI_API_KEY
   const geminiKey = process.env.GEMINI_API_KEY
@@ -226,7 +233,7 @@ export async function POST(req: NextRequest) {
     Promise.resolve(new Date().toISOString().split('T')[0]),
     supabase.from('profiles').select('display_name').eq('id', user.id).single(),
   ])
-  const systemInstruction = buildSystemInstruction(today, profile?.display_name ?? null)
+  const systemInstruction = buildSystemInstruction(today, profile?.display_name ?? null, uiLangName)
 
   if (openaiKey) {
     try {

@@ -26,8 +26,11 @@ export default function CommunityInfoButton() {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-7 z-50 w-56 bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
-          <p className="text-xs font-semibold text-gray-700 mb-3">{t('community.pointsInfoTitle')}</p>
+        <div
+          className="fixed left-4 right-4 top-16 z-50 mx-auto w-auto max-w-[320px] rounded-2xl border border-gray-100 bg-white p-4 shadow-lg"
+          onClick={e => e.stopPropagation()}
+        >
+          <p className="text-sm font-semibold text-gray-700 mb-3">{t('community.pointsInfoTitle')}</p>
           <div className="space-y-2">
             {[
               { key: 'srcDaily', label: t('community.srcDaily'), points: t('community.ptsValue', { points: 10 }) },
@@ -37,13 +40,13 @@ export default function CommunityInfoButton() {
               { key: 'srcReflection', label: t('community.srcReflection'), points: t('community.ptsValue', { points: 5 }) },
               { key: 'srcBadge', label: t('community.srcBadge'), points: t('community.byBadge') },
             ].map(r => (
-              <div key={r.key} className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">{r.label}</span>
-                <span className="text-xs font-medium text-gray-800">{r.points}</span>
+              <div key={r.key} className="flex items-start justify-between gap-3">
+                <span className="text-xs leading-snug text-gray-500">{r.label}</span>
+                <span className="shrink-0 whitespace-nowrap text-xs font-medium text-gray-800">{r.points}</span>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-gray-400 mt-3 pt-3 border-t border-gray-100">
+          <p className="mt-3 border-t border-gray-100 pt-3 text-[10px] leading-snug text-gray-400">
             {t('community.pointsInfoFooter')}
           </p>
         </div>

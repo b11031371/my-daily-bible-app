@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { Heart, PencilSimple, Trash, ChatCircle, Check, X } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
+import { localizeBibleRange } from '@/lib/bible-books'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { TFunc } from '@/lib/i18n'
 import type { ReflectionWithProfile, ReflectionComment } from '@/types/app'
@@ -457,7 +458,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-semibold text-gray-700">{formatDate(date, locale)}</span>
                 {bibleRange && (
-                  <span className="text-xs text-amber-600">📖 {bibleRange}</span>
+                  <span className="text-xs text-amber-600">📖 {localizeBibleRange(bibleRange, locale)}</span>
                 )}
               </div>
               <Link

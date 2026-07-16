@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { MagnifyingGlass, X, DownloadSimple, ListBullets, Sparkle, Copy, Check, Plus } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { formatMonth } from '@/lib/utils'
 import type { ReflectionFilters } from '@/types/app'
 
 const CUSTOM_FILTER_CHIPS_KEY = 'reflection_custom_filter_chips'
@@ -16,49 +17,6 @@ function extractBookName(range: string): string {
   return range.replace(/\s*\d.*$/, '').trim()
 }
 
-function getDefaultFilterChips(todayBibleRange: string | null): string[] {
-  const bookName = todayBibleRange ? extractBookName(todayBibleRange) : null
-  return [
-    '我這個月的留言',
-    bookName ? `${bookName}的相關留言` : '今天讀的書卷相關留言',
-  ]
-}
-
-function getDefaultSummaryChips(todayBibleRange: string | null): string[] {
-  const bookName = todayBibleRange ? extractBookName(todayBibleRange) : null
-  return [
-    '整理我這個月的所有反思留言摘要',
-    bookName ? `整理大家對${bookName}的心得摘要` : '整理大家對今天讀的書卷心得摘要',
-  ]
-}
-
-function formatConditions(f: ReflectionFilters): string {
-  const parts: string[] = []
-  if (f.month) {
-    const [y, m] = f.month.split('-')
-    parts.push(`${y}年${parseInt(m)}月`)
-  }
-  if (f.selfOnly) parts.push('我的留言（含匿名）')
-  else if (f.user_name) parts.push(`「${f.user_name}」的留言`)
-  if (f.bible_book) parts.push(`書卷：${f.bible_book}`)
-  if (f.keyword) parts.push(`關鍵字：「${f.keyword}」`)
-  return parts.length > 0 ? parts.join('、') : '所有留言（無特定篩選）'
-}
-
-function buildQueryFromFilters(f: ReflectionFilters): string {
-  const parts: string[] = []
-  if (f.month) {
-    const [y, m] = f.month.split('-')
-    parts.push(`${y}年${parseInt(m)}月`)
-  }
-  if (f.selfOnly) parts.push('我的留言')
-  else if (f.user_name) parts.push(`${f.user_name}的留言`)
-  if (f.bible_book) parts.push(f.bible_book)
-  if (f.keyword) parts.push(`包含「${f.keyword}」`)
-  const conditions = parts.length > 0 ? parts.join('、') : '所有留言'
-  return `請整理${conditions}的反思留言摘要`
-}
-
 type Step =
   | 'input'
   | 'choose'
@@ -70,9 +28,40 @@ type Step =
   | 'summary_done'
 
 export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
-  const { t } = useI18n()
-  const defaultFilterChips = getDefaultFilterChips(todayBibleRange)
-  const defaultSummaryChips = getDefaultSummaryChips(todayBibleRange)
+  const { t, locale } = useI18n()
+
+  const bookName = todayBibleRange ? extractBookName(todayBibleRange) : null
+  const defaultFilterChips = [
+    t('community.chipMine'),
+    bookName ? t('community.chipBook', { book: bookName }) : t('community.chipBookToday'),
+  ]
+  const defaultSummaryChips = [
+    t('community.chipSummaryMine'),
+    bookName ? t('community.chipSummaryBook', { book: bookName }) : t('community.chipSummaryToday'),
+  ]
+
+  // 顯示用：把篩選條件組成一句在地化描述（給確認框看）
+  function formatConditions(f: ReflectionFilters): string {
+    const parts: string[] = []
+    if (f.month) parts.push(formatMonth(f.month, locale))
+    if (f.selfOnly) parts.push(t('community.condMine'))
+    else if (f.user_name) parts.push(t('community.condUser', { name: f.user_name }))
+    if (f.bible_book) parts.push(t('community.condBook', { book: f.bible_book }))
+    if (f.keyword) parts.push(t('community.condKeyword', { keyword: f.keyword }))
+    return parts.length > 0 ? parts.join(t('common.listSeparator')) : t('community.condAll')
+  }
+
+  // 從已套用的篩選組出送給 AI 的查詢字串（用 UI 語言，AI 便以該語言回覆）
+  function buildQueryFromFilters(f: ReflectionFilters): string {
+    const parts: string[] = []
+    if (f.month) parts.push(formatMonth(f.month, locale))
+    if (f.selfOnly) parts.push(t('community.queryMine'))
+    else if (f.user_name) parts.push(t('community.queryUser', { name: f.user_name }))
+    if (f.bible_book) parts.push(f.bible_book)
+    if (f.keyword) parts.push(t('community.queryKeyword', { keyword: f.keyword }))
+    const conditions = parts.length > 0 ? parts.join(t('common.listSeparator')) : t('community.queryAll')
+    return t('community.summaryQueryTemplate', { conditions })
+  }
 
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -196,7 +185,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
       const res = await fetch('/api/ai/search-reflections', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q }),
+        body: JSON.stringify({ query: q, locale }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -222,13 +211,13 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
   async function handleDownload() {
     if (!answer) return
     if (navigator.share) {
-      try { await navigator.share({ title: '反思摘要', text: answer }) }
+      try { await navigator.share({ title: t('community.downloadName'), text: answer }) }
       catch (e) { if ((e as Error).name !== 'AbortError') throw e }
     } else {
       const blob = new Blob([answer], { type: 'text/plain;charset=utf-8' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = url; a.download = '反思摘要.txt'; a.click()
+      a.href = url; a.download = `${t('community.downloadName')}.txt`; a.click()
       URL.revokeObjectURL(url)
     }
   }
@@ -349,7 +338,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             }
                             if (e.key === 'Escape') { setAddingFilterChip(false); setNewFilterChip('') }
                           }}
-                          placeholder="輸入常用查詢問句"
+                          placeholder={t('community.chipFilterPlaceholder')}
                           className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                         />
                         <button
@@ -361,10 +350,10 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                           disabled={!newFilterChip.trim()}
                           className="text-xs text-gray-700 font-medium disabled:opacity-40 px-2"
                         >
-                          儲存
+                          {t('common.save')}
                         </button>
                         <button onClick={() => { setAddingFilterChip(false); setNewFilterChip('') }} className="text-xs text-gray-400 px-1">
-                          取消
+                          {t('common.cancel')}
                         </button>
                       </div>
                     ) : (
@@ -424,7 +413,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             }
                             if (e.key === 'Escape') { setAddingSummaryChip(false); setNewSummaryChip('') }
                           }}
-                          placeholder="輸入常用整理問句"
+                          placeholder={t('community.chipSummaryPlaceholder')}
                           className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                         />
                         <button
@@ -436,10 +425,10 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                           disabled={!newSummaryChip.trim()}
                           className="text-xs text-amber-700 font-medium disabled:opacity-40 px-2"
                         >
-                          儲存
+                          {t('common.save')}
                         </button>
                         <button onClick={() => { setAddingSummaryChip(false); setNewSummaryChip('') }} className="text-xs text-gray-400 px-1">
-                          取消
+                          {t('common.cancel')}
                         </button>
                       </div>
                     ) : (
