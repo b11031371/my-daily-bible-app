@@ -37,12 +37,12 @@ type RankRow = {
 }
 
 function RankList({ rows }: { rows: RankRow[] }) {
-  if (!rows.length) return <p className="text-sm text-gray-400 text-center py-4 bg-white rounded-xl shadow-sm">尚無資料，請先更新榜單</p>
+  if (!rows.length) return <p className="text-sm text-gray-400 text-center py-4 bg-surface rounded-xl shadow-sm">尚無資料，請先更新榜單</p>
   return (
-    <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-50">
+    <div className="bg-surface rounded-xl shadow-sm divide-y divide-gray-50">
       {rows.map(r => (
         <div key={r.rank} className="flex items-center gap-3 px-4 py-3">
-          <span className={`w-6 text-center text-sm font-bold shrink-0 ${r.rank <= 3 ? 'text-amber-500' : 'text-gray-300'}`}>
+          <span className={`w-6 text-center text-sm font-bold shrink-0 ${r.rank <= 3 ? 'text-primary-dark' : 'text-gray-300'}`}>
             {r.rank}
           </span>
           <BibleAvatar seed={r.profiles?.avatar_seed ?? 'alpha'} className="w-8 h-8 shrink-0" />

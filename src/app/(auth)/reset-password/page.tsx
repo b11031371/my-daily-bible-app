@@ -12,9 +12,9 @@ function calcStrength(pw: string): 0 | 1 | 2 | 3 {
   if (/[0-9]/.test(pw) && /[a-zA-Z]/.test(pw)) score++
   return score as 0 | 1 | 2 | 3
 }
-const STRENGTH_COLOR = ['', 'bg-red-400', 'bg-amber-400', 'bg-green-500']
+const STRENGTH_COLOR = ['', 'bg-red-400', 'bg-primary', 'bg-green-500']
 const STRENGTH_KEY   = ['', 'auth.strengthWeak', 'auth.strengthOk', 'auth.strengthStrong']
-const STRENGTH_TEXT  = ['', 'text-red-500', 'text-amber-500', 'text-green-600']
+const STRENGTH_TEXT  = ['', 'text-red-500', 'text-primary-dark', 'text-green-600']
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -53,10 +53,10 @@ export default function ResetPasswordPage() {
           <div className="flex justify-center mb-2">
             <img src="/icons/icon.svg" alt="Sproutiv" className="w-14 h-14 rounded-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('auth.reset.title')}</h1>
+          <h1 className="text-2xl font-bold text-heading">{t('auth.reset.title')}</h1>
           <p className="text-sm text-gray-500 mt-1">{t('auth.reset.subtitle')}</p>
         </div>
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
           {error && (
             <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</div>
           )}
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading || confirmMismatch}
-            className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
+            className="w-full btn-gradient text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
           >
             {loading ? t('auth.reset.submitting') : t('auth.reset.submit')}
           </button>

@@ -247,13 +247,13 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
     <div className="w-full min-w-0">
       {/* Header row */}
       <div className="flex items-center justify-between mb-3 gap-2">
-        <span className="text-sm font-semibold text-gray-700">{t('community.tabFeed')}</span>
+        <span className="text-sm font-semibold text-heading">{t('community.tabFeed')}</span>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {isFiltered && (
             <>
               <button
                 onClick={handleAISummaryFromFilter}
-                className="shrink-0 text-xs text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1"
+                className="shrink-0 text-xs text-primary-dark bg-primary-light px-2.5 py-0.5 rounded-full border border-primary flex items-center gap-1"
               >
                 <Sparkle size={10} weight="fill" /> {t('community.aiSummary')}
               </button>
@@ -277,7 +277,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
       {/* Collapsible search panel */}
       {isOpen && (
-        <div className="mb-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <div className="mb-4 bg-surface rounded-2xl p-4 shadow-sm border border-gray-100">
           {/* Panel header */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-500">{t('community.aiSearchTitle')}</span>
@@ -339,7 +339,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             if (e.key === 'Escape') { setAddingFilterChip(false); setNewFilterChip('') }
                           }}
                           placeholder={t('community.chipFilterPlaceholder')}
-                          className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                         />
                         <button
                           onClick={() => {
@@ -368,7 +368,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
                   {/* AI summary chips */}
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-500 mb-1.5 flex items-center gap-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-primary-dark mb-1.5 flex items-center gap-1">
                       <Sparkle size={11} weight="fill" /> {t('community.aiOrganize')}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -376,22 +376,22 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         <button
                           key={chip}
                           onClick={() => handleChooseSummary(chip)}
-                          className="text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-xl border border-amber-200 hover:bg-amber-100 transition-colors text-left"
+                          className="text-xs bg-primary-light text-primary-dark px-2.5 py-1 rounded-xl border border-primary hover:bg-primary-light transition-colors text-left"
                         >
                           {chip}
                         </button>
                       ))}
                       {customSummaryChips.map(chip => (
-                        <span key={chip} className="flex items-center gap-0.5 bg-amber-50 rounded-xl pl-2.5 pr-1 py-1 border border-amber-200">
+                        <span key={chip} className="flex items-center gap-0.5 bg-primary-light rounded-xl pl-2.5 pr-1 py-1 border border-primary">
                           <button
                             onClick={() => handleChooseSummary(chip)}
-                            className="text-xs text-amber-700 hover:text-amber-900 transition-colors"
+                            className="text-xs text-primary-dark hover:text-primary-dark transition-colors"
                           >
                             {chip}
                           </button>
                           <button
                             onClick={() => saveSummaryChips(customSummaryChips.filter(c => c !== chip))}
-                            className="p-0.5 text-amber-300 hover:text-red-400 transition-colors"
+                            className="p-0.5 text-primary hover:text-red-400 transition-colors"
                           >
                             <X size={10} weight="bold" />
                           </button>
@@ -414,7 +414,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             if (e.key === 'Escape') { setAddingSummaryChip(false); setNewSummaryChip('') }
                           }}
                           placeholder={t('community.chipSummaryPlaceholder')}
-                          className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                         />
                         <button
                           onClick={() => {
@@ -423,7 +423,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             setNewSummaryChip(''); setAddingSummaryChip(false)
                           }}
                           disabled={!newSummaryChip.trim()}
-                          className="text-xs text-amber-700 font-medium disabled:opacity-40 px-2"
+                          className="text-xs text-primary-dark font-medium disabled:opacity-40 px-2"
                         >
                           {t('common.save')}
                         </button>
@@ -461,7 +461,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading || !query.trim()}
-                  className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium disabled:opacity-40 shrink-0"
+                  className="btn-gradient text-gray-900 text-sm px-4 py-2 rounded-xl font-medium disabled:opacity-40 shrink-0"
                 >
                   {t('community.search')}
                 </button>
@@ -485,9 +485,9 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               </button>
               <button
                 onClick={() => handleChooseSummary()}
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-amber-300 hover:bg-amber-50 transition-colors text-left"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
               >
-                <Sparkle size={20} className="text-amber-500 shrink-0" />
+                <Sparkle size={20} className="text-primary-dark shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-gray-800">{t('community.aiMode')}</p>
                   <p className="text-xs text-gray-400">{t('community.aiModeDesc')}</p>
@@ -499,14 +499,14 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
           {/* Summary confirm */}
           {step === 'summary_confirm' && parsedConditions !== null && (
             <div className="mt-3 space-y-3">
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
-                <p className="text-xs text-amber-700 font-medium mb-1">{t('community.summaryConfirm')}</p>
+              <div className="p-3 bg-primary-light rounded-xl border border-primary-light">
+                <p className="text-xs text-primary-dark font-medium mb-1">{t('community.summaryConfirm')}</p>
                 <p className="text-sm text-gray-700">{formatConditions(parsedConditions)}</p>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => executeSummary()}
-                  className="flex-1 bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm py-2 rounded-xl font-medium"
+                  className="flex-1 btn-gradient text-gray-900 text-sm py-2 rounded-xl font-medium"
                 >
                   {t('community.confirmStart')}
                 </button>

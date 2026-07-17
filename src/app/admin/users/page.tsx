@@ -14,7 +14,7 @@ export default async function AdminUsersPage() {
       <h1 className="text-xl font-bold">使用者管理</h1>
       <div className="space-y-2">
         {(users ?? []).map(u => (
-          <div key={u.id} className="bg-white rounded-xl px-4 py-3 shadow-sm flex items-center gap-3">
+          <div key={u.id} className="bg-surface rounded-xl px-4 py-3 shadow-sm flex items-center gap-3">
             <BibleAvatar seed={u.avatar_seed ?? 'alpha'} className="w-9 h-9 shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">

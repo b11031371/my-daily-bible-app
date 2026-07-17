@@ -22,9 +22,9 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
 
   if (checkedIn) {
     return (
-      <div className="bg-white rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
+      <div className="bg-surface rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
         <span className="text-xl">✅</span>
-        <span className="text-sm font-semibold text-gray-800">{t('checkin.quickDone')}</span>
+        <span className="text-sm font-semibold text-heading">{t('checkin.quickDone')}</span>
       </div>
     )
   }
@@ -58,7 +58,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
       <button
         onClick={handleCheckin}
         disabled={loading}
-        className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-[14px] px-5 py-4 text-sm font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
+        className="w-full btn-gradient text-gray-900 rounded-[14px] px-5 py-4 text-sm font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
       >
         {loading ? t('checkin.checkingIn') : t('checkin.quickButton')}
       </button>

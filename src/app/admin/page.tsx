@@ -41,7 +41,7 @@ export default async function AdminDashboard() {
       <h1 className="text-xl font-bold">後台首頁</h1>
 
       {/* Approval mode toggle */}
-      <div className="bg-white rounded-xl p-5 shadow-sm flex items-center justify-between">
+      <div className="bg-surface rounded-xl p-5 shadow-sm flex items-center justify-between">
         <div>
           <p className="font-medium text-gray-900">筆記審核模式</p>
           <p className="text-xs text-gray-400 mt-0.5">
@@ -53,25 +53,25 @@ export default async function AdminDashboard() {
             type="submit"
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${approvalMode ? 'bg-primary' : 'bg-gray-200'}`}
           >
-            <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${approvalMode ? 'translate-x-6' : 'translate-x-1'}`} />
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${approvalMode ? 'translate-x-6' : 'translate-x-1'}`} />
           </button>
         </form>
       </div>
 
       {/* Today stats */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl p-5 shadow-sm">
+        <div className="bg-surface rounded-xl p-5 shadow-sm">
           <p className="text-3xl font-bold text-gray-900">{checkinCount ?? 0}</p>
           <p className="text-sm text-gray-500 mt-1">今日簽到人數</p>
         </div>
-        <div className="bg-white rounded-xl p-5 shadow-sm">
+        <div className="bg-surface rounded-xl p-5 shadow-sm">
           <p className="text-3xl font-bold text-accent">{reflectionCount ?? 0}</p>
           <p className="text-sm text-gray-500 mt-1">今日反思回答</p>
         </div>
       </div>
 
       {/* Daily checkin log */}
-      <div className="bg-white rounded-xl p-5 shadow-sm">
+      <div className="bg-surface rounded-xl p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-gray-700 mb-4">每日簽到紀錄</h2>
         <div className="space-y-4">
           {dates.map(date => {

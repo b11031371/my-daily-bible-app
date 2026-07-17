@@ -128,14 +128,14 @@ export default function CommunityTabs({
         <button
           onClick={() => setTab('feed')}
           className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
-            ${tab === 'feed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            ${tab === 'feed' ? 'bg-surface text-gray-900 shadow-sm' : 'text-gray-500'}`}
         >
           {t('community.tabFeed')}
         </button>
         <button
           onClick={() => setTab('groups')}
           className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors
-            ${tab === 'groups' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            ${tab === 'groups' ? 'bg-surface text-gray-900 shadow-sm' : 'text-gray-500'}`}
         >
           {t('community.tabGroups')}
         </button>

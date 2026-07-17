@@ -27,10 +27,10 @@ export default function CommunityInfoButton() {
 
       {open && (
         <div
-          className="fixed left-4 right-4 top-16 z-50 mx-auto w-auto max-w-[320px] rounded-2xl border border-gray-100 bg-white p-4 shadow-lg"
+          className="fixed left-4 right-4 top-16 z-50 mx-auto w-auto max-w-[320px] rounded-2xl border border-gray-100 bg-surface p-4 shadow-lg"
           onClick={e => e.stopPropagation()}
         >
-          <p className="text-sm font-semibold text-gray-700 mb-3">{t('community.pointsInfoTitle')}</p>
+          <p className="text-sm font-semibold text-heading mb-3">{t('community.pointsInfoTitle')}</p>
           <div className="space-y-2">
             {[
               { key: 'srcDaily', label: t('community.srcDaily'), points: t('community.ptsValue', { points: 10 }) },

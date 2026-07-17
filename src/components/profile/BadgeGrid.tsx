@@ -25,7 +25,7 @@ function BadgeItem({ badge, t, locale }: { badge: BadgeWithStatus; t: TFunc; loc
         className={cn(
           'text-3xl cursor-pointer transition-all duration-200 rounded-full p-1.5 active:scale-95',
           badge.earned
-            ? 'bg-amber-50 ring-1 ring-amber-200 hover:ring-amber-400 hover:bg-amber-100 hover:scale-110 hover:drop-shadow-[0_2px_10px_rgba(255,204,102,0.55)]'
+            ? 'bg-primary-light ring-1 ring-primary hover:ring-primary hover:bg-primary-light hover:scale-110 hover:drop-shadow-[0_2px_10px_var(--color-glow)]'
             : 'opacity-30 hover:scale-105 hover:opacity-40'
         )}
         onClick={() => setShow(v => !v)}

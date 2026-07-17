@@ -16,10 +16,10 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
   const handleUnapprove = () => startTransition(() => unapproveNote(date))
 
   return (
-    <div className={`flex items-center justify-between rounded-2xl px-4 py-3 mb-4 ${isApproved ? 'bg-green-50' : 'bg-amber-50'}`}>
+    <div className={`flex items-center justify-between rounded-2xl px-4 py-3 mb-4 ${isApproved ? 'bg-green-50' : 'bg-primary-light'}`}>
       <div className="flex items-center gap-2">
         <span className="text-sm">{isApproved ? '✅' : '🟡'}</span>
-        <span className={`text-sm font-medium ${isApproved ? 'text-green-700' : 'text-amber-700'}`}>
+        <span className={`text-sm font-medium ${isApproved ? 'text-green-700' : 'text-primary-dark'}`}>
           {isApproved ? t('approval.approved') : t('approval.pending')}
         </span>
       </div>
@@ -35,7 +35,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
         <button
           onClick={handleApprove}
           disabled={pending}
-          className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-full font-medium hover:bg-amber-600 transition-colors disabled:opacity-50"
+          className="text-xs bg-primary-dark text-white px-3 py-1.5 rounded-full font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
         >
           {pending ? t('approval.processing') : t('approval.approve')}
         </button>

@@ -173,7 +173,7 @@ export default function GroupTree({ treePoints, fruitOrder, className, interacti
             transform: 'translate(-50%, calc(100% + 10px))',
             zIndex: 50,
           }}
-          className="bg-white rounded-2xl shadow-xl px-4 py-3 w-52 text-center"
+          className="bg-surface rounded-2xl shadow-xl px-4 py-3 w-52 text-center"
           onClick={e => e.stopPropagation()}
         >
           <p className="text-[10px] text-gray-400 mb-0.5">{t('tree.fruitOfSpirit')}</p>

@@ -18,7 +18,7 @@ export default async function AdminReflectionsPage() {
       </div>
       <div className="space-y-2">
         {(reflections ?? []).map((r: any) => (
-          <div key={r.id} className="bg-white rounded-xl px-4 py-3 shadow-sm flex gap-3 items-start">
+          <div key={r.id} className="bg-surface rounded-xl px-4 py-3 shadow-sm flex gap-3 items-start">
             <div className="flex-1 min-w-0">
               <div className="flex gap-2 text-xs text-gray-400 mb-1">
                 <span className="font-medium text-gray-600">

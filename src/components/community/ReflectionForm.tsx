@@ -61,7 +61,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
         {pointsEarned > 0 && (
           <div className="text-xs text-gray-700 font-medium mb-2">{t('community.pointsEarned', { points: pointsEarned })}</div>
         )}
-        <div className="bg-[#f5f3ee] rounded-xl p-4 text-sm text-gray-700 leading-6 whitespace-pre-wrap">
+        <div className="bg-primary-light rounded-xl p-4 text-sm text-gray-700 leading-6 whitespace-pre-wrap">
           {content}
         </div>
         <button
@@ -90,7 +90,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
             onClick={() => setIsAnonymous(v => !v)}
             className={`w-9 h-5 rounded-full transition-colors flex items-center px-0.5 cursor-pointer ${isAnonymous ? 'bg-primary' : 'bg-gray-200'}`}
           >
-            <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${isAnonymous ? 'translate-x-4' : ''}`} />
+            <div className={`w-4 h-4 bg-surface rounded-full shadow transition-transform ${isAnonymous ? 'translate-x-4' : ''}`} />
           </div>
           {t('community.postAnonymously')}
         </label>
@@ -99,7 +99,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
           <button
             type="submit"
             disabled={loading || content.trim().length === 0}
-            className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-1.5 rounded-full font-medium disabled:opacity-40 hover:brightness-95 transition-[filter]"
+            className="btn-gradient text-gray-900 text-sm px-4 py-1.5 rounded-full font-medium disabled:opacity-40 hover:brightness-95 transition-[filter]"
           >
             {loading ? t('community.submitting') : t('community.submit')}
           </button>

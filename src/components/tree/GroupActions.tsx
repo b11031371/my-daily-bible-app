@@ -57,7 +57,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
     <div className="space-y-3">
       {/* Rename */}
       {isMember && (
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-surface rounded-2xl p-4 shadow-sm">
           <p className="text-xs font-semibold text-gray-500 mb-2">{t('group.groupName')}</p>
           {editingName ? (
             <div className="flex gap-2">
@@ -85,7 +85,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
 
       {/* Invite */}
       {isMember && canInvite && (
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-surface rounded-2xl p-4 shadow-sm">
           <p className="text-xs font-semibold text-gray-500 mb-3">{t('group.inviteTitle')}</p>
           <div className="flex items-center gap-2 mb-3">
             <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 font-mono font-bold text-xl tracking-widest text-gray-900 text-center">
@@ -93,7 +93,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
             </div>
             <button
               onClick={handleCopyCode}
-              className="text-xs bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 font-medium px-3 py-3 rounded-xl hover:brightness-95 transition-[filter]"
+              className="text-xs btn-gradient text-gray-900 font-medium px-3 py-3 rounded-xl hover:brightness-95 transition-[filter]"
             >
               {copied ? '✓' : t('group.copy')}
             </button>
@@ -110,7 +110,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
       {/* Leave */}
       {isMember && (
         showLeaveConfirm ? (
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="bg-surface rounded-2xl p-4 shadow-sm">
             <p className="text-sm text-gray-700 mb-3 text-center">
               {isLastMember
                 ? t('group.leaveLastMember')

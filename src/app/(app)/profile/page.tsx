@@ -1,4 +1,5 @@
 import { createClient, getUser } from '@/lib/supabase/server'
+import TitleDivider from '@/components/layout/TitleDivider'
 import { getServerI18n } from '@/lib/i18n/server'
 import { localize } from '@/lib/i18n'
 import { redirect } from 'next/navigation'
@@ -77,7 +78,7 @@ export default async function ProfilePage() {
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">{t('nav.profile')}</h1>
+        <h1 className="page-title font-bold text-heading">{t('nav.profile')}</h1>
         <div className="flex items-center gap-3">
           {profile?.role === 'admin' && (
             <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-2.5 py-1">{t('profile.admin')}</Link>
@@ -89,8 +90,10 @@ export default async function ProfilePage() {
         </div>
       </div>
 
+      <TitleDivider />
+
       {/* Profile card */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
+      <div className="bg-surface rounded-2xl p-5 shadow-sm flex items-center gap-4">
         <BibleAvatar seed={profile?.avatar_seed ?? 'alpha'} className="w-14 h-14" />
         <div>
           <p className="font-semibold text-gray-900">{profile?.display_name}</p>
@@ -106,8 +109,8 @@ export default async function ProfilePage() {
           { key: 'streakMax', label: t('profile.streakMax'), value: t('checkin.daysValue', { count: profile?.streak_max ?? 0 }), icon: <Star size={26} weight="fill" /> },
           { key: 'checkins', label: t('profile.totalCheckins'), value: t('profile.timesValue', { count: totalCheckinCount ?? 0 }), icon: <SealCheck size={26} weight="fill" /> },
         ].map(s => (
-          <div key={s.key} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
-            <span className="text-gray-700">{s.icon}</span>
+          <div key={s.key} className="bg-surface rounded-2xl p-4 shadow-sm flex items-center gap-3">
+            <span className="text-heading">{s.icon}</span>
             <div>
               <p className="text-lg font-bold text-gray-900">{s.value}</p>
               <p className="text-xs text-gray-400">{s.label}</p>
@@ -117,21 +120,21 @@ export default async function ProfilePage() {
       </div>
 
       {/* Notification settings */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4">{t('profile.notifications')}</h2>
+      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-heading mb-4">{t('profile.notifications')}</h2>
         <PushSubscribeButton initialHour={(profile as any)?.notification_hour ?? 8} />
       </div>
 
       {/* Badges */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4">{t('profile.badges')}</h2>
+      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-heading mb-4">{t('profile.badges')}</h2>
         <BadgeGrid badges={badgesWithStatus} />
       </div>
 
       {/* Point history */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <div className="bg-surface rounded-2xl p-5 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-700">{t('profile.pointHistory', { month: monthLabel })}</h2>
+          <h2 className="text-sm font-semibold text-heading">{t('profile.pointHistory', { month: monthLabel })}</h2>
           <span className="text-xs text-gray-400">{t('profile.totalEarned', { points: monthlyTotal })}</span>
         </div>
         <div className="space-y-2.5">

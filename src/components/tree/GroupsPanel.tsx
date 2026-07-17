@@ -52,7 +52,7 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
 
       {/* Unified scrollable group list */}
       {myGroups.length === 0 && otherGroups.length === 0 ? (
-        <div className="bg-white rounded-2xl p-6 shadow-sm text-center space-y-3">
+        <div className="bg-surface rounded-2xl p-6 shadow-sm text-center space-y-3">
           <p className="text-gray-500 text-sm">{t('group.noGroupsYet')}</p>
           <p className="text-xs text-gray-400">{t('group.noGroupsHint')}</p>
         </div>

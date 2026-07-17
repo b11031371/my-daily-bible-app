@@ -8,10 +8,10 @@ export default function MarkdownRenderer({ content }: { content: string }) {
       remarkPlugins={[remarkGfm, remarkBreaks]}
       components={{
         h1: ({ children }) => (
-          <h1 className="text-xl font-bold text-gray-900 mb-4">{children}</h1>
+          <h1 className="page-title font-bold text-heading mb-4">{children}</h1>
         ),
         h2: ({ children }) => (
-          <h2 className="text-base font-bold text-gray-900 mt-6 mb-2 pb-1 border-b border-[#e8e0d0]">
+          <h2 className="text-base font-bold text-gray-900 mt-6 mb-2 pb-1 border-b border-gray-200">
             {children}
           </h2>
         ),
@@ -22,7 +22,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
           <p className="text-sm text-gray-700 leading-7 mb-3">{children}</p>
         ),
         blockquote: ({ children }) => (
-          <blockquote className="border-l-4 border-accent bg-accent-light px-4 py-3 my-3 rounded-r-lg text-sm text-gray-700 italic">
+          <blockquote className="border-l-4 border-primary bg-primary-light px-4 py-3 my-3 rounded-r-lg text-sm text-gray-700 italic">
             {children}
           </blockquote>
         ),
@@ -38,7 +38,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
         strong: ({ children }) => (
           <strong className="font-semibold text-gray-900">{children}</strong>
         ),
-        hr: () => <hr className="border-[#e8e0d0] my-4" />,
+        hr: () => <hr className="border-gray-200 my-4" />,
         a: ({ href, children }) => (
           <a href={href} className="text-gray-700 underline underline-offset-2 break-all" target="_blank" rel="noreferrer">
             {children}

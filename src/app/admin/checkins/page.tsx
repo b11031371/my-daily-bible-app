@@ -33,7 +33,7 @@ export default function AdminCheckinsPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold">補簽管理</h1>
-      <div className="bg-white rounded-xl p-5 shadow-sm">
+      <div className="bg-surface rounded-xl p-5 shadow-sm">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-1">選擇使用者</label>
@@ -57,7 +57,7 @@ export default function AdminCheckinsPage() {
           </div>
           {msg && <p className={`text-sm ${msg.startsWith('✅') ? 'text-gray-700' : 'text-red-500'}`}>{msg}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
+            className="w-full btn-gradient text-gray-900 rounded-lg py-2.5 text-sm font-medium disabled:opacity-50">
             {loading ? '處理中...' : '執行補簽'}
           </button>
         </form>

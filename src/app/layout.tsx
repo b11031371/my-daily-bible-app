@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={htmlLang} className={`h-full ${wenkai.className}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try{var s=localStorage.getItem('bible-font-size');if(s)document.documentElement.style.fontSize=s;}catch(e){}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{var d=document.documentElement;var s=localStorage.getItem('bible-font-size');if(s)d.style.fontSize=s;var th=localStorage.getItem('bible-theme');if(th)d.setAttribute('data-theme',th);if(th==='random'){var rv=localStorage.getItem('bible-random');if(rv)d.style.cssText+=';'+rv;}var md=localStorage.getItem('bible-mode');if(md)d.setAttribute('data-mode',md);}catch(e){}` }} />
       </head>
       <body className="h-full" suppressHydrationWarning>
         <I18nProvider initialLocale={locale}>{children}</I18nProvider>

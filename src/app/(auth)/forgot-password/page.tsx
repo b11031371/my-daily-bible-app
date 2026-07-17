@@ -34,17 +34,17 @@ export default function ForgotPasswordPage() {
           <div className="flex justify-center mb-2">
             <img src="/icons/icon.svg" alt="Sproutiv" className="w-14 h-14 rounded-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('auth.forgot.title')}</h1>
+          <h1 className="text-2xl font-bold text-heading">{t('auth.forgot.title')}</h1>
           <p className="text-sm text-gray-500 mt-1">{t('auth.forgot.subtitle')}</p>
         </div>
         {sent ? (
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center space-y-3">
+          <div className="bg-surface rounded-2xl shadow-sm p-6 text-center space-y-3">
             <div className="text-4xl">📬</div>
             <p className="font-semibold text-gray-900">{t('auth.forgot.sentTitle')}</p>
             <p className="text-sm text-gray-500">{t('auth.forgot.sentBody', { email })}</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
             {error && (
               <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</div>
             )}
@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
+              className="w-full btn-gradient text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
             >
               {loading ? t('auth.forgot.submitting') : t('auth.forgot.submit')}
             </button>

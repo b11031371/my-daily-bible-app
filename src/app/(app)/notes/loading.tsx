@@ -15,7 +15,7 @@ export default function NotesLoading() {
       </div>
 
       {/* Streak + week */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm animate-pulse">
+      <div className="bg-surface rounded-2xl p-4 shadow-sm animate-pulse">
         <div className="flex items-center justify-between mb-3">
           <div className="h-5 w-24 bg-gray-100 rounded" />
           <div className="h-3 w-12 bg-gray-100 rounded" />
@@ -36,7 +36,7 @@ export default function NotesLoading() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl p-3 shadow-sm text-center animate-pulse">
+          <div key={i} className="bg-surface rounded-2xl p-3 shadow-sm text-center animate-pulse">
             <div className="h-7 w-7 bg-gray-100 rounded-full mx-auto mb-0.5" />
             <div className="h-5 w-8 bg-gray-100 rounded mx-auto mb-1" />
             <div className="h-3 w-12 bg-gray-100 rounded mx-auto" />
@@ -45,7 +45,7 @@ export default function NotesLoading() {
       </div>
 
       {/* Community preview */}
-      <div className="bg-white rounded-2xl px-4 py-3 shadow-sm flex items-center gap-3 animate-pulse">
+      <div className="bg-surface rounded-2xl px-4 py-3 shadow-sm flex items-center gap-3 animate-pulse">
         <div className="flex -space-x-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white" />

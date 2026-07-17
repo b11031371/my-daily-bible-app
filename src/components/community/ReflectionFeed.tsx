@@ -84,12 +84,12 @@ function CommentItem({
               onChange={e => setEditContent(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSave()}
               autoFocus
-              className="flex-1 bg-gray-100 rounded-xl px-3 py-1 text-xs text-gray-900 focus:outline-none"
+              className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1 text-xs text-gray-900 focus:outline-none"
             />
-            <button onClick={handleSave} disabled={saving || !editContent.trim()} className="p-1 text-primary disabled:opacity-40">
+            <button onClick={handleSave} disabled={saving || !editContent.trim()} className="shrink-0 p-1 text-primary disabled:opacity-40">
               <Check size={14} weight="bold" />
             </button>
-            <button onClick={() => { setEditMode(false); setEditContent(comment.content) }} className="p-1 text-gray-400">
+            <button onClick={() => { setEditMode(false); setEditContent(comment.content) }} className="shrink-0 p-1 text-gray-400">
               <X size={14} weight="bold" />
             </button>
           </div>
@@ -242,7 +242,7 @@ function ReflectionCard({
   }
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
+    <div className="bg-surface rounded-2xl p-4 shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-2 mb-1">
         <BibleAvatar seed={seed} className="w-7 h-7 shrink-0" />
@@ -266,7 +266,7 @@ function ReflectionCard({
                 onClick={() => setEditAnon(v => !v)}
                 className={`w-8 h-4 rounded-full flex items-center px-0.5 cursor-pointer transition-colors ${editAnon ? 'bg-primary' : 'bg-gray-200'}`}
               >
-                <div className={`w-3 h-3 bg-white rounded-full shadow transition-transform ${editAnon ? 'translate-x-4' : ''}`} />
+                <div className={`w-3 h-3 bg-surface rounded-full shadow transition-transform ${editAnon ? 'translate-x-4' : ''}`} />
               </div>
               {t('community.anonymous')}
             </label>
@@ -280,7 +280,7 @@ function ReflectionCard({
               <button
                 onClick={handleSaveEdit}
                 disabled={editLoading || !editContent.trim()}
-                className="text-xs font-medium bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 px-3 py-1 rounded-full disabled:opacity-40"
+                className="text-xs font-medium btn-gradient text-gray-900 px-3 py-1 rounded-full disabled:opacity-40"
               >
                 {editLoading ? t('settings.saving') : t('common.save')}
               </button>
@@ -355,7 +355,7 @@ function ReflectionCard({
                 >
                   {liked
                     ? <GradientHeartFill size={18} />
-                    : <Heart size={18} weight="regular" className="text-gray-300 hover:text-amber-400" />
+                    : <Heart size={18} weight="regular" className="text-gray-300 hover:text-primary" />
                   }
                 </button>
               </div>
@@ -382,19 +382,19 @@ function ReflectionCard({
               {currentUserId && (
                 <div className="flex gap-2 pt-1">
                   <BibleAvatar seed={currentUserAvatarSeed ?? currentUserId} className="w-6 h-6 shrink-0 mt-1" />
-                  <div className="flex-1 flex gap-2">
+                  <div className="flex-1 flex gap-2 min-w-0">
                     <input
                       type="text"
                       value={commentInput}
                       onChange={e => setCommentInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
                       placeholder={t('community.commentPlaceholder')}
-                      className="flex-1 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                      className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                     />
                     <button
                       onClick={handleAddComment}
                       disabled={submitting || !commentInput.trim()}
-                      className="text-xs font-medium text-primary disabled:opacity-40"
+                      className="shrink-0 text-xs font-medium text-primary disabled:opacity-40"
                     >
                       {t('community.submit')}
                     </button>
@@ -456,9 +456,9 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
           <div key={date} id={`date-${date}`}>
             <div className="flex items-center justify-between mb-2 px-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-semibold text-gray-700">{formatDate(date, locale)}</span>
+                <span className="text-sm font-semibold text-heading">{formatDate(date, locale)}</span>
                 {bibleRange && (
-                  <span className="text-xs text-amber-600">📖 {localizeBibleRange(bibleRange, locale)}</span>
+                  <span className="text-xs text-primary-dark">📖 {localizeBibleRange(bibleRange, locale)}</span>
                 )}
               </div>
               <Link

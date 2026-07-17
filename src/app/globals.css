@@ -1,14 +1,26 @@
 @import "tailwindcss";
 
 @theme {
+  /* 預設主題：金黃 Gold（等同無 data-theme / data-theme="gold"）。
+     其他主題於下方 :root[data-theme="…"] 覆蓋這些變數即可切換整體配色。 */
   --color-primary:       #FFCC66;
   --color-primary-dark:  #E8A500;
   --color-primary-light: #FFF8E0;
   --color-accent:        #FF8C5A;
   --color-accent-light:  #FFF0E8;
   --color-theme-bg:      #FFFDF5;
+  --color-surface:       #FFFFFF;   /* 卡片底：亮色=白，深色模式改深卡片色 */
 
-  /* Warm brown-tinted grays */
+  /* CTA 漸層色（由 .btn-gradient 使用），隨主題變。grad-mid 為中間色：
+     設成 from/to 的中點時等於雙色調（現有主題）；設成第三種色則成三色調（繽紛）。 */
+  --color-grad-from:     #FFD880;
+  --color-grad-mid:      #FFC86D;
+  --color-grad-to:       #FFB85A;
+
+  /* 徽章 hover 光暈（帶透明度，隨主題變） */
+  --color-glow:          rgba(255, 204, 102, 0.55);
+
+  /* Warm brown-tinted grays（各主題共用文字/邊框灰階） */
   --color-gray-50:  #FDFAF8;
   --color-gray-100: #F5EFE8;
   --color-gray-200: #E8DDD5;
@@ -21,10 +33,168 @@
   --color-gray-900: #2C1A0E;
 }
 
+/* ── Themes ──────────────────────────────────────────────────────────────────
+   加主題只需在此加一組覆蓋（+ ThemeSwitcher 清單加一列）。data-theme 選擇器
+   特異性高於 @theme 的 :root，utilities 以 var() 取值，故切換即時生效。 */
+:root[data-theme="forest"] {
+  --color-primary:       #5BC79A;   /* 柔和主綠：實心元件/邊框/選中 */
+  --color-primary-dark:  #2E9E73;   /* 溫潤中綠：文字/強調（仍保留白底可讀對比） */
+  --color-primary-light: #EAF8F1;
+  --color-accent:        #F2B155;   /* 柔和暖琥珀輔色：少量點綴 */
+  --color-accent-light:  #FEF4E4;
+  --color-theme-bg:      #F4FBF7;
+  /* 雙色調柔和漸層：粉彩薄荷 → 柔青 */
+  --color-grad-from:     #8CE8C0;
+  --color-grad-mid:      #5FD3C0;
+  --color-grad-to:       #35BCB0;
+  --color-glow:          rgba(53, 188, 176, 0.45);
+}
+
+:root[data-theme="ocean"] {
+  --color-primary:       #5CB3E6;   /* 柔和海藍 */
+  --color-primary-dark:  #2C82C4;   /* 溫潤深藍：文字/強調（白底可讀） */
+  --color-primary-light: #E7F3FC;
+  --color-accent:        #F2A15E;   /* 柔和暖珊瑚輔色：跳出藍色 */
+  --color-accent-light:  #FEF1E8;
+  --color-theme-bg:      #F3F9FE;
+  /* 雙色調柔和漸層：粉彩天藍 → 柔水青 */
+  --color-grad-from:     #A2DBFA;
+  --color-grad-mid:      #63C2E8;
+  --color-grad-to:       #3AACD6;
+  --color-glow:          rgba(58, 172, 214, 0.45);
+}
+
+:root[data-theme="indigo"] {
+  --color-primary:       #8B7CE8;   /* 柔和靛紫 */
+  --color-primary-dark:  #7263D2;   /* 柔和中紫：文字/強調（降低厚重感、白底仍可讀） */
+  --color-primary-light: #EEEBFB;
+  --color-accent:        #F2B06A;   /* 柔和暖桃輔色：跳出紫色 */
+  --color-accent-light:  #FEF3E6;
+  --color-theme-bg:      #F6F5FE;
+  /* 雙色調柔和漸層：粉彩薰衣草 → 柔丁香紫 */
+  --color-grad-from:     #BEB2FA;
+  --color-grad-mid:      #B57BE8;
+  --color-grad-to:       #AC5AD8;
+  --color-glow:          rgba(172, 90, 216, 0.45);
+}
+
+:root[data-theme="rose"] {
+  --color-primary:       #F27EA8;   /* 柔和玫瑰粉 */
+  --color-primary-dark:  #DB6C97;   /* 柔和中玫瑰：文字/強調（降低厚重感） */
+  --color-primary-light: #FCE9F0;
+  --color-accent:        #F2926E;   /* 柔和珊瑚輔色 */
+  --color-accent-light:  #FDEEE7;
+  --color-theme-bg:      #FEF5F8;
+  /* 雙色調柔和漸層：粉彩玫瑰 → 柔蜜桃 */
+  --color-grad-from:     #FFC2D8;
+  --color-grad-mid:      #FBA5A8;
+  --color-grad-to:       #F88A72;
+  --color-glow:          rgba(248, 138, 114, 0.45);
+}
+
+:root[data-theme="teal"] {
+  --color-primary:       #3FB8C4;   /* 綠松青碧 */
+  --color-primary-dark:  #2A8E99;
+  --color-primary-light: #E4F6F8;
+  --color-accent:        #FF9E7A;   /* 珊瑚輔色：跳出冷色 */
+  --color-accent-light:  #FFEDE6;
+  --color-theme-bg:      #F2FBFC;
+  /* 雙色調柔和漸層：柔綠松 → 水青 */
+  --color-grad-from:     #8FEAE4;
+  --color-grad-mid:      #56C9CE;
+  --color-grad-to:       #34AEBE;
+  --color-glow:          rgba(52, 174, 190, 0.45);
+}
+
+:root[data-theme="slate"] {
+  --color-primary:       #6E88A8;   /* 沉穩灰藍 */
+  --color-primary-dark:  #4E6684;
+  --color-primary-light: #EDF1F6;
+  --color-accent:        #E0956B;   /* 暖陶土輔色 */
+  --color-accent-light:  #FCEFE6;
+  --color-theme-bg:      #F5F7FA;
+  /* 雙色調柔和漸層：柔灰藍（低飽和、極簡） */
+  --color-grad-from:     #BECEE0;
+  --color-grad-mid:      #94AECB;
+  --color-grad-to:       #6E88A8;
+  --color-glow:          rgba(110, 136, 168, 0.45);
+}
+
+/* ── Dark mode ───────────────────────────────────────────────────────────────
+   與顏色主題正交（data-mode="dark" 可搭配任一 data-theme）。做法：反轉暖灰色階
+   （gray-900 變亮字、gray-50/100 變暗底）+ 深頁面底/卡片 + 選中淡底改深色。
+   主色/漸層/輔色沿用各主題（在深底上仍好看）。放在主題區塊之後，故 primary-light
+   等共用變數在深色模式勝出。日後可再加 [data-theme][data-mode] 做各主題深色微調。 */
+:root[data-mode="dark"] {
+  --color-theme-bg: #15120D;   /* 深頁面底（暖黑） */
+  --color-surface:  #211C16;   /* 深卡片 */
+
+  /* 暖灰色階反轉 */
+  --color-gray-50:  #211C16;
+  --color-gray-100: #2B251D;
+  --color-gray-200: #3A3228;
+  --color-gray-300: #4E4638;
+  --color-gray-400: #8B8073;
+  --color-gray-500: #A99E90;
+  --color-gray-600: #C7BCAD;
+  --color-gray-700: #E3D9CB;
+  --color-gray-800: #F0E9DE;
+  --color-gray-900: #FAF6EF;
+
+  /* 選中/引用等淡色底 → 深色暖底 */
+  --color-primary-light: #2E2718;
+
+  /* 深色模式標題改用較亮的主色（primary-dark 在暗底可能太深看不清） */
+  --color-heading: var(--color-primary);
+}
+
 body {
-  background-color: #FFFDF5;
-  color: #3D2B1F;
+  background-color: var(--color-theme-bg);
+  color: var(--color-gray-800);   /* 亮色=深棕字、深色=淺字，隨模式反轉 */
   -webkit-font-smoothing: antialiased;
+}
+
+/* 主題化的 CTA 漸層（取代寫死的 from-[#FFD880] to-[#FFB85A]） */
+.btn-gradient {
+  background-image: linear-gradient(to bottom right, var(--color-grad-from), var(--color-grad-mid), var(--color-grad-to));
+  /* 漸層底永遠是亮色，字固定深色（不隨深色模式反轉），確保對比。 */
+  color: #2C1A0E;
+}
+
+/* 主題色文字（標題、區塊小標、統計圖示）：跟隨主題（亮色=主題深色調；深色模式改用
+   較亮主色，見 data-mode 覆蓋）。用一般類別避免 @theme 裁剪 var 值。 */
+:root { --color-heading: var(--color-primary-dark); }
+.text-heading { color: var(--color-heading); }
+
+/* 頁面大標題：略大字級。搭配 text-heading 使用。 */
+.page-title {
+  font-size: 1.375rem;   /* 略大於 text-xl（1.25rem） */
+  line-height: 1.2;
+}
+
+/* 標題下方的流線分隔線（見 components/layout/TitleDivider）：
+   一條 SVG 路徑同時畫直線 + 右端向下彎角，流動漸層連續穿過整條，無接縫。
+   此處只負責外距與「右端淡出」的 mask（讓右端彎角保留約 6~7 成可見度）。 */
+.title-divider {
+  margin: 10px 0 10px;
+  -webkit-mask-image: linear-gradient(to right, #000 75%, transparent 140%);
+  mask-image: linear-gradient(to right, #000 75%, transparent 140%);
+}
+.title-divider svg { display: block; }
+
+/* 設定頁區塊標題橫幅（取代 from-[#FFF5CC] to-[#FFD880]） */
+.section-band {
+  background-image: linear-gradient(to right, var(--color-primary-light), var(--color-grad-from));
+}
+
+/* 深色模式：標題橫幅改為低調深色漸層，讓亮色標題文字可讀 */
+:root[data-mode="dark"] .section-band {
+  background-image: linear-gradient(to right, var(--color-surface), var(--color-gray-100));
+}
+
+/* 深色模式：漸層元件加飽和/亮度 + 同色霓虹光暈，營造現代螢光感（亮色模式不受影響） */
+:root[data-mode="dark"] .btn-gradient {
+  filter: saturate(1.5) brightness(1.12) drop-shadow(0 0 7px var(--color-glow));
 }
 
 .pb-nav {
@@ -40,7 +210,9 @@ body {
 /* Animated gradient border wrapper — place inside the wrapping element,
    inner content sits on top with its own background + slightly smaller border-radius */
 .animated-border {
-  background: linear-gradient(270deg, #FFCC66, #FFB870, #FFE08C, #E8A500, #FFB870, #FFCC66);
+  background: linear-gradient(270deg,
+    var(--color-primary), var(--color-grad-from), var(--color-primary-light),
+    var(--color-primary-dark), var(--color-grad-from), var(--color-primary));
   background-size: 400% 400%;
   animation: gradient-flow 6s ease infinite;
   padding: 2px;

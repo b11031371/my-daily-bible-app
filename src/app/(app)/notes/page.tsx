@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import TitleDivider from '@/components/layout/TitleDivider'
 import { fetchAvailableDates, fetchPassageRange } from '@/lib/github/api'
 import { formatDate, todayString, getLastSevenDays } from '@/lib/utils'
 import { createClient, getUser } from '@/lib/supabase/server'
@@ -81,19 +82,20 @@ export default async function NotesPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">
-      <h1 className="text-xl font-bold text-gray-900">{t('notesList.title')}</h1>
+      <h1 className="page-title font-bold text-heading">{t('notesList.title')}</h1>
+      <TitleDivider />
 
       {/* Hero card */}
       {showHeroCard ? (
         <Link href={`/notes/${today}`} className="block active:opacity-90 transition-opacity">
           <div className="animated-border rounded-3xl shadow-lg">
-            <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-[22px] p-6 text-gray-900">
+            <div className="btn-gradient rounded-[22px] p-6 text-gray-900">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">{t('notesList.todayBadge')}</span>
-                <span className="text-sm text-gray-700">{formatDate(today, locale)}</span>
+                <span className="text-sm text-black/60">{formatDate(today, locale)}</span>
               </div>
               <p className="text-xl font-bold leading-snug mb-4">{passageRange}</p>
-              <div className="flex items-center gap-1 text-sm text-gray-700 font-medium">
+              <div className="flex items-center gap-1 text-sm text-black/60 font-medium">
                 <span>{t('notesList.readToday')}</span>
                 <span>›</span>
               </div>
@@ -102,13 +104,13 @@ export default async function NotesPage() {
         </Link>
       ) : (
         <div className="rounded-3xl shadow-lg">
-          <div className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] rounded-3xl p-6 text-gray-900 opacity-60">
+          <div className="btn-gradient rounded-3xl p-6 text-gray-900 opacity-60">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">{t('notesList.todayBadge')}</span>
-              <span className="text-sm text-gray-700">{formatDate(today, locale)}</span>
+              <span className="text-sm text-black/60">{formatDate(today, locale)}</span>
             </div>
             <p className="text-xl font-bold leading-snug mb-4">{t('notesList.notUploaded')}</p>
-            <div className="flex items-center gap-1 text-sm text-gray-700 font-medium">
+            <div className="flex items-center gap-1 text-sm text-black/60 font-medium">
               <span>{t('notesList.checkBackLater')}</span>
             </div>
           </div>
@@ -116,10 +118,10 @@ export default async function NotesPage() {
       )}
 
       {/* Streak + week progress */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
+      <div className="bg-surface rounded-2xl p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Fire size={20} weight="fill" className="text-gray-700" />
+            <Fire size={20} weight="fill" className="text-heading" />
             <span className="font-bold text-gray-900">{t('notesList.streak', { count: profile?.streak_current ?? 0 })}</span>
           </div>
           <span className="text-xs text-gray-400">{t('notesList.lastSevenDays')}</span>
@@ -132,7 +134,7 @@ export default async function NotesPage() {
             return (
               <div key={date} className="flex-1 flex flex-col items-center gap-1">
                 <div className={`w-full aspect-square rounded-lg flex items-center justify-center text-sm
-                  ${done && !isRetro ? 'bg-primary text-gray-900 font-black' : done && isRetro ? 'bg-primary/40 text-gray-700 font-black' : isToday ? 'border-2 border-primary text-gray-800' : 'bg-gray-100 text-gray-300'}`}>
+                  ${done && !isRetro ? 'btn-gradient text-gray-900 font-black' : done && isRetro ? 'bg-primary/40 text-gray-700 font-black' : isToday ? 'border-2 border-primary text-gray-800' : 'bg-gray-100 text-gray-300'}`}>
                   {done ? '✓' : ''}
                 </div>
                 <span className="text-[10px] text-gray-400">{date.slice(8)}</span>
@@ -152,8 +154,8 @@ export default async function NotesPage() {
           { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: t('notesList.statComments'), href: '/community' },
           { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: t('notesList.statBadges'), href: '/profile' },
         ].map(s => (
-          <Link key={s.href} href={s.href} className="bg-white rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
-            <div className="flex justify-center mb-0.5 text-gray-700">{s.icon}</div>
+          <Link key={s.href} href={s.href} className="bg-surface rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
+            <div className="flex justify-center mb-0.5 text-heading">{s.icon}</div>
             <div className="font-bold text-gray-900 text-base">{s.value}</div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
           </Link>
@@ -162,7 +164,7 @@ export default async function NotesPage() {
 
       {/* Community preview */}
       {(checkinCount ?? 0) > 0 && (
-        <div className="bg-white rounded-2xl px-4 py-3 shadow-sm flex items-center gap-3">
+        <div className="bg-surface rounded-2xl px-4 py-3 shadow-sm flex items-center gap-3">
           <div className="flex -space-x-2 shrink-0">
             {orderedProfiles.map((p) => (
               <BibleAvatar
@@ -193,12 +195,12 @@ export default async function NotesPage() {
               <Link
                 key={date}
                 href={`/notes/${date}`}
-                className="flex items-center justify-between bg-white rounded-2xl px-5 py-3.5 shadow-sm"
+                className="flex items-center justify-between bg-surface rounded-2xl px-5 py-3.5 shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-900">{formatDate(date, locale)}</span>
                   {approvalMode && isAdmin && !approvedDates.has(date) && (
-                    <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">{t('notesList.pendingReview')}</span>
+                    <span className="text-[10px] text-primary-dark bg-primary-light px-1.5 py-0.5 rounded-full">{t('notesList.pendingReview')}</span>
                   )}
                 </div>
                 <span className="text-gray-300 text-lg">›</span>

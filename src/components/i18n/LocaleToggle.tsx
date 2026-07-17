@@ -8,7 +8,7 @@ export default function LocaleToggle() {
   const { locale, setLocale } = useI18n()
 
   return (
-    <div className="inline-flex items-center rounded-full border border-gray-200 bg-white/80 p-0.5 shadow-sm backdrop-blur">
+    <div className="inline-flex items-center rounded-full border border-gray-200 bg-surface/80 p-0.5 shadow-sm backdrop-blur">
       {LOCALES.map((l) => {
         const active = locale === l.code
         return (
@@ -17,7 +17,7 @@ export default function LocaleToggle() {
             onClick={() => setLocale(l.code)}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               active
-                ? 'bg-gradient-to-r from-[#FFD880] to-[#FFB85A] text-gray-900'
+                ? 'btn-gradient text-gray-900'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >

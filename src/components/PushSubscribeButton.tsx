@@ -107,7 +107,7 @@ export default function PushSubscribeButton({ initialHour }: Props) {
           disabled={busy}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${state === 'subscribed' ? 'bg-primary' : 'bg-gray-200'}`}
         >
-          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${state === 'subscribed' ? 'translate-x-6' : 'translate-x-1'}`} />
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${state === 'subscribed' ? 'translate-x-6' : 'translate-x-1'}`} />
         </button>
       </div>
 
@@ -117,7 +117,7 @@ export default function PushSubscribeButton({ initialHour }: Props) {
           <select
             value={hour}
             onChange={e => updateHour(Number(e.target.value))}
-            className="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-700 bg-white"
+            className="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-700 bg-surface"
           >
             {HOURS.map(h => (
               <option key={h} value={h}>{formatHour(h)}</option>

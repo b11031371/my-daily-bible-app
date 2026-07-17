@@ -30,8 +30,8 @@ function BadgeToast({
       onTouchEnd={e => { if (touchY.current - e.changedTouches[0].clientY > 28) onDismiss() }}
     >
       <div className="animated-border rounded-2xl shadow-xl">
-        <div className="bg-white rounded-[14px] px-4 py-3 space-y-2.5">
-          <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">{t('badge.unlockedTitle')}</p>
+        <div className="bg-surface rounded-[14px] px-4 py-3 space-y-2.5">
+          <p className="text-[10px] font-semibold text-primary-dark uppercase tracking-wide">{t('badge.unlockedTitle')}</p>
           {badges.map(b => (
             <div key={b.id} className="flex items-center gap-3">
               <span className="text-3xl leading-none">{b.icon}</span>

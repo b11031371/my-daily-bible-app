@@ -23,8 +23,8 @@ export default function FontSizeSwitcher() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div className="bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-4 py-3">
+    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
+      <div className="section-band px-4 py-3">
         <p className="text-base font-bold text-gray-900">{t('settings.fontSize')}</p>
       </div>
       <div className="p-4 flex gap-2">
@@ -36,7 +36,7 @@ export default function FontSizeSwitcher() {
               onClick={() => apply(opt.size)}
               className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-colors ${
                 active
-                  ? 'bg-amber-50 border-amber-400 text-amber-700'
+                  ? 'bg-primary-light border-primary text-primary-dark'
                   : 'border-gray-200 text-gray-500 hover:border-gray-300'
               }`}
             >

@@ -7,8 +7,8 @@ export default function LanguageSwitcher() {
   const { locale, setLocale, t } = useI18n()
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div className="bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-4 py-3">
+    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
+      <div className="section-band px-4 py-3">
         <p className="text-base font-bold text-gray-900">{t('settings.language')}</p>
       </div>
       <div className="p-2 divide-y divide-gray-50">
@@ -20,10 +20,10 @@ export default function LanguageSwitcher() {
               onClick={() => setLocale(l.code)}
               className="w-full flex items-center justify-between px-2 py-3 text-left"
             >
-              <span className={`text-sm ${active ? 'font-semibold text-amber-700' : 'text-gray-700'}`}>
+              <span className={`text-sm ${active ? 'font-semibold text-primary-dark' : 'text-gray-700'}`}>
                 {l.label}
               </span>
-              {active && <Check size={18} weight="bold" className="text-amber-500" />}
+              {active && <Check size={18} weight="bold" className="text-primary-dark" />}
             </button>
           )
         })}

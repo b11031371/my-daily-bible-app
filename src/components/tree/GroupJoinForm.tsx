@@ -57,12 +57,12 @@ export default function GroupJoinForm({ canJoin }: Props) {
           onChange={e => setCode(e.target.value.toUpperCase())}
           placeholder={t('group.inviteCodePlaceholder')}
           maxLength={8}
-          className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary tracking-widest font-mono"
+          className="flex-1 bg-surface border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary tracking-widest font-mono"
         />
         <button
           type="submit"
           disabled={loading || !code.trim()}
-          className="px-4 py-2 rounded-xl bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm font-medium disabled:opacity-50 transition-opacity"
+          className="px-4 py-2 rounded-xl btn-gradient text-gray-900 text-sm font-medium disabled:opacity-50 transition-opacity"
         >
           {loading ? '…' : t('group.join')}
         </button>

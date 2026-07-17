@@ -42,7 +42,7 @@ export default function JoinGroupModal() {
           className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/40"
           onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
-          <div className="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-2xl p-6 space-y-4">
+          <div className="bg-surface w-full max-w-sm rounded-t-3xl sm:rounded-2xl p-6 space-y-4">
             <h2 className="text-base font-semibold text-gray-900">{t('group.joinGroupTitle')}</h2>
             <div>
               <label className="text-sm text-gray-600 block mb-1.5">{t('group.enterInviteCode')}</label>
@@ -66,7 +66,7 @@ export default function JoinGroupModal() {
               <button
                 onClick={handleJoin}
                 disabled={loading || code.length < 6}
-                className="flex-1 text-sm font-semibold bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-xl py-3 hover:brightness-95 transition-[filter] disabled:opacity-50"
+                className="flex-1 text-sm font-semibold btn-gradient text-gray-900 rounded-xl py-3 hover:brightness-95 transition-[filter] disabled:opacity-50"
               >
                 {loading ? t('group.joining') : t('group.join')}
               </button>

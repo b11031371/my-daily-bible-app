@@ -37,10 +37,10 @@ export default function LoginPage() {
           <div className="flex justify-center mb-2">
             <img src="/icons/icon.svg" alt="Sproutiv" className="w-14 h-14 rounded-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Sproutiv</h1>
+          <h1 className="text-2xl font-bold text-heading">Sproutiv</h1>
           <p className="text-sm text-gray-500 mt-1">{t('auth.login.subtitle')}</p>
         </div>
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
           {error && (
             <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</div>
           )}
@@ -87,7 +87,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
+            className="w-full btn-gradient text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
           >
             {loading ? t('auth.login.submitting') : t('auth.login.submit')}
           </button>

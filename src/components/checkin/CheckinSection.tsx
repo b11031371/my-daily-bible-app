@@ -62,8 +62,8 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
           { key: 'streak', label: t('checkin.statMaxStreak'), value: t('checkin.daysValue', { count: monthlyMaxStreak }), icon: <Star size={28} weight="fill" /> },
           { key: 'points', label: t('checkin.statPoints'), value: `${points}`, icon: <Diamond size={28} weight="fill" /> },
         ].map(s => (
-          <div key={s.key} className="bg-white rounded-2xl p-4 text-center shadow-sm">
-            <div className="flex justify-center mb-1 text-gray-700">{s.icon}</div>
+          <div key={s.key} className="bg-surface rounded-2xl p-4 text-center shadow-sm">
+            <div className="flex justify-center mb-1 text-heading">{s.icon}</div>
             <div className="text-lg font-bold text-gray-900">{s.value}</div>
             <div className="text-xs text-gray-400">{s.label}</div>
           </div>
@@ -71,7 +71,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       </div>
 
       {/* Today checkin */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
+      <div className="bg-surface rounded-2xl p-5 shadow-sm">
         <p className="text-sm font-medium text-gray-500 mb-3">{t('checkin.todayLabel', { date: formatDate(today, locale) })}</p>
         {result ? (
           <div className="text-center py-4">
@@ -88,7 +88,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             <button
               onClick={() => doCheckin(today)}
               disabled={loading}
-              className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
+              className="w-full btn-gradient text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
             >
               {loading ? t('checkin.checkingIn') : t('checkin.checkInNow')}
             </button>
@@ -100,8 +100,8 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       <StampCard monthlyCount={monthlyCount} monthLabel={monthLabel} />
 
       {/* Retro checkins */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-700 mb-3">{t('checkin.retroTitle')}</p>
+      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+        <p className="text-sm font-semibold text-heading mb-3">{t('checkin.retroTitle')}</p>
         <div className="space-y-2">
           {pastDays.map((date, i) => {
             const daysLate = i + 1

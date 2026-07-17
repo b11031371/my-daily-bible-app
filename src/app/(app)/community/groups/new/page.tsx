@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import TitleDivider from '@/components/layout/TitleDivider'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useI18n } from '@/components/i18n/I18nProvider'
@@ -28,12 +29,13 @@ export default function NewGroupPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3">
         <Link href="/community" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
-        <h1 className="text-xl font-bold text-gray-900">{t('group.createTitle')}</h1>
+        <h1 className="page-title font-bold text-heading">{t('group.createTitle')}</h1>
       </div>
+      <TitleDivider />
 
-      <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-surface rounded-2xl p-5 shadow-sm space-y-4">
         <div>
           <label className="text-sm font-medium text-gray-700 block mb-1.5">{t('group.nameLabel')}</label>
           <input
@@ -51,7 +53,7 @@ export default function NewGroupPage() {
         <button
           onClick={handleCreate}
           disabled={loading}
-          className="w-full bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+          className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
         >
           {loading ? t('group.creating') : t('group.create')}
         </button>

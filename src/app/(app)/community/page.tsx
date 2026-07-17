@@ -1,4 +1,5 @@
 import { createClient, getUser } from '@/lib/supabase/server'
+import TitleDivider from '@/components/layout/TitleDivider'
 import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
 import CommunityTabs from '@/components/community/CommunityTabs'
@@ -90,9 +91,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
       <div className="flex items-center gap-2">
-        <h1 className="text-xl font-bold text-gray-900">{t('nav.community')}</h1>
+        <h1 className="page-title font-bold text-heading">{t('nav.community')}</h1>
         <CommunityInfoButton />
       </div>
+      <TitleDivider />
 
       <CommunityTabs
         myGroups={myGroups}

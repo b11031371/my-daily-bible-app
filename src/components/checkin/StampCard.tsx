@@ -50,9 +50,9 @@ interface Props {
 export default function StampCard({ monthlyCount, monthLabel }: Props) {
   const { t } = useI18n()
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm">
+    <div className="bg-surface rounded-2xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-700">{t('checkin.stampTitle')}</h3>
+        <h3 className="text-sm font-semibold text-heading">{t('checkin.stampTitle')}</h3>
         <span className="text-xs text-gray-400">{monthLabel}</span>
       </div>
 

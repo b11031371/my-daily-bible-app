@@ -18,11 +18,11 @@ export default function LeaderboardTable({ entries }: Props) {
   })
 
   if (entries.length === 0) {
-    return <div className="bg-white rounded-2xl p-6 text-center text-sm text-gray-400 shadow-sm">{t('leaderboard.empty')}</div>
+    return <div className="bg-surface rounded-2xl p-6 text-center text-sm text-gray-400 shadow-sm">{t('leaderboard.empty')}</div>
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
       {entries.map((entry, i) => {
         const isMe = entry.user_id === me
         const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : null

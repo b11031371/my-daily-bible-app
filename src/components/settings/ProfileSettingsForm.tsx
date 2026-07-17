@@ -67,8 +67,8 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
   return (
     <div className="space-y-6">
       {/* 暱稱 */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-        <div className="-mx-5 -mt-5 bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-5 py-3 rounded-t-2xl">
+      <section className="bg-surface rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.nickname')}</h2>
         </div>
         <input
@@ -83,7 +83,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           <button
             onClick={saveName}
             disabled={loading === 'name' || !name.trim() || name.trim() === initialName}
-            className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
+            className="btn-gradient text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
           >
             {loading === 'name' ? t('settings.saving') : t('common.save')}
           </button>
@@ -91,8 +91,8 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
       </section>
 
       {/* 頭像 */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-        <div className="-mx-5 -mt-5 bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-5 py-3 rounded-t-2xl">
+      <section className="bg-surface rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.avatar')}</h2>
         </div>
         <div className="grid grid-cols-6 gap-2">
@@ -110,8 +110,8 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
       </section>
 
       {/* 密碼 */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
-        <div className="-mx-5 -mt-5 bg-gradient-to-r from-[#FFF5CC] to-[#FFD880] px-5 py-3 rounded-t-2xl">
+      <section className="bg-surface rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.changePassword')}</h2>
         </div>
         <input
@@ -133,7 +133,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           <button
             onClick={savePassword}
             disabled={loading === 'pw' || !newPassword}
-            className="bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
+            className="btn-gradient text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
           >
             {loading === 'pw' ? t('settings.updating') : t('settings.updatePassword')}
           </button>

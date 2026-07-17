@@ -125,7 +125,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
       </div>
 
       {/* Tree */}
-      <div className="bg-white rounded-3xl shadow-sm p-6 flex flex-col items-center">
+      <div className="bg-surface rounded-3xl shadow-sm p-6 flex flex-col items-center">
         {!isCurrentMonth && (
           <p className="text-xs text-gray-400 mb-4">{t('group.historyRecord', { month: monthLabel })}</p>
         )}
@@ -158,7 +158,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
 
       {/* Fruits legend */}
       {fruitCount > 0 && (
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-surface rounded-2xl p-4 shadow-sm">
           <p className="text-xs font-semibold text-gray-500 mb-3">{t('group.grownFruits')}</p>
           <div className="flex flex-wrap gap-2">
             {group.fruit_order.slice(0, fruitCount).map((fruit, i) => (
@@ -176,7 +176,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
       )}
 
       {/* Members */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
+      <div className="bg-surface rounded-2xl p-4 shadow-sm">
         <p className="text-xs font-semibold text-gray-500 mb-3">
           {t('group.membersCount', { count: activeMembers.length, max: TREE_CONFIG.maxMembers })}
         </p>

@@ -42,8 +42,8 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
             className={cn(
               'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
               lang === l
-                ? 'bg-gradient-to-br from-[#FFD880] to-[#FFB85A] text-gray-900'
-                : 'bg-white text-gray-500 border border-gray-200'
+                ? 'btn-gradient text-gray-900'
+                : 'bg-surface text-gray-500 border border-gray-200'
             )}
           >
             {l === 'zh' ? '中文' : 'English'}
@@ -60,7 +60,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       </div>
 
       {/* Note content */}
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+      <div className="bg-surface rounded-2xl shadow-sm overflow-hidden mb-4">
         {hasMarkdown && content ? (
           <div className="p-5">
             <MarkdownRenderer content={content} />
@@ -70,7 +70,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
         ) : (
           /* PDF embed fallback when no markdown available */
           <div>
-            <div className="bg-[#f5f3ee] px-4 py-2 text-xs text-gray-500 flex items-center gap-1.5">
+            <div className="bg-primary-light px-4 py-2 text-xs text-gray-500 flex items-center gap-1.5">
               <span>📄</span> {t('noteView.pdfDisplay')}
             </div>
             <iframe
@@ -84,8 +84,8 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       </div>
 
       {/* Reflection form */}
-      <div id="reflection" className="bg-white rounded-2xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('noteView.shareThoughts')}</h3>
+      <div id="reflection" className="bg-surface rounded-2xl shadow-sm p-5">
+        <h3 className="text-sm font-semibold text-heading mb-3">{t('noteView.shareThoughts')}</h3>
         <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
       </div>
     </div>

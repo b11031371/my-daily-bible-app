@@ -22,7 +22,7 @@ export default function GroupTreeCard({ group }: Props) {
   const fruitCount = getFruitCount(tree_points)
 
   return (
-    <Link href={`/community/groups/${id}`} className="block bg-white rounded-2xl shadow-sm overflow-hidden active:opacity-90 transition-opacity">
+    <Link href={`/community/groups/${id}`} className="block bg-surface rounded-2xl shadow-sm overflow-hidden active:opacity-90 transition-opacity">
       <div className="flex items-center gap-3 px-4 py-3">
         {/* Mini tree */}
         <div className="relative w-16 h-16 shrink-0 flex items-end justify-center">
