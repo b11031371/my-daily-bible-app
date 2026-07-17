@@ -37,9 +37,9 @@ function BadgeItem({ badge, t, locale }: { badge: BadgeWithStatus; t: TFunc; loc
       {show && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setShow(false)} />
-          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-36 bg-gray-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-lg text-center">
+          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-36 bg-gray-900 text-gray-50 text-xs rounded-xl px-3 py-2.5 shadow-lg text-center">
             <p className="font-semibold mb-1">{badgeName}</p>
-            <p className="text-white/70 leading-snug">
+            <p className="text-gray-300 leading-snug">
               {t('badge.unlockCondition', { hint: unlockHint })}
             </p>
             <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
