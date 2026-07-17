@@ -40,7 +40,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={htmlLang} className={`h-full ${wenkai.className}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `try{var d=document.documentElement;var s=localStorage.getItem('bible-font-size');if(s)d.style.fontSize=s;var th=localStorage.getItem('bible-theme');if(th)d.setAttribute('data-theme',th);if(th==='random'){var rv=localStorage.getItem('bible-random');if(rv)d.style.cssText+=';'+rv;}var md=localStorage.getItem('bible-mode');if(md)d.setAttribute('data-mode',md);}catch(e){}` }} />
+        <meta name="theme-color" content="#FFCC66" />
+        <script dangerouslySetInnerHTML={{ __html: `try{var d=document.documentElement;var s=localStorage.getItem('bible-font-size');if(s)d.style.fontSize=s;var th=localStorage.getItem('bible-theme');if(th)d.setAttribute('data-theme',th);var rv=null;if(th==='random'){rv=localStorage.getItem('bible-random');if(rv)d.style.cssText+=';'+rv;}var md=localStorage.getItem('bible-mode');if(md)d.setAttribute('data-mode',md);var TC={gold:'#FFCC66',forest:'#5BC79A',ocean:'#5CB3E6',indigo:'#8B7CE8',rose:'#F27EA8',teal:'#3FB8C4',slate:'#6E88A8'};var col=md==='dark'?'#15120D':(th==='random'&&rv?(((rv.match(/--color-primary\\s*:\\s*([^;]+)/)||[])[1])||'').trim()||'#FFCC66':(TC[th]||'#FFCC66'));var mt=document.querySelector('meta[name=\"theme-color\"]');if(!mt){mt=document.createElement('meta');mt.setAttribute('name','theme-color');document.head.appendChild(mt);}mt.setAttribute('content',col);}catch(e){}` }} />
       </head>
       <body className="h-full" suppressHydrationWarning>
         <I18nProvider initialLocale={locale}>{children}</I18nProvider>

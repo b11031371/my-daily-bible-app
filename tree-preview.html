@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>Tree Preview</title>
+<style>
+  body { font-family: sans-serif; background: #f5f5f0; padding: 32px; }
+  h2 { font-size: 12px; color: #888; margin: 0 0 16px; letter-spacing: .08em; text-transform: uppercase; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 48px; }
+  .card { background: white; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  label { font-size: 12px; color: #999; }
+
+  /* Fruit popup */
+  .fruit-popup { display:none; position:absolute; bottom:0; left:50%; transform:translate(-50%, calc(100% + 10px)); z-index:50; background:white; border-radius:16px; padding:12px 16px; width:200px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,.12); }
+  .fruit-popup .subtitle { font-size:10px; color:#aaa; margin-bottom:2px; }
+  .fruit-popup .name { font-size:15px; font-weight:700; color:#111; margin-bottom:6px; }
+  .fruit-popup .verse { font-size:11px; color:#666; line-height:1.6; white-space:pre-line; }
+  .tree-wrap { position:relative; display:inline-block; }
+  .tree-wrap:focus-within .fruit-popup { display:block; }
+
+  @keyframes sway { 0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)} }
+  .sway { animation: sway 4.5s ease-in-out infinite; transform-origin: 100px 246px; }
+</style>
+</head>
+<body>
+
+<!-- ─── 完整樹對比 ─── -->
+<h2>完整樹對比（Stage 5 · 9 顆果子）</h2>
+<div class="row">
+
+  <!-- V1 原版 -->
+  <div class="card">
+    <label>V1 原版</label>
+    <svg viewBox="0 0 200 268" width="200" height="268" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="252" rx="72" ry="11" fill="#D4C4B8"/>
+      <rect x="93" y="156" width="14" height="90" rx="7" fill="#6B4C3B"/>
+      <g class="sway">
+        <ellipse cx="90" cy="162" rx="11" ry="8" fill="#A8D87A"/>
+        <ellipse cx="113" cy="159" rx="12" ry="8" fill="#8DC45A"/>
+        <path d="M 100 178 Q 82 170 60 158" stroke="#6B4C3B" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M 100 178 Q 118 170 140 158" stroke="#6B4C3B" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M 92 196 L 76 194" stroke="#6B4C3B" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 108 196 L 124 194" stroke="#6B4C3B" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="60"  cy="158" r="20" fill="#A8D87A"/>
+        <circle cx="140" cy="158" r="20" fill="#8DC45A"/>
+        <circle cx="76"  cy="194" r="14" fill="#9BD068"/>
+        <circle cx="124" cy="194" r="14" fill="#A8D87A"/>
+        <circle cx="100" cy="132" r="46" fill="#8DC45A"/>
+        <circle cx="68"  cy="150" r="30" fill="#A8D87A"/>
+        <circle cx="132" cy="150" r="30" fill="#8DC45A"/>
+        <circle cx="100" cy="98"  r="28" fill="#9BD068"/>
+        <circle cx="50"  cy="148" r="22" fill="#A8D87A"/>
+        <circle cx="150" cy="148" r="22" fill="#9BD068"/>
+        <circle cx="76"  cy="112" r="20" fill="#A8D87A"/>
+        <circle cx="124" cy="112" r="20" fill="#8DC45A"/>
+        <g><circle cx="80"  cy="93"  r="13" fill="#FF8C5A"/><text x="80"  y="94"  text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">仁愛</text></g>
+        <g><circle cx="112" cy="85"  r="13" fill="#FF8C5A"/><text x="112" y="86"  text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">喜樂</text></g>
+        <g><circle cx="140" cy="103" r="13" fill="#FF8C5A"/><text x="140" y="104" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">和平</text></g>
+        <g><circle cx="58"  cy="126" r="13" fill="#FF8C5A"/><text x="58"  y="127" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">忍耐</text></g>
+        <g><circle cx="148" cy="128" r="13" fill="#FF8C5A"/><text x="148" y="129" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">恩慈</text></g>
+        <g><circle cx="74"  cy="152" r="13" fill="#FF8C5A"/><text x="74"  y="153" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">良善</text></g>
+        <g><circle cx="128" cy="155" r="13" fill="#FF8C5A"/><text x="128" y="156" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">信實</text></g>
+        <g><circle cx="100" cy="162" r="13" fill="#FF8C5A"/><text x="100" y="163" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">溫柔</text></g>
+        <g><circle cx="100" cy="112" r="13" fill="#FF8C5A"/><text x="100" y="113" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="white">節制</text></g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 新版：V1 結構 + V2 配色 + 互動果子 -->
+  <div class="card">
+    <label>新版（V1 結構 + V2 配色）· 點擊果子查看</label>
+    <div class="tree-wrap">
+      <svg viewBox="0 0 200 268" width="200" height="268" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+        <ellipse cx="100" cy="252" rx="72" ry="11" fill="#C8B8AC"/>
+        <!-- trunk tapered -->
+        <path d="M 93 246 L 107 246 L 105 156 L 95 156 Z" fill="#5C3D2E"/>
+        <g class="sway">
+          <ellipse cx="90" cy="162" rx="11" ry="8" fill="#9EDE9E"/>
+          <ellipse cx="113" cy="159" rx="12" ry="8" fill="#7ECB7E"/>
+          <path d="M 100 178 Q 82 170 60 158" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M 100 178 Q 118 170 140 158" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M 92 196 L 76 194" stroke="#5C3D2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 108 196 L 124 194" stroke="#5C3D2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <circle cx="60"  cy="158" r="22" fill="#61AF61"/>
+          <circle cx="140" cy="158" r="22" fill="#4E9450"/>
+          <circle cx="76"  cy="194" r="15" fill="#7ECB7E"/>
+          <circle cx="124" cy="194" r="15" fill="#61AF61"/>
+          <circle cx="100" cy="132" r="50" fill="#61AF61"/>
+          <circle cx="68"  cy="150" r="34" fill="#4E9450"/>
+          <circle cx="132" cy="150" r="34" fill="#61AF61"/>
+          <circle cx="100" cy="98"  r="30" fill="#7ECB7E"/>
+          <circle cx="50"  cy="148" r="24" fill="#4E9450"/>
+          <circle cx="150" cy="148" r="24" fill="#61AF61"/>
+          <circle cx="76"  cy="112" r="22" fill="#7ECB7E"/>
+          <circle cx="124" cy="112" r="22" fill="#61AF61"/>
+          <circle cx="100" cy="82"  r="20" fill="#9EDE9E"/>
+          <!-- Fruits: no labels, just circles with highlight dot -->
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'仁愛','你們要彼此相愛，像我愛你們一樣。\n— 約翰福音 15:12')">
+            <circle cx="80"  cy="93"  r="13" fill="#E8593A"/><circle cx="76"  cy="89"  r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'喜樂','你們要靠主常常喜樂，我再說，你們要喜樂！\n— 腓立比書 4:4')">
+            <circle cx="112" cy="85"  r="13" fill="#E8593A"/><circle cx="108" cy="81"  r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'和平','我留下平安給你們，我將我的平安賜給你們。\n— 約翰福音 14:27')">
+            <circle cx="140" cy="103" r="13" fill="#E8593A"/><circle cx="136" cy="99"  r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'忍耐','患難生忍耐，忍耐生老練，老練生盼望。\n— 羅馬書 5:3–4')">
+            <circle cx="58"  cy="126" r="13" fill="#E8593A"/><circle cx="54"  cy="122" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'恩慈','要以恩慈相待，存憐憫的心，彼此饒恕。\n— 以弗所書 4:32')">
+            <circle cx="148" cy="128" r="13" fill="#E8593A"/><circle cx="144" cy="124" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'良善','你們要嘗嘗主恩的滋味，便知道他是美善。\n— 詩篇 34:8')">
+            <circle cx="74"  cy="152" r="13" fill="#E8593A"/><circle cx="70"  cy="148" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'信實','那召你們的本是信實的，他必成就這事。\n— 帖撒羅尼迦前書 5:24')">
+            <circle cx="128" cy="155" r="13" fill="#E8593A"/><circle cx="124" cy="151" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'溫柔','溫柔的人有福了，因為他們必承受地土。\n— 馬太福音 5:5')">
+            <circle cx="100" cy="162" r="13" fill="#E8593A"/><circle cx="96"  cy="158" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+          <g tabindex="0" style="cursor:pointer" onclick="showFruit(event,'節制','凡較力爭勝的，諸事都有節制。\n— 哥林多前書 9:25')">
+            <circle cx="100" cy="112" r="13" fill="#E8593A"/><circle cx="96"  cy="108" r="3.5" fill="rgba(255,255,255,0.4)"/>
+          </g>
+        </g>
+      </svg>
+      <div id="fruit-popup" class="fruit-popup" onclick="event.stopPropagation()">
+        <div class="subtitle">聖靈果子</div>
+        <div class="name" id="fp-name"></div>
+        <div class="verse" id="fp-verse"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── 新版成長階段（V2 設計 + V2 配色） ─── -->
+<h2>成長階段（V2 設計）</h2>
+<div class="row">
+
+  <!-- Stage 1: 種子發芽 20 pts, p≈0.057 -->
+  <div class="card">
+    <label>種子發芽 · 20 分</label>
+    <svg viewBox="0 0 200 268" width="140" height="188" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="252" rx="72" ry="11" fill="#C8B8AC"/>
+      <!-- p=0.057: trunkHeight≈16.4, top≈229.6, w≈4.57 -->
+      <path d="M 97.8 246 L 102.2 246 L 102 230 L 98 230 Z" fill="#5C3D2E"/>
+      <!-- sprout leaves barely visible -->
+      <ellipse cx="90" cy="235" rx="11" ry="8" fill="#9EDE9E" opacity="0.12"/>
+      <ellipse cx="113" cy="232" rx="12" ry="8" fill="#7ECB7E" opacity="0.12"/>
+    </svg>
+  </div>
+
+  <!-- Stage 2: 幼苗 80 pts, p≈0.229 -->
+  <div class="card">
+    <label>幼苗成長 · 80 分</label>
+    <svg viewBox="0 0 200 268" width="140" height="188" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="252" rx="72" ry="11" fill="#C8B8AC"/>
+      <!-- p=0.229: trunkHeight≈29.8, top≈216.2, w≈6.3 -->
+      <path d="M 96.9 246 L 103.1 246 L 102.8 216 L 97.2 216 Z" fill="#5C3D2E"/>
+      <!-- sproutLeafOp = fade(0.229,0.04,0.22) = 1 -->
+      <ellipse cx="90" cy="222" rx="11" ry="8" fill="#9EDE9E"/>
+      <ellipse cx="113" cy="219" rx="12" ry="8" fill="#7ECB7E"/>
+      <!-- branchOp = fade(0.229,0.35,0.62) = 0 — not yet -->
+    </svg>
+  </div>
+
+  <!-- Stage 3: 小樹 180 pts, p=0.514 -->
+  <div class="card">
+    <label>小樹茁壯 · 180 分</label>
+    <svg viewBox="0 0 200 268" width="140" height="188" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="252" rx="72" ry="11" fill="#C8B8AC"/>
+      <!-- p=0.514: trunkHeight≈52, top≈194, w≈9.1 -->
+      <path d="M 95.5 246 L 104.5 246 L 103.5 194 L 96.5 194 Z" fill="#5C3D2E"/>
+      <!-- branchOp = fade(0.514,0.35,0.62) = 0.607; leafClusterOp = fade(0.514,0.42,0.72)=0.31; mainCanopyOp≈0 -->
+      <path d="M 100 216 Q 82 208 60 196" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.61"/>
+      <path d="M 100 216 Q 118 208 140 196" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.61"/>
+      <path d="M 92 234 L 76 232" stroke="#5C3D2E" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.61"/>
+      <path d="M 108 234 L 124 232" stroke="#5C3D2E" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.61"/>
+      <circle cx="60"  cy="196" r="22" fill="#61AF61" opacity="0.31"/>
+      <circle cx="140" cy="196" r="22" fill="#4E9450" opacity="0.31"/>
+      <circle cx="76"  cy="232" r="15" fill="#7ECB7E" opacity="0.31"/>
+      <circle cx="124" cy="232" r="15" fill="#61AF61" opacity="0.31"/>
+      <!-- mainCanopyOp = fade(0.514,0.52,0.82) = -0.02 → ~0 -->
+    </svg>
+  </div>
+
+  <!-- Stage 4: 大樹 300 pts, p≈0.857 -->
+  <div class="card">
+    <label>大樹展葉 · 300 分</label>
+    <svg viewBox="0 0 200 268" width="140" height="188" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="252" rx="72" ry="11" fill="#C8B8AC"/>
+      <!-- p=0.857: trunkHeight≈79, top≈167, w≈12.6 -->
+      <path d="M 93.7 246 L 106.3 246 L 104.3 167 L 95.7 167 Z" fill="#5C3D2E"/>
+      <path d="M 100 189 Q 82 181 60 169" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M 100 189 Q 118 181 140 169" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M 92 207 L 76 205" stroke="#5C3D2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M 108 207 L 124 205" stroke="#5C3D2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- leafCluster: fade(0.857,0.42,0.72)=1; mainCanopy: fade(0.857,0.52,0.82)=1; fullCanopy: fade(0.857,0.76,1.0)=0.40 -->
+      <circle cx="60"  cy="169" r="22" fill="#61AF61"/>
+      <circle cx="140" cy="169" r="22" fill="#4E9450"/>
+      <circle cx="76"  cy="205" r="15" fill="#7ECB7E"/>
+      <circle cx="124" cy="205" r="15" fill="#61AF61"/>
+      <circle cx="100" cy="132" r="50" fill="#61AF61"/>
+      <circle cx="68"  cy="150" r="34" fill="#4E9450"/>
+      <circle cx="132" cy="150" r="34" fill="#61AF61"/>
+      <circle cx="100" cy="98"  r="30" fill="#7ECB7E" opacity="0.40"/>
+      <circle cx="50"  cy="148" r="24" fill="#4E9450" opacity="0.40"/>
+      <circle cx="150" cy="148" r="24" fill="#61AF61" opacity="0.40"/>
+      <circle cx="76"  cy="112" r="22" fill="#7ECB7E" opacity="0.40"/>
+      <circle cx="124" cy="112" r="22" fill="#61AF61" opacity="0.40"/>
+      <circle cx="100" cy="82"  r="20" fill="#9EDE9E" opacity="0.40"/>
+    </svg>
+  </div>
+
+</div>
+
+<script>
+  const fruits = {
+    '仁愛': '你們要彼此相愛，像我愛你們一樣。\n— 約翰福音 15:12',
+    '喜樂': '你們要靠主常常喜樂，我再說，你們要喜樂！\n— 腓立比書 4:4',
+    '和平': '我留下平安給你們，我將我的平安賜給你們。\n— 約翰福音 14:27',
+    '忍耐': '患難生忍耐，忍耐生老練，老練生盼望。\n— 羅馬書 5:3–4',
+    '恩慈': '要以恩慈相待，存憐憫的心，彼此饒恕。\n— 以弗所書 4:32',
+    '良善': '你們要嘗嘗主恩的滋味，便知道他是美善。\n— 詩篇 34:8',
+    '信實': '那召你們的本是信實的，他必成就這事。\n— 帖撒羅尼迦前書 5:24',
+    '溫柔': '溫柔的人有福了，因為他們必承受地土。\n— 馬太福音 5:5',
+    '節制': '凡較力爭勝的，諸事都有節制。\n— 哥林多前書 9:25',
+  }
+  let currentTarget = null
+  function showFruit(e, name, verse) {
+    e.stopPropagation()
+    const popup = document.getElementById('fruit-popup')
+    document.getElementById('fp-name').textContent = name
+    document.getElementById('fp-verse').textContent = verse
+    popup.style.display = 'block'
+    // darken clicked fruit
+    if (currentTarget) currentTarget.querySelector('circle').setAttribute('fill','#E8593A')
+    currentTarget = e.currentTarget
+    e.currentTarget.querySelector('circle').setAttribute('fill','#C4432A')
+  }
+  document.addEventListener('click', () => {
+    document.getElementById('fruit-popup').style.display = 'none'
+    if (currentTarget) { currentTarget.querySelector('circle').setAttribute('fill','#E8593A'); currentTarget = null }
+  })
+</script>
+</body>
+</html>

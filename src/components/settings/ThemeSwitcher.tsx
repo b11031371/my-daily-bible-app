@@ -39,6 +39,22 @@ function randomThemeVars(): Record<string, string> {
   }
 }
 
+// 同步手機狀態列/底部顏色（PWA theme-color）：深色模式用深底，否則用當前主題主色。
+function syncThemeColorMeta() {
+  const root = document.documentElement
+  const dark = root.getAttribute('data-mode') === 'dark'
+  const col = dark
+    ? '#15120D'
+    : getComputedStyle(root).getPropertyValue('--color-primary').trim() || '#FFCC66'
+  let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+  if (!meta) {
+    meta = document.createElement('meta')
+    meta.setAttribute('name', 'theme-color')
+    document.head.appendChild(meta)
+  }
+  meta.setAttribute('content', col)
+}
+
 export default function ThemeSwitcher() {
   const { t } = useI18n()
   const [current, setCurrent] = useState<string>('gold')
@@ -63,6 +79,7 @@ export default function ThemeSwitcher() {
     setCurrent(code)
     try { localStorage.setItem(STORAGE_KEY, code) } catch {}
     root.setAttribute('data-theme', code)
+    syncThemeColorMeta()
   }
 
   function applyRandom() {
@@ -76,6 +93,7 @@ export default function ThemeSwitcher() {
     } catch {}
     root.setAttribute('data-theme', 'random')
     setCurrent('random')
+    syncThemeColorMeta()
   }
 
   function toggleDark() {
@@ -84,6 +102,7 @@ export default function ThemeSwitcher() {
     try { localStorage.setItem(MODE_KEY, next ? 'dark' : 'light') } catch {}
     if (next) document.documentElement.setAttribute('data-mode', 'dark')
     else document.documentElement.removeAttribute('data-mode')
+    syncThemeColorMeta()
   }
 
   // 固定 px 尺寸：色票不隨字級（rem）放大，避免特大字級時擠在一起
