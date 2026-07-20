@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   LOCALE_COOKIE,
@@ -54,6 +54,27 @@ export function I18nProvider({
     },
     [router],
   )
+
+  // profiles.language 是後來才加的欄位，舊用戶一律被塞成預設的 'zh'，而他們真正的
+  // 偏好只存在瀏覽器 cookie 裡，DB 端無從得知。middleware 只補「沒有 cookie」的方向，
+  // 補不到這些人，所以這裡反向把 cookie 寫回 DB 一次。
+  //
+  // 用 localStorage 記號確保每個帳號在每個瀏覽器只跑一次：這是為了修舊資料，
+  // 之後 setLocale 就會持續同步，沒必要每次載入都多打一次 DB。
+  useEffect(() => {
+    void (async () => {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      if (!data.user) return // 未登入（auth 頁）：不留記號，登入後還會再試一次
+
+      const key = `${LOCALE_COOKIE}-synced:${data.user.id}`
+      if (localStorage.getItem(key)) return
+
+      await supabase.from('profiles').update({ language: initialLocale }).eq('id', data.user.id)
+      localStorage.setItem(key, '1')
+    })()
+  }, [initialLocale])
 
   const value = useMemo(() => ({ locale, t, setLocale }), [locale, t, setLocale])
 
