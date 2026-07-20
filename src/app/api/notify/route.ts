@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import webpush from 'web-push'
+import { DEFAULT_LOCALE, getDictionary, isLocale, translate, type Locale } from '@/lib/i18n'
 
 webpush.setVapidDetails(
   process.env.VAPID_SUBJECT!,
@@ -25,35 +26,48 @@ export async function GET(req: NextRequest) {
   // 找出「這個小時要收通知」的用戶
   const { data: users } = await supabase
     .from('profiles')
-    .select('id')
+    .select('id, language')
     .eq('notification_hour', taiwanHour)
 
   if (!users?.length) return NextResponse.json({ sent: 0 })
 
-  const userIds = users.map(u => u.id)
+  // user_id → locale，供推播挑選文案語言。DB 存的是自由字串，
+  // 用 isLocale 擋掉舊資料或已下架的語言（例如停用中的 tl）。
+  const localeOf = new Map<string, Locale>(
+    users.map(u => [u.id, isLocale(u.language) ? u.language : DEFAULT_LOCALE]),
+  )
 
   // 撈出這些用戶的訂閱
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: subs } = await (supabase as any)
     .from('push_subscriptions')
-    .select('endpoint, p256dh, auth')
-    .in('user_id', userIds)
+    .select('user_id, endpoint, p256dh, auth')
+    .in('user_id', [...localeOf.keys()])
 
   if (!subs?.length) return NextResponse.json({ sent: 0 })
 
-  const payload = JSON.stringify({
-    title: 'Sproutiv',
-    body: '今天讀經了嗎？來看看今天的進度吧！',
-    url: '/notes',
-  })
+  // 每種語言的 payload 只組一次，同語言的訂閱共用。
+  const payloadCache = new Map<Locale, string>()
+  const payloadFor = (locale: Locale) => {
+    const cached = payloadCache.get(locale)
+    if (cached) return cached
+    const dict = getDictionary(locale)
+    const payload = JSON.stringify({
+      title: 'Sproutiv',
+      body: translate(dict, 'push.notifyBody'),
+      url: '/notes',
+    })
+    payloadCache.set(locale, payload)
+    return payload
+  }
 
   const staleEndpoints: string[] = []
   await Promise.allSettled(
-    subs.map(async (sub: { endpoint: string; p256dh: string; auth: string }) => {
+    subs.map(async (sub: { user_id: string; endpoint: string; p256dh: string; auth: string }) => {
       try {
         await webpush.sendNotification(
           { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload
+          payloadFor(localeOf.get(sub.user_id) ?? DEFAULT_LOCALE)
         )
       } catch (err: unknown) {
         const status = (err as { statusCode?: number }).statusCode

@@ -136,6 +136,8 @@ export const en = {
     remindAt: 'Reminder at {time} daily',
     enableHint: 'Get a daily reminder when enabled',
     reminderTime: 'Reminder time',
+    // The push notification body itself, read server-side by /api/notify
+    notifyBody: "Ready for today's reading? Come check out the progress!",
   },
   leaderboard: {
     empty: "This week's leaderboard isn't ready yet",

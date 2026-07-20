@@ -12,6 +12,7 @@ export interface Database {
           total_points: number
           streak_current: number
           streak_max: number
+          language: string
           created_at: string
         }
         Insert: {
@@ -22,6 +23,7 @@ export interface Database {
           total_points?: number
           streak_current?: number
           streak_max?: number
+          language?: string
           created_at?: string
         }
         Update: {
@@ -31,6 +33,7 @@ export interface Database {
           total_points?: number
           streak_current?: number
           streak_max?: number
+          language?: string
         }
         Relationships: []
       }

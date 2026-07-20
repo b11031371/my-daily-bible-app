@@ -136,6 +136,8 @@ export const zh: Dictionary = {
     remindAt: '每天 {time} 提醒',
     enableHint: '開啟後每天定時提醒',
     reminderTime: '提醒時間',
+    // 推播通知本身的內文，由 /api/notify 在 server 端取用
+    notifyBody: '今天讀經了嗎？來看看今天的進度吧！',
   },
   leaderboard: {
     empty: '本週排行榜尚未產生',
