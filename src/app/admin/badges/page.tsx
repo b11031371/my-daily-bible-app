@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import type { Badge } from '@/types/app'
+import BadgeIcon from '@/components/profile/BadgeIcon'
 
 export default function AdminBadgesPage() {
   const [badges, setBadges] = useState<Badge[]>([])
@@ -37,12 +38,9 @@ export default function AdminBadgesPage() {
       {badges.map(b => (
         <div key={b.id} className="bg-surface rounded-xl p-5 shadow-sm space-y-3">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{b.icon}</span>
-            <input
-              value={b.icon}
-              onChange={e => update(b.id, 'icon', e.target.value)}
-              className="w-16 border rounded px-2 py-1 text-sm text-center"
-            />
+            {/* 圖示改由程式碼管理（lib/badges/icons.ts），這裡只顯示不可編輯。 */}
+            <BadgeIcon badgeId={b.id} size={26} />
+            <code className="text-xs text-gray-400" title="圖示定義於 src/lib/badges/icons.ts">{b.id}</code>
             <div
               onClick={() => update(b.id, 'is_active', !b.is_active)}
               className={`w-10 h-6 rounded-full flex items-center px-0.5 cursor-pointer transition-colors ${b.is_active ? 'bg-primary' : 'bg-gray-200'}`}

@@ -4,8 +4,10 @@ import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { localize } from '@/lib/i18n'
 import { Check } from '@phosphor-icons/react'
+import BadgeIcon from '@/components/profile/BadgeIcon'
 
-interface Badge { id: string; name_zh: string; name_i18n: Record<string, string> | null; icon: string }
+// icon 不再從 DB 取，改由 badge id 對到 lib/badges/icons.ts。
+interface Badge { id: string; name_zh: string; name_i18n: Record<string, string> | null }
 interface Ctx { showBadges: (ids: string[]) => void }
 
 const ToastCtx = createContext<Ctx>({ showBadges: () => {} })
@@ -35,7 +37,7 @@ function BadgeToast({
           <p className="text-[10px] font-semibold text-primary-dark uppercase tracking-wide">{t('badge.unlockedTitle')}</p>
           {badges.map(b => (
             <div key={b.id} className="flex items-center gap-3">
-              <span className="text-3xl leading-none">{b.icon}</span>
+              <BadgeIcon badgeId={b.id} size={30} className="shrink-0" />
               <p className="flex-1 text-sm font-bold text-gray-900">{localize(b.name_i18n, locale, b.name_zh)}</p>
               <Check size={14} weight="bold" className="text-gray-400 shrink-0" />
             </div>
@@ -58,7 +60,7 @@ export function BadgeToastProvider({ children }: { children: React.ReactNode }) 
     const supabase = createClient()
     const { data } = await supabase
       .from('badges')
-      .select('id, name_zh, name_i18n, icon')
+      .select('id, name_zh, name_i18n')
       .in('id', ids)
     if (!data?.length) return
 

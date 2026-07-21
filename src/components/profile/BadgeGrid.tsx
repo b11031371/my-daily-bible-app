@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { localize, type Locale, type TFunc } from '@/lib/i18n'
 import type { BadgeWithStatus } from '@/types/app'
+import BadgeIcon from './BadgeIcon'
 
 const CONDITION_KEYS: Record<string, string> = {
   streak:           'badge.condStreak',
@@ -23,14 +24,16 @@ function BadgeItem({ badge, t, locale }: { badge: BadgeWithStatus; t: TFunc; loc
     <div className="relative flex flex-col items-center gap-1.5 select-none">
       <div
         className={cn(
-          'text-3xl cursor-pointer transition-all duration-200 rounded-full p-1.5 active:scale-95',
+          'flex items-center justify-center cursor-pointer transition-all duration-200 rounded-full p-1.5 active:scale-95',
           badge.earned
             ? 'bg-primary-light ring-1 ring-primary hover:ring-primary hover:bg-primary-light hover:scale-110 hover:drop-shadow-[0_2px_10px_var(--color-glow)]'
-            : 'opacity-30 hover:scale-105 hover:opacity-40'
+            // 未解鎖：灰階 + 降透明度。單靠 opacity 對彩色自訂圖會糊成一團看不出形狀，
+            // 灰階則保留輪廓，讀得出「是什麼」但明顯還沒拿到。
+            : 'grayscale opacity-40 hover:scale-105 hover:opacity-55'
         )}
         onClick={() => setShow(v => !v)}
       >
-        {badge.icon}
+        <BadgeIcon badgeId={badge.id} size={30} />
       </div>
       <span className="text-xs text-center text-gray-600 leading-tight">{badgeName}</span>
 
