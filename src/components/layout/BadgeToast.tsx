@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { localize } from '@/lib/i18n'
+import { Check } from '@phosphor-icons/react'
 
 interface Badge { id: string; name_zh: string; name_i18n: Record<string, string> | null; icon: string }
 interface Ctx { showBadges: (ids: string[]) => void }
@@ -36,7 +37,7 @@ function BadgeToast({
             <div key={b.id} className="flex items-center gap-3">
               <span className="text-3xl leading-none">{b.icon}</span>
               <p className="flex-1 text-sm font-bold text-gray-900">{localize(b.name_i18n, locale, b.name_zh)}</p>
-              <span className="text-xs text-gray-400 shrink-0">✓</span>
+              <Check size={14} weight="bold" className="text-gray-400 shrink-0" />
             </div>
           ))}
         </div>

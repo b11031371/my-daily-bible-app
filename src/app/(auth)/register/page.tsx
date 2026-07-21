@@ -13,9 +13,11 @@ function calcStrength(pw: string): 0 | 1 | 2 | 3 {
   if (/[0-9]/.test(pw) && /[a-zA-Z]/.test(pw)) score++
   return score as 0 | 1 | 2 | 3
 }
-const STRENGTH_COLOR = ['', 'bg-red-400', 'bg-primary', 'bg-green-500']
+// 三段刻度全用語意色，不摻主題色：主題色當「中」時，在 forest/teal 等綠色系主題
+// 下會與「強」的綠糊在一起，刻度就讀不出來了。
+const STRENGTH_COLOR = ['', 'bg-danger', 'bg-warning', 'bg-success']
 const STRENGTH_KEY   = ['', 'auth.strengthWeak', 'auth.strengthOk', 'auth.strengthStrong']
-const STRENGTH_TEXT  = ['', 'text-red-500', 'text-primary-dark', 'text-green-600']
+const STRENGTH_TEXT  = ['', 'text-danger', 'text-warning', 'text-success']
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -68,7 +70,7 @@ export default function RegisterPage() {
         </div>
         <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
           {error && (
-            <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</div>
+            <div className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.register.nickname')}</label>
@@ -141,7 +143,7 @@ export default function RegisterPage() {
                 onChange={e => setConfirm(e.target.value)}
                 className={`w-full border rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 transition-colors ${
                   confirmMismatch
-                    ? 'border-red-300 focus:ring-red-300'
+                    ? 'border-danger-line focus:ring-danger-line'
                     : 'border-gray-200 focus:ring-primary'
                 }`}
                 placeholder={t('auth.register.confirmPlaceholder')}
@@ -159,7 +161,7 @@ export default function RegisterPage() {
               </button>
             </div>
             {confirmMismatch && (
-              <p className="mt-1 text-xs text-red-500">{t('auth.register.mismatch')}</p>
+              <p className="mt-1 text-xs text-danger">{t('auth.register.mismatch')}</p>
             )}
           </div>
           <button

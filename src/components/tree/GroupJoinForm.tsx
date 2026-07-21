@@ -67,7 +67,7 @@ export default function GroupJoinForm({ canJoin }: Props) {
           {loading ? '…' : t('group.join')}
         </button>
       </form>
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   )
 }

@@ -48,7 +48,7 @@ export default function NewGroupPage() {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
         <button
           onClick={handleCreate}

@@ -1,4 +1,5 @@
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { Confetti } from '@phosphor-icons/react'
 
 const ROTATIONS = [-2, 3, -1, 2, -3, 1, -2, 3, -1, 2]
 
@@ -82,7 +83,10 @@ export default function StampCard({ monthlyCount, monthLabel }: Props) {
       </div>
 
       {monthlyCount >= 10 && (
-        <p className="text-center text-xs text-gray-900 font-semibold mt-3">{t('checkin.stampFull')}</p>
+        <p className="flex items-center justify-center gap-1 text-xs text-gray-900 font-semibold mt-3">
+          <Confetti size={14} weight="fill" className="text-heading" />
+          {t('checkin.stampFull')}
+        </p>
       )}
       {monthlyCount > 0 && monthlyCount < 10 && (
         <p className="text-center text-xs text-gray-400 mt-3">{t('checkin.stampRemaining', { count: 10 - monthlyCount })}</p>

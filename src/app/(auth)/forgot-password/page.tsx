@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { PaperPlaneTilt } from '@phosphor-icons/react'
 
 export default function ForgotPasswordPage() {
   const { t } = useI18n()
@@ -39,14 +40,14 @@ export default function ForgotPasswordPage() {
         </div>
         {sent ? (
           <div className="bg-surface rounded-2xl shadow-sm p-6 text-center space-y-3">
-            <div className="text-4xl">📬</div>
+            <PaperPlaneTilt size={40} weight="fill" className="text-heading mx-auto" />
             <p className="font-semibold text-gray-900">{t('auth.forgot.sentTitle')}</p>
             <p className="text-sm text-gray-500">{t('auth.forgot.sentBody', { email })}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</div>
+              <div className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
             )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
-import { MagnifyingGlass, X, DownloadSimple, ListBullets, Sparkle, Copy, Check, Plus } from '@phosphor-icons/react'
+import { MagnifyingGlass, X, DownloadSimple, ListBullets, Sparkle, Copy, Check, Plus, CheckCircle } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { formatMonth } from '@/lib/utils'
 import type { ReflectionFilters } from '@/types/app'
@@ -280,7 +280,10 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
         <div className="mb-4 bg-surface rounded-2xl p-4 shadow-sm border border-gray-100">
           {/* Panel header */}
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-gray-500">{t('community.aiSearchTitle')}</span>
+            <span className="flex items-center gap-1 text-xs font-semibold text-gray-500">
+              <Sparkle size={13} weight="fill" className="text-heading" />
+              {t('community.aiSearchTitle')}
+            </span>
             <button onClick={handleClose} className="p-0.5 text-gray-300 hover:text-gray-500 transition-colors">
               <X size={15} weight="bold" />
             </button>
@@ -293,7 +296,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                 <div className="mb-3 space-y-3">
                   {/* List query chips */}
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-rose-400 mb-1.5 flex items-center gap-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-1.5 flex items-center gap-1">
                       <ListBullets size={11} weight="bold" /> {t('community.listQuery')}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -301,22 +304,22 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         <button
                           key={chip}
                           onClick={() => handleChooseFilter(chip)}
-                          className="text-xs bg-rose-50 text-rose-700 px-2.5 py-1 rounded-xl border border-rose-200 hover:bg-rose-100 transition-colors text-left"
+                          className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-xl border border-gray-200 hover:bg-gray-200 transition-colors text-left"
                         >
                           {chip}
                         </button>
                       ))}
                       {customFilterChips.map(chip => (
-                        <span key={chip} className="flex items-center gap-0.5 bg-rose-50 rounded-xl pl-2.5 pr-1 py-1 border border-rose-200">
+                        <span key={chip} className="flex items-center gap-0.5 bg-gray-100 rounded-xl pl-2.5 pr-1 py-1 border border-gray-200">
                           <button
                             onClick={() => handleChooseFilter(chip)}
-                            className="text-xs text-rose-700 hover:text-rose-900 transition-colors"
+                            className="text-xs text-gray-700 hover:text-gray-900 transition-colors"
                           >
                             {chip}
                           </button>
                           <button
                             onClick={() => saveFilterChips(customFilterChips.filter(c => c !== chip))}
-                            className="p-0.5 text-rose-300 hover:text-red-400 transition-colors"
+                            className="p-0.5 text-gray-300 hover:text-danger transition-colors"
                           >
                             <X size={10} weight="bold" />
                           </button>
@@ -391,7 +394,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                           </button>
                           <button
                             onClick={() => saveSummaryChips(customSummaryChips.filter(c => c !== chip))}
-                            className="p-0.5 text-primary hover:text-red-400 transition-colors"
+                            className="p-0.5 text-primary hover:text-danger transition-colors"
                           >
                             <X size={10} weight="bold" />
                           </button>
@@ -534,7 +537,10 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
           {/* Filter done */}
           {step === 'filter_done' && (
             <div className="space-y-2">
-              <p className="text-sm text-gray-600">{t('community.filterApplied')}</p>
+              <p className="flex items-center gap-1.5 text-sm text-gray-600">
+                <CheckCircle size={16} weight="fill" className="text-heading shrink-0" />
+                {t('community.filterApplied')}
+              </p>
               <button
                 onClick={handleClearFilter}
                 className="text-xs text-gray-400 hover:text-gray-600 transition-colors underline"
@@ -546,7 +552,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
           {/* Error */}
           {error && (
-            <p className="mt-4 text-sm text-red-500">{error}</p>
+            <p className="mt-4 text-sm text-danger">{error}</p>
           )}
 
           {/* Summary result */}
@@ -571,7 +577,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   }}
                   className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
                 >
-                  {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                  {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
                   {copied ? t('community.copied') : t('community.copyText')}
                 </button>
                 <button

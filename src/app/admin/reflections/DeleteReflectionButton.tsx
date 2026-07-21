@@ -19,7 +19,7 @@ export default function DeleteReflectionButton({ id }: { id: string }) {
         <button
           onClick={handleDelete}
           disabled={loading}
-          className="text-xs text-red-500 border border-red-200 rounded-lg px-2 py-1 hover:bg-red-50 transition-colors disabled:opacity-50"
+          className="text-xs text-danger border border-danger-line rounded-lg px-2 py-1 hover:bg-danger-soft transition-colors disabled:opacity-50"
         >
           {loading ? '...' : '確認'}
         </button>
@@ -36,7 +36,7 @@ export default function DeleteReflectionButton({ id }: { id: string }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="text-xs text-gray-300 hover:text-red-400 transition-colors shrink-0 px-1 py-1"
+      className="text-xs text-gray-300 hover:text-danger transition-colors shrink-0 px-1 py-1"
     >
       刪除
     </button>

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import GroupTreeCard from './GroupTreeCard'
-import { MagnifyingGlass, Plus } from '@phosphor-icons/react'
+import { MagnifyingGlass, Plus, Plant } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { GroupWithMembers } from '@/types/app'
 
@@ -54,7 +54,10 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
       {myGroups.length === 0 && otherGroups.length === 0 ? (
         <div className="bg-surface rounded-2xl p-6 shadow-sm text-center space-y-3">
           <p className="text-gray-500 text-sm">{t('group.noGroupsYet')}</p>
-          <p className="text-xs text-gray-400">{t('group.noGroupsHint')}</p>
+          <p className="text-xs text-gray-400">
+            {t('group.noGroupsHint')}
+            <Plant size={13} weight="fill" className="text-heading inline-block ml-1 align-text-bottom" />
+          </p>
         </div>
       ) : (
         <div className="space-y-2">

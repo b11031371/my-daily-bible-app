@@ -55,7 +55,7 @@ export default function JoinGroupModal() {
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-lg font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary uppercase"
               />
             </div>
-            {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            {error && <p className="text-sm text-danger text-center">{error}</p>}
             <div className="flex gap-2">
               <button
                 onClick={() => { setOpen(false); setCode(''); setError(null) }}

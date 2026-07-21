@@ -2,6 +2,7 @@
 import { useTransition } from 'react'
 import { approveNote, unapproveNote } from '@/app/(app)/notes/[date]/actions'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { CheckCircle, Clock } from '@phosphor-icons/react'
 
 interface Props {
   date: string
@@ -16,10 +17,14 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
   const handleUnapprove = () => startTransition(() => unapproveNote(date))
 
   return (
-    <div className={`flex items-center justify-between rounded-2xl px-4 py-3 mb-4 ${isApproved ? 'bg-green-50' : 'bg-primary-light'}`}>
+    // 已審核/待審核的差別由圖示「形狀」承擔（打勾 vs 時鐘），底色與文字一律用主題色。
+    // 先前用綠色表示已審核，在 forest/teal 這類綠色系主題下會與主色糊在一起，看不出是狀態。
+    <div className="flex items-center justify-between rounded-2xl px-4 py-3 mb-4 bg-primary-light">
       <div className="flex items-center gap-2">
-        <span className="text-sm">{isApproved ? '✅' : '🟡'}</span>
-        <span className={`text-sm font-medium ${isApproved ? 'text-green-700' : 'text-primary-dark'}`}>
+        {isApproved
+          ? <CheckCircle size={18} weight="fill" className="text-primary-dark" />
+          : <Clock size={18} weight="fill" className="text-primary-dark" />}
+        <span className="text-sm font-medium text-primary-dark">
           {isApproved ? t('approval.approved') : t('approval.pending')}
         </span>
       </div>
@@ -27,7 +32,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
         <button
           onClick={handleUnapprove}
           disabled={pending}
-          className="text-xs text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+          className="text-xs text-gray-400 hover:text-danger transition-colors disabled:opacity-50"
         >
           {pending ? t('approval.processing') : t('approval.unapprove')}
         </button>

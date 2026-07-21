@@ -4,8 +4,23 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { Check } from '@phosphor-icons/react'
 
 const AVATAR_SEEDS = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu']
+
+// 成敗狀態獨立成欄位，不再靠訊息尾端的 ✓ 判斷（先前失敗訊息與成功訊息同色同樣式，
+// 那個勾是唯一的區別）。
+type Msg = { ok: boolean; text: string } | null
+
+function StatusMsg({ msg }: { msg: Msg }) {
+  if (!msg) return null
+  return (
+    <span className={`text-xs inline-flex items-center gap-1 ${msg.ok ? 'text-gray-700' : 'text-danger'}`}>
+      {msg.ok && <Check size={12} weight="bold" />}
+      {msg.text}
+    </span>
+  )
+}
 
 interface Props {
   userId: string
@@ -23,9 +38,9 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  const [nameMsg, setNameMsg] = useState('')
-  const [avatarMsg, setAvatarMsg] = useState('')
-  const [pwMsg, setPwMsg] = useState('')
+  const [nameMsg, setNameMsg] = useState<Msg>(null)
+  const [avatarMsg, setAvatarMsg] = useState<Msg>(null)
+  const [pwMsg, setPwMsg] = useState<Msg>(null)
   const [loading, setLoading] = useState<'name' | 'avatar' | 'pw' | null>(null)
 
   async function saveName() {
@@ -33,9 +48,9 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
     setLoading('name')
     const { error } = await supabase.from('profiles').update({ display_name: name.trim() }).eq('id', userId)
     setLoading(null)
-    setNameMsg(error ? t('settings.saveFail') : t('settings.nameUpdated'))
+    setNameMsg(error ? { ok: false, text: t('settings.saveFail') } : { ok: true, text: t('settings.nameUpdated') })
     if (!error) router.refresh()
-    setTimeout(() => setNameMsg(''), 3000)
+    setTimeout(() => setNameMsg(null), 3000)
   }
 
   async function saveAvatar(newSeed: string) {
@@ -43,25 +58,25 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
     setLoading('avatar')
     const { error } = await supabase.from('profiles').update({ avatar_seed: newSeed }).eq('id', userId)
     setLoading(null)
-    setAvatarMsg(error ? t('settings.saveFail') : t('settings.avatarUpdated'))
+    setAvatarMsg(error ? { ok: false, text: t('settings.saveFail') } : { ok: true, text: t('settings.avatarUpdated') })
     if (!error) router.refresh()
-    setTimeout(() => setAvatarMsg(''), 3000)
+    setTimeout(() => setAvatarMsg(null), 3000)
   }
 
   async function savePassword() {
-    if (newPassword.length < 6) { setPwMsg(t('auth.pwTooShort')); return }
-    if (newPassword !== confirmPassword) { setPwMsg(t('settings.pwMismatch')); return }
+    if (newPassword.length < 6) { setPwMsg({ ok: false, text: t('auth.pwTooShort') }); return }
+    if (newPassword !== confirmPassword) { setPwMsg({ ok: false, text: t('settings.pwMismatch') }); return }
     setLoading('pw')
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     setLoading(null)
     if (error) {
-      setPwMsg(t('settings.updateFail'))
+      setPwMsg({ ok: false, text: t('settings.updateFail') })
     } else {
-      setPwMsg(t('settings.pwUpdated'))
+      setPwMsg({ ok: true, text: t('settings.pwUpdated') })
       setNewPassword('')
       setConfirmPassword('')
     }
-    setTimeout(() => setPwMsg(''), 3000)
+    setTimeout(() => setPwMsg(null), 3000)
   }
 
   return (
@@ -79,7 +94,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           maxLength={20}
         />
         <div className="flex items-center justify-between">
-          {nameMsg ? <span className="text-xs text-gray-700">{nameMsg}</span> : <span />}
+          {nameMsg ? <StatusMsg msg={nameMsg} /> : <span />}
           <button
             onClick={saveName}
             disabled={loading === 'name' || !name.trim() || name.trim() === initialName}
@@ -106,7 +121,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
             </button>
           ))}
         </div>
-        {avatarMsg && <p className="text-xs text-gray-700">{avatarMsg}</p>}
+        {avatarMsg && <p><StatusMsg msg={avatarMsg} /></p>}
       </section>
 
       {/* 密碼 */}
@@ -129,7 +144,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           placeholder={t('settings.confirmPwPlaceholder')}
         />
         <div className="flex items-center justify-between">
-          {pwMsg ? <span className="text-xs text-gray-700">{pwMsg}</span> : <span />}
+          {pwMsg ? <StatusMsg msg={pwMsg} /> : <span />}
           <button
             onClick={savePassword}
             disabled={loading === 'pw' || !newPassword}

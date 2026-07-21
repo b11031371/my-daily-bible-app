@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { PencilSimple, Check } from '@phosphor-icons/react'
 
 interface Props {
   groupId: string
@@ -77,7 +78,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               className="text-sm text-gray-700 hover:text-gray-900 flex items-center gap-1.5"
             >
               <span>{groupName}</span>
-              <span className="text-gray-300 text-xs">✎</span>
+              <PencilSimple size={13} className="text-gray-300" />
             </button>
           )}
         </div>
@@ -95,7 +96,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               onClick={handleCopyCode}
               className="text-xs btn-gradient text-gray-900 font-medium px-3 py-3 rounded-xl hover:brightness-95 transition-[filter]"
             >
-              {copied ? '✓' : t('group.copy')}
+              {copied ? <Check size={16} weight="bold" className="mx-auto" /> : t('group.copy')}
             </button>
           </div>
           <button
@@ -120,7 +121,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               <button
                 onClick={handleLeave}
                 disabled={leaving}
-                className="flex-1 text-sm text-red-500 border border-red-200 rounded-xl py-2.5 hover:bg-red-50 transition-colors disabled:opacity-50"
+                className="flex-1 text-sm text-danger border border-danger-line rounded-xl py-2.5 hover:bg-danger-soft transition-colors disabled:opacity-50"
               >
                 {leaving ? t('group.leaving') : t('group.confirmLeave')}
               </button>

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { todayString } from '@/lib/utils'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import { SealCheck } from '@phosphor-icons/react'
 
 const SS_KEY = `checkin:${todayString()}`
 
@@ -23,7 +24,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
   if (checkedIn) {
     return (
       <div className="bg-surface rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
-        <span className="text-xl">✅</span>
+        <SealCheck size={22} weight="fill" className="text-heading" />
         <span className="text-sm font-semibold text-heading">{t('checkin.quickDone')}</span>
       </div>
     )
@@ -58,9 +59,9 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
       <button
         onClick={handleCheckin}
         disabled={loading}
-        className="w-full btn-gradient text-gray-900 rounded-[14px] px-5 py-4 text-sm font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
+        className="w-full btn-gradient text-gray-900 rounded-[14px] px-5 py-4 text-sm font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
       >
-        {loading ? t('checkin.checkingIn') : t('checkin.quickButton')}
+        {loading ? t('checkin.checkingIn') : <><SealCheck size={18} weight="fill" />{t('checkin.quickButton')}</>}
       </button>
     </div>
   )

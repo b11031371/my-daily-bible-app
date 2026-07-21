@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Heart, PencilSimple, Trash, ChatCircle, Check, X } from '@phosphor-icons/react'
+import { Heart, PencilSimple, Trash, ChatCircle, Check, X, BookOpen } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import { localizeBibleRange } from '@/lib/bible-books'
@@ -105,7 +105,7 @@ function CommentItem({
                   </button>
                 )}
                 {canDelete && (
-                  <button onClick={() => onDelete(comment.id)} className="p-0.5 text-gray-300 hover:text-red-400 transition-colors">
+                  <button onClick={() => onDelete(comment.id)} className="p-0.5 text-gray-300 hover:text-danger transition-colors">
                     <Trash size={11} />
                   </button>
                 )}
@@ -299,7 +299,7 @@ function ReflectionCard({
               confirmDelete ? (
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-400">{t('community.confirmDelete')}</span>
-                  <button onClick={handleDelete} className="text-xs text-red-500 font-medium hover:text-red-600">{t('community.delete')}</button>
+                  <button onClick={handleDelete} className="text-xs text-danger font-medium hover:opacity-70 transition-opacity">{t('community.delete')}</button>
                   <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-600">{t('common.cancel')}</button>
                 </div>
               ) : (
@@ -313,7 +313,7 @@ function ReflectionCard({
                   </button>
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="p-1 text-gray-300 hover:text-red-400 transition-colors"
+                    className="p-1 text-gray-300 hover:text-danger transition-colors"
                     aria-label={t('community.delete')}
                   >
                     <Trash size={14} weight="regular" />
@@ -458,7 +458,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-semibold text-heading">{formatDate(date, locale)}</span>
                 {bibleRange && (
-                  <span className="text-xs text-primary-dark">📖 {localizeBibleRange(bibleRange, locale)}</span>
+                  <span className="text-xs text-primary-dark inline-flex items-center gap-1"><BookOpen size={13} weight="fill" /> {localizeBibleRange(bibleRange, locale)}</span>
                 )}
               </div>
               <Link

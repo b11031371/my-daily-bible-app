@@ -5,6 +5,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import MarkdownRenderer from './MarkdownRenderer'
 import ReflectionForm from '@/components/community/ReflectionForm'
 import ApprovalBanner from './ApprovalBanner'
+import { FilePdf, ChatCircle } from '@phosphor-icons/react'
 
 interface Props {
   date: string
@@ -71,7 +72,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           /* PDF embed fallback when no markdown available */
           <div>
             <div className="bg-primary-light px-4 py-2 text-xs text-gray-500 flex items-center gap-1.5">
-              <span>📄</span> {t('noteView.pdfDisplay')}
+              <FilePdf size={14} /> {t('noteView.pdfDisplay')}
             </div>
             <iframe
               src={`${pdfUrl}#toolbar=0`}
@@ -85,7 +86,10 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
 
       {/* Reflection form */}
       <div id="reflection" className="bg-surface rounded-2xl shadow-sm p-5">
-        <h3 className="text-sm font-semibold text-heading mb-3">{t('noteView.shareThoughts')}</h3>
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-heading mb-3">
+          <ChatCircle size={16} weight="fill" />
+          {t('noteView.shareThoughts')}
+        </h3>
         <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
       </div>
     </div>

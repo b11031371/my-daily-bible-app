@@ -31,6 +31,18 @@
   --color-gray-700: #4F3425;
   --color-gray-800: #3B2214;
   --color-gray-900: #2C1A0E;
+
+  /* ── 語意色 ────────────────────────────────────────────────────────────────
+     顏色本身就是訊息（錯誤/警告/成功），故與 data-theme 正交：7 個主題共用同一
+     組，只在 data-mode="dark" 調亮度。必須寫字面色碼，不可用 var()——@theme 會
+     裁掉 var 值（同 --color-heading 的坑，見下方註解）。
+     注意：「成功」不含「已審核」狀態——綠色在 forest/teal 主題會與主色糊在一起，
+     該狀態改由圖示形狀（CheckCircle vs Clock）表達，顏色回歸主題色。 */
+  --color-danger:       #C0563D;   /* 錯誤訊息文字、刪除操作 */
+  --color-danger-soft:  #FDF0EC;   /* 錯誤訊息底、刪除 hover 底 */
+  --color-danger-line:  #EFC3B7;   /* 錯誤輸入框邊框、刪除按鈕外框 */
+  --color-warning:      #D08A2C;   /* 密碼強度「中」 */
+  --color-success:      #3F8F5F;   /* 密碼強度「強」、複製成功 */
 }
 
 /* ── Themes ──────────────────────────────────────────────────────────────────
@@ -146,6 +158,13 @@
 
   /* 深色模式標題改用較亮的主色（primary-dark 在暗底可能太深看不清） */
   --color-heading: var(--color-primary);
+
+  /* 語意色：暗底提亮文字色、soft/line 由淺底改為深底 */
+  --color-danger:       #E8907A;
+  --color-danger-soft:  #35211A;
+  --color-danger-line:  #5C3328;
+  --color-warning:      #E0A552;
+  --color-success:      #7FBF95;
 }
 
 body {

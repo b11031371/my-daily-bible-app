@@ -6,7 +6,7 @@ import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
 import QuickCheckinButton from '@/components/notes/QuickCheckinButton'
-import { Fire, Users, ChatCircle, Medal } from '@phosphor-icons/react/dist/ssr'
+import { Fire, Users, ChatCircle, Medal, Check } from '@phosphor-icons/react/dist/ssr'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import type { Profile } from '@/types/app'
 
@@ -135,7 +135,7 @@ export default async function NotesPage() {
               <div key={date} className="flex-1 flex flex-col items-center gap-1">
                 <div className={`w-full aspect-square rounded-lg flex items-center justify-center text-sm
                   ${done && !isRetro ? 'btn-gradient text-gray-900 font-black' : done && isRetro ? 'bg-primary/40 text-gray-700 font-black' : isToday ? 'border-2 border-primary text-gray-800' : 'bg-gray-100 text-gray-300'}`}>
-                  {done ? '✓' : ''}
+                  {done && <Check size={14} weight="bold" />}
                 </div>
                 <span className="text-[10px] text-gray-400">{date.slice(8)}</span>
               </div>

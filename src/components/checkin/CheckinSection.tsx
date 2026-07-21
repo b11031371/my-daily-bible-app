@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { todayString, formatDate, formatMonth } from '@/lib/utils'
 import { POINTS_BY_DAYS_LATE } from '@/lib/points'
 import StampCard from '@/components/checkin/StampCard'
-import { Fire, Star, Diamond } from '@phosphor-icons/react'
+import { Fire, Star, Diamond, Confetti, SealCheck } from '@phosphor-icons/react'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { Locale, TFunc } from '@/lib/i18n'
@@ -75,22 +75,25 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
         <p className="text-sm font-medium text-gray-500 mb-3">{t('checkin.todayLabel', { date: formatDate(today, locale) })}</p>
         {result ? (
           <div className="text-center py-4">
-            <div className="text-3xl mb-2">🎉</div>
+            <Confetti size={34} weight="fill" className="text-heading mx-auto mb-2" />
             <p className="font-bold text-gray-900">{t('checkin.resultPoints', { points: result.points, days: checkinDays })}</p>
             {result.badges.length > 0 && (
               <p className="text-sm text-accent mt-1">{t('checkin.unlockedBadges', { badges: result.badges.join(' ') })}</p>
             )}
           </div>
         ) : checkedDates[today] !== undefined ? (
-          <div className="text-center py-4 text-gray-800 font-medium">{t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}</div>
+          <div className="flex items-center justify-center gap-1.5 py-4 text-gray-800 font-medium">
+            <SealCheck size={18} weight="fill" className="text-heading" />
+            {t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}
+          </div>
         ) : (
           <div className="animated-border rounded-xl">
             <button
               onClick={() => doCheckin(today)}
               disabled={loading}
-              className="w-full btn-gradient text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50"
+              className="w-full btn-gradient text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
             >
-              {loading ? t('checkin.checkingIn') : t('checkin.checkInNow')}
+              {loading ? t('checkin.checkingIn') : <><SealCheck size={20} weight="fill" />{t('checkin.checkInNow')}</>}
             </button>
           </div>
         )}
