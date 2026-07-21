@@ -3,10 +3,14 @@ import { useState, useEffect } from 'react'
 import type { Badge } from '@/types/app'
 import BadgeIcon from '@/components/profile/BadgeIcon'
 
+// 成敗獨立成欄位，並保留伺服器回傳的原因——先前一律顯示「儲存失敗」，
+// 會把「migration 未套用」這類可行動的訊息吞掉。
+type Msg = { ok: boolean; text: string } | null
+
 export default function AdminBadgesPage() {
   const [badges, setBadges] = useState<Badge[]>([])
   const [saving, setSaving] = useState<string | null>(null)
-  const [msg, setMsg] = useState('')
+  const [msg, setMsg] = useState<Msg>(null)
 
   useEffect(() => {
     fetch('/api/admin/badges').then(r => r.json()).then(setBadges)
@@ -14,15 +18,17 @@ export default function AdminBadgesPage() {
 
   async function save(badge: Badge) {
     setSaving(badge.id)
-    setMsg('')
+    setMsg(null)
     const res = await fetch('/api/admin/badges', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(badge),
     })
+    const data = await res.json().catch(() => ({}))
     setSaving(null)
-    setMsg(res.ok ? '已儲存' : '儲存失敗')
-    setTimeout(() => setMsg(''), 2000)
+    setMsg(res.ok ? { ok: true, text: '已儲存' } : { ok: false, text: data.error ?? '儲存失敗' })
+    // 失敗訊息通常較長且需要讀，留久一點
+    setTimeout(() => setMsg(null), res.ok ? 2000 : 8000)
   }
 
   function update(id: string, field: keyof Badge, value: string | number | boolean) {
@@ -33,7 +39,11 @@ export default function AdminBadgesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">徽章管理</h1>
-        {msg && <span className="text-sm text-gray-700">{msg}</span>}
+        {msg && (
+          <span className={`text-sm text-right ${msg.ok ? 'text-gray-700' : 'text-danger'}`}>
+            {msg.text}
+          </span>
+        )}
       </div>
       {badges.map(b => (
         <div key={b.id} className="bg-surface rounded-xl p-5 shadow-sm space-y-3">
