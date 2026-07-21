@@ -33,6 +33,21 @@ export default async function SettingsPage() {
         initialName={profile?.display_name ?? ''}
         initialSeed={profile?.avatar_seed ?? 'alpha'}
       />
+
+      {/* 徽章圖示的出處標示。Twemoji 為 CC-BY 4.0，授權要求標註原始創作者；
+          該專案明示設定頁是行動 app 可接受的標註位置。 */}
+      <p className="pt-2 text-center text-[11px] leading-relaxed text-gray-400">
+        {t('settings.creditsBadges')}
+        {' · '}
+        <a
+          href="https://creativecommons.org/licenses/by/4.0/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 hover:text-gray-600 transition-colors"
+        >
+          {t('settings.creditsLicense')}
+        </a>
+      </p>
     </div>
   )
 }

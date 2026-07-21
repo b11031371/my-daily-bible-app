@@ -110,6 +110,9 @@ export const en = {
     newPwPlaceholder: 'New password (at least 6 characters)',
     confirmPwPlaceholder: 'Confirm new password',
     updating: 'Updating…',
+    // 徽章圖示來源標示。Twemoji 採 CC-BY 4.0，授權要求標註原始創作者。
+    creditsBadges: 'Badge icons from Twemoji by Twitter, Inc. and other contributors',
+    creditsLicense: 'Licensed under CC-BY 4.0',
     updatePassword: 'Update password',
     theme: 'Theme',
     themeGold: 'Gold',

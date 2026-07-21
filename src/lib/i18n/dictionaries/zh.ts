@@ -110,6 +110,9 @@ export const zh: Dictionary = {
     newPwPlaceholder: '新密碼（至少 6 個字元）',
     confirmPwPlaceholder: '確認新密碼',
     updating: '更新中...',
+    // 徽章圖示來源標示。Twemoji 採 CC-BY 4.0，授權要求標註原始創作者。
+    creditsBadges: '徽章圖示來自 Twemoji，由 Twitter, Inc. 及貢獻者製作',
+    creditsLicense: '採用 CC-BY 4.0 授權',
     updatePassword: '更新密碼',
     theme: '主題',
     themeGold: '金黃',

@@ -108,6 +108,9 @@ export const tl: DeepPartial<Dictionary> = {
     newPwPlaceholder: 'Bagong password (hindi bababa sa 6 na karakter)',
     confirmPwPlaceholder: 'Kumpirmahin ang bagong password',
     updating: 'Ina-update…',
+    // 徽章圖示來源標示。Twemoji 採 CC-BY 4.0，授權要求標註原始創作者。
+    creditsBadges: 'Mga badge icon mula sa Twemoji ng Twitter, Inc. at iba pang contributors',
+    creditsLicense: 'Nasa ilalim ng lisensyang CC-BY 4.0',
     updatePassword: 'I-update ang password',
   },
   badge: {

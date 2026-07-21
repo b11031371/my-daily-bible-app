@@ -27,9 +27,10 @@ function BadgeItem({ badge, t, locale }: { badge: BadgeWithStatus; t: TFunc; loc
           'flex items-center justify-center cursor-pointer transition-all duration-200 rounded-full p-1.5 active:scale-95',
           badge.earned
             ? 'bg-primary-light ring-1 ring-primary hover:ring-primary hover:bg-primary-light hover:scale-110 hover:drop-shadow-[0_2px_10px_var(--color-glow)]'
-            // 未解鎖：灰階 + 降透明度。單靠 opacity 對彩色自訂圖會糊成一團看不出形狀，
-            // 灰階則保留輪廓，讀得出「是什麼」但明顯還沒拿到。
-            : 'grayscale opacity-40 hover:scale-105 hover:opacity-55'
+            // 未解鎖：灰階 + 虛線空框。Twemoji 是扁平純色，灰階後輪廓完整保留，
+            // 讀得出「是什麼」；虛線框則表達「這格還沒填滿」，比單純調淡更接近
+            // 收集冊的語彙（調淡看起來像壞掉或停用）。
+            : 'border border-dashed border-gray-300 grayscale opacity-50 hover:scale-105 hover:opacity-70'
         )}
         onClick={() => setShow(v => !v)}
       >
