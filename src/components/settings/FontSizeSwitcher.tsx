@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 
 const OPTIONS = [
@@ -11,10 +11,18 @@ const OPTIONS = [
 
 export default function FontSizeSwitcher() {
   const { t } = useI18n()
-  const [current, setCurrent] = useState<string>(() => {
-    if (typeof window === 'undefined') return '16px'
-    return localStorage.getItem('bible-font-size') ?? '16px'
-  })
+  // 初值必須跟 server 算出來的一樣，否則存過非預設字級的人會 hydration mismatch。
+  // 真正的字級在 layout 的 inline script 就套到 <html> 上了，這裡只是要把「哪一顆
+  // 是選中的」補正回來，掛載後再讀（與 ThemeSwitcher 同一套做法）。
+  const [current, setCurrent] = useState('16px')
+
+  useEffect(() => {
+    setCurrent(
+      document.documentElement.style.fontSize ||
+        localStorage.getItem('bible-font-size') ||
+        '16px',
+    )
+  }, [])
 
   function apply(size: string) {
     document.documentElement.style.fontSize = size
