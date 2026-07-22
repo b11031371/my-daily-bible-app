@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { formatDateZH, todayString } from '@/lib/utils'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
-import { setApprovalMode } from './actions'
+import { setApprovalMode, setQuizAiOpen, setQuizOpen } from './actions'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -11,11 +11,15 @@ export default async function AdminDashboard() {
     { count: checkinCount },
     { count: reflectionCount },
     { data: approvalSetting },
+    { data: quizAiSetting },
+    { data: quizOpenSetting },
     { data: recentCheckins },
   ] = await Promise.all([
     supabase.from('checkins').select('*', { count: 'exact', head: true }).eq('note_date', today),
     supabase.from('reflections').select('*', { count: 'exact', head: true }).eq('note_date', today),
     (supabase as any).from('app_settings').select('value').eq('key', 'approval_mode').single(),
+    (supabase as any).from('app_settings').select('value').eq('key', 'quiz_ai_open').maybeSingle(),
+    (supabase as any).from('app_settings').select('value').eq('key', 'quiz_open').maybeSingle(),
     supabase
       .from('checkins')
       .select('note_date, is_retro, checked_in_at, profiles(display_name, avatar_seed)')
@@ -25,6 +29,8 @@ export default async function AdminDashboard() {
   ])
 
   const approvalMode = (approvalSetting as any)?.value === 'true'
+  const quizAiOpen = (quizAiSetting as any)?.value === 'true'
+  const quizOpen = (quizOpenSetting as any)?.value === 'true'
 
   // Group checkins by date
   type CheckinRow = { note_date: string; is_retro: boolean; profiles: { display_name: string; avatar_seed: string } | null }
@@ -54,6 +60,42 @@ export default async function AdminDashboard() {
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${approvalMode ? 'bg-primary' : 'bg-gray-200'}`}
           >
             <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${approvalMode ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </form>
+      </div>
+
+      {/* Quiz feature toggle */}
+      <div className="bg-surface rounded-xl p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p className="font-medium text-gray-900">開放搶答測驗</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {quizOpen ? '開啟中 · 所有登入用戶都能建立與主持測驗' : '關閉中 · 一般用戶點入口只會看到「敬請期待」，僅 admin 可用'}
+          </p>
+        </div>
+        <form action={setQuizOpen.bind(null, !quizOpen)}>
+          <button
+            type="submit"
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${quizOpen ? 'bg-primary' : 'bg-gray-200'}`}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${quizOpen ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </form>
+      </div>
+
+      {/* Quiz AI toggle */}
+      <div className="bg-surface rounded-xl p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p className="font-medium text-gray-900">開放一般用戶用 AI 出題</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {quizAiOpen ? '開啟中 · 所有登入用戶都能用 AI 產生測驗題目' : '關閉中 · 只有 admin 能用 AI 出題'}
+          </p>
+        </div>
+        <form action={setQuizAiOpen.bind(null, !quizAiOpen)}>
+          <button
+            type="submit"
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${quizAiOpen ? 'bg-primary' : 'bg-gray-200'}`}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${quizAiOpen ? 'translate-x-6' : 'translate-x-1'}`} />
           </button>
         </form>
       </div>

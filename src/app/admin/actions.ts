@@ -18,3 +18,24 @@ export async function setApprovalMode(enabled: boolean) {
   revalidatePath('/notes/[date]', 'page')
   revalidatePath('/admin')
 }
+
+// 搶答測驗的總開關。關閉時一般用戶在社群頁還是看得到入口圖示，
+// 但點下去只跳「敬請期待」；admin 不受影響，可以先備題試玩。
+export async function setQuizOpen(enabled: boolean) {
+  const { supabase } = await assertAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from('app_settings').update({ value: enabled ? 'true' : 'false' }).eq('key', 'quiz_open')
+  revalidatePath('/community')
+  revalidatePath('/quiz')
+  revalidatePath('/admin')
+}
+
+// 關閉時只有 admin 用得了 AI 出題（/api/quiz/generate 會再擋一次），
+// 打開就等於把 API 成本開放給所有登入用戶，所以預設是關的。
+export async function setQuizAiOpen(enabled: boolean) {
+  const { supabase } = await assertAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from('app_settings').update({ value: enabled ? 'true' : 'false' }).eq('key', 'quiz_ai_open')
+  revalidatePath('/quiz/new')
+  revalidatePath('/admin')
+}

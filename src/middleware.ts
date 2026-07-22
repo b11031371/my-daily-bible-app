@@ -30,7 +30,9 @@ export async function middleware(request: NextRequest) {
   const isAdminPage = pathname.startsWith('/admin')
   const isPublicPage = isAuthPage ||
     pathname.startsWith('/forgot-password') ||
-    pathname.startsWith('/auth/')
+    pathname.startsWith('/auth/') ||
+    // 搶答測驗的玩家頁：現場的人用 PIN + 暱稱就能玩，不必先辦帳號
+    pathname.startsWith('/play')
 
   if (!user && !isPublicPage) {
     return NextResponse.redirect(new URL('/login', request.url))

@@ -67,3 +67,74 @@ export interface CheckinResult {
   streak_current: number
   badges_unlocked: string[]
 }
+
+// ── 測驗 ─────────────────────────────────────────────────────────────────────
+
+export type Quiz = Database['public']['Tables']['quizzes']['Row']
+export type QuizQuestion = Database['public']['Tables']['quiz_questions']['Row']
+export type QuizRoom = Database['public']['Tables']['quiz_rooms']['Row']
+export type QuizRoomStatus = QuizRoom['status']
+
+export interface QuizWithCount extends Quiz {
+  question_count: number
+  /** 目前還開著的房間 PIN，有值代表這份測驗正在進行中 */
+  active_pin: string | null
+}
+
+/** 編輯器在前端操作的形狀：沒有 id，整包送出後由伺服器重建 */
+export interface QuizQuestionDraft {
+  prompt: string
+  options: string[]
+  correct_index: number
+  explanation: string | null
+  time_limit_seconds: number
+}
+
+export interface QuizRoomPlayerView {
+  id: string
+  nickname: string
+  avatar_seed: string
+  score: number
+}
+
+/**
+ * 玩家端看到的題目。correct_index / explanation / distribution 只有在
+ * status='reveal' 時才由伺服器填入——答題階段這些欄位一定是 undefined。
+ */
+export interface QuizQuestionView {
+  index: number
+  prompt: string
+  options: string[]
+  time_limit_seconds: number
+  answered_count: number
+  total_players: number
+  correct_index?: number
+  explanation?: string | null
+  my_choice?: number | null
+  my_points?: number
+  distribution?: number[]
+}
+
+export interface QuizRoomState {
+  /** 伺服器時間，client 用它校正時鐘後才算倒數 */
+  server_now: string
+  room: {
+    pin: string
+    status: QuizRoomStatus
+    current_index: number
+    total_questions: number
+    question_started_at: string | null
+  }
+  quiz: { title: string }
+  is_host: boolean
+  me: {
+    player_id: string
+    nickname: string
+    avatar_seed: string
+    score: number
+    rank: number
+    answered: boolean
+  } | null
+  players: QuizRoomPlayerView[]
+  question: QuizQuestionView | null
+}

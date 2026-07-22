@@ -255,6 +255,162 @@ export interface Database {
         }
         Relationships: []
       }
+      quizzes: {
+        Row: {
+          id: string
+          owner_id: string
+          title: string
+          description: string | null
+          bible_range: string | null
+          source_note_date: string | null
+          origin: 'manual' | 'ai'
+          language: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          title: string
+          description?: string | null
+          bible_range?: string | null
+          source_note_date?: string | null
+          origin?: 'manual' | 'ai'
+          language?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          description?: string | null
+          bible_range?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          id: string
+          quiz_id: string
+          order_index: number
+          prompt: string
+          options: string[]
+          correct_index: number
+          explanation: string | null
+          time_limit_seconds: number
+        }
+        Insert: {
+          id?: string
+          quiz_id: string
+          order_index: number
+          prompt: string
+          options: string[]
+          correct_index: number
+          explanation?: string | null
+          time_limit_seconds?: number
+        }
+        Update: {
+          order_index?: number
+          prompt?: string
+          options?: string[]
+          correct_index?: number
+          explanation?: string | null
+          time_limit_seconds?: number
+        }
+        Relationships: []
+      }
+      quiz_rooms: {
+        Row: {
+          id: string
+          quiz_id: string
+          host_id: string
+          pin: string
+          status: 'lobby' | 'question' | 'reveal' | 'ended'
+          current_index: number
+          question_started_at: string | null
+          allow_guests: boolean
+          created_at: string
+          ended_at: string | null
+        }
+        Insert: {
+          id?: string
+          quiz_id: string
+          host_id: string
+          pin: string
+          status?: 'lobby' | 'question' | 'reveal' | 'ended'
+          current_index?: number
+          question_started_at?: string | null
+          allow_guests?: boolean
+          created_at?: string
+          ended_at?: string | null
+        }
+        Update: {
+          status?: 'lobby' | 'question' | 'reveal' | 'ended'
+          current_index?: number
+          question_started_at?: string | null
+          ended_at?: string | null
+        }
+        Relationships: []
+      }
+      quiz_room_players: {
+        Row: {
+          id: string
+          room_id: string
+          user_id: string | null
+          nickname: string
+          avatar_seed: string
+          token: string
+          score: number
+          correct_count: number
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          room_id: string
+          user_id?: string | null
+          nickname: string
+          avatar_seed?: string
+          token: string
+          score?: number
+          correct_count?: number
+          joined_at?: string
+        }
+        Update: {
+          nickname?: string
+          avatar_seed?: string
+          score?: number
+          correct_count?: number
+        }
+        Relationships: []
+      }
+      quiz_answers: {
+        Row: {
+          id: string
+          room_id: string
+          player_id: string
+          question_id: string | null
+          question_index: number
+          choice_index: number
+          is_correct: boolean
+          points: number
+          elapsed_ms: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          room_id: string
+          player_id: string
+          question_id?: string | null
+          question_index: number
+          choice_index: number
+          is_correct: boolean
+          points: number
+          elapsed_ms: number
+          created_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -276,6 +432,16 @@ export interface Database {
       }
       fn_admin_checkin: {
         Args: { p_user_id: string; p_note_date: string; p_points: number }
+        Returns: Json
+      }
+      fn_submit_quiz_answer: {
+        Args: {
+          p_pin: string
+          p_player_id: string
+          p_token: string
+          p_question_index: number
+          p_choice_index: number
+        }
         Returns: Json
       }
     }

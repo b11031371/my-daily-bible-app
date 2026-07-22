@@ -1,4 +1,6 @@
 import { createClient, getUser } from '@/lib/supabase/server'
+import { getQuizAccess } from '@/lib/quiz-access'
+import QuizEntryButton from '@/components/quiz/QuizEntryButton'
 import TitleDivider from '@/components/layout/TitleDivider'
 import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
@@ -87,12 +89,18 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const canCreateOrJoin = myGroups.length < TREE_CONFIG.maxGroups
 
   const currentUserIsAdmin = myProfile?.role === 'admin'
+  const quizAccess = await getQuizAccess(supabase, user!.id)
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
       <div className="flex items-center gap-2">
         <h1 className="page-title font-bold text-heading">{t('nav.community')}</h1>
         <CommunityInfoButton />
+
+        {/* 搶答測驗的入口。底部導覽已經滿了（4 格），所以收在這裡當一顆小圖示 ——
+            社群本來就是「大家一起做點什麼」的地方。總開關關著時圖示照樣顯示，
+            但只會跳「敬請期待」 */}
+        <QuizEntryButton enabled={quizAccess.canUseQuiz} />
       </div>
       <TitleDivider />
 
