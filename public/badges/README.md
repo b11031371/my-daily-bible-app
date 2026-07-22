@@ -38,6 +38,11 @@ CC-BY 4.0 要求標示原始創作者。Twemoji 專案在 README 明示可接受
 
 1. 新檔放進這個資料夾
 2. 到 `src/lib/badges/icons.ts` 改對應的 `file`
+3. **同一個檔案裡的 `BADGE_ART_VERSION` 加一**
+
+第 3 步不能省。這些圖在 `next.config.ts` 設了一年的 immutable 快取（PWA 從背景醒來時
+才不必重抓圖，否則那一刻常常還沒連上網，圖會空白），代價是沿用同一個檔名時舊訪客的
+瀏覽器不會回來問，會一直用舊的。版號會掛成網址的 `?v=`，一改就會重抓。
 
 把 `file` 拿掉則退回 emoji 顯示，所以可以一個一個換，中途不會破圖。
 `BADGE_ICONS` 裡查不到的 badge id 會顯示 Phosphor 的 `Medal` 作為預設。

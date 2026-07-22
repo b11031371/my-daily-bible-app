@@ -11,9 +11,21 @@
  * 呈現一致——系統 emoji 由裝置字型決定長相，iOS 與 Android 使用者看到的並不同。
  * 授權要求標示出處，已放在設定頁底部（settings.credits*）與 public/badges/README.md。
  *
- * 要換掉某個徽章的圖：把新檔放進 public/badges/ 並改下面的 file 欄位。
+ * 要換掉某個徽章的圖：把新檔放進 public/badges/ 並改下面的 file 欄位，
+ * 然後把 BADGE_ART_VERSION 加一。
  * 拿掉 file 則退回 emoji，所以可以一個一個換，中途不會破圖。
  */
+
+/**
+ * 圖檔版號，會以 ?v= 掛在網址後面。
+ *
+ * 徽章圖在 next.config.ts 裡設了一年的 immutable 快取（PWA 從背景醒來時才不用重抓，
+ * 見那邊的註解）。副作用是換了圖也叫同一個檔名時，舊訪客的瀏覽器不會去問伺服器，
+ * 會一直用舊的。改動 public/badges/ 裡任何一張圖，就把這個數字加一：網址一變，
+ * 瀏覽器視為另一個資源，自然會重抓。
+ */
+export const BADGE_ART_VERSION = 1
+
 export interface BadgeIcon {
   /** 沒有 file 時的後備顯示 */
   emoji: string
