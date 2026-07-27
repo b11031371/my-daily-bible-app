@@ -78,7 +78,7 @@ export default function RegisterPage() {
               type="text"
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               placeholder={t('auth.register.nicknamePlaceholder')}
               autoComplete="nickname"
               required
@@ -90,7 +90,7 @@ export default function RegisterPage() {
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               placeholder="your@email.com"
               autoComplete="email"
               required
@@ -103,7 +103,7 @@ export default function RegisterPage() {
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 placeholder={t('auth.register.pwPlaceholder')}
                 autoComplete="new-password"
                 required
@@ -141,10 +141,10 @@ export default function RegisterPage() {
                 type={showConfirm ? 'text' : 'password'}
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
-                className={`w-full border rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 transition-colors ${
+                className={`w-full border rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus-visible:ring-2 transition-colors ${
                   confirmMismatch
-                    ? 'border-danger-line focus:ring-danger-line'
-                    : 'border-gray-200 focus:ring-primary'
+                    ? 'border-danger-line focus-visible:ring-danger-line'
+                    : 'border-gray-200 focus-visible:ring-primary'
                 }`}
                 placeholder={t('auth.register.confirmPlaceholder')}
                 autoComplete="new-password"

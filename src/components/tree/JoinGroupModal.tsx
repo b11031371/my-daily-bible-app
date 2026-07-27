@@ -52,7 +52,7 @@ export default function JoinGroupModal() {
                 placeholder={t('group.inviteCodeExample')}
                 maxLength={6}
                 autoFocus
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-lg font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary uppercase"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-lg font-mono tracking-widest text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary uppercase"
               />
             </div>
             {error && <p className="text-sm text-danger text-center">{error}</p>}

@@ -13,6 +13,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [pointsEarned, setPointsEarned] = useState(0)
+  const [error, setError] = useState('')
   const { showBadges } = useBadgeToast()
   const MAX = 1000
 
@@ -39,6 +40,7 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setError('')
     const res = await fetch('/api/reflection', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -51,6 +53,9 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
       setSubmitted(true)
       router.refresh()
       router.push(`/community?scrollTo=${date}`)
+    } else {
+      // 失敗原本靜默：按鈕彈回、文字還在框裡，看起來像沒送出也像送出了。
+      setError(t('community.submitFail'))
     }
     setLoading(false)
   }
@@ -82,8 +87,9 @@ export default function ReflectionForm({ date, bibleRange }: { date: string; bib
         maxLength={MAX}
         rows={4}
         placeholder={t('community.thoughtPlaceholder')}
-        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm leading-6 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm leading-6 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       />
+      {error && <p className="text-xs text-danger mt-1.5">{error}</p>}
       <div className="flex items-center justify-between mt-2">
         <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer select-none">
           <div

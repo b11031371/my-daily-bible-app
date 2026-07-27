@@ -27,20 +27,28 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
   // 「結束這場」的確認改成就地展開（見下方 header），不再用會蓋住整個畫面的
   // 原生 confirm()。advance 本身回歸單純執行，確認與否由呼叫端決定。
   const [confirmingEnd, setConfirmingEnd] = useState(false)
+  const [actionError, setActionError] = useState('')
 
   const advance = useCallback(async (action: Action) => {
     setConfirmingEnd(false)
+    setActionError('')
     setBusy(true)
-    await fetch(`/api/play/${pin}/advance`, {
+    const res = await fetch(`/api/play/${pin}/advance`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action }),
     })
+    // 原本不看 res.ok，推進失敗時畫面停在原地、主持人只會一直重按。
+    if (!res.ok) {
+      setBusy(false)
+      setActionError(t('quiz.actionFail'))
+      return
+    }
     // 不等下一次輪詢，按完立刻拉一次新狀態
     await mutate()
     setBusy(false)
     if (action === 'end') router.refresh()
-  }, [pin, mutate, router])
+  }, [pin, mutate, router, t])
 
   if (loading || !state) {
     return <p className="max-w-lg mx-auto px-4 pt-10 text-center text-sm text-gray-400">…</p>
@@ -98,6 +106,8 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
           )
         )}
       </div>
+
+      {actionError && <p className="text-sm text-danger text-center">{actionError}</p>}
 
       {/* ── 大廳：PIN 大字 + 陸續加入的人 ─────────────────────────────────── */}
       {room.status === 'lobby' && (

@@ -342,7 +342,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             if (e.key === 'Escape') { setAddingFilterChip(false); setNewFilterChip('') }
                           }}
                           placeholder={t('community.chipFilterPlaceholder')}
-                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                         />
                         <button
                           onClick={() => {
@@ -417,7 +417,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             if (e.key === 'Escape') { setAddingSummaryChip(false); setNewSummaryChip('') }
                           }}
                           placeholder={t('community.chipSummaryPlaceholder')}
-                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                         />
                         <button
                           onClick={() => {
@@ -459,7 +459,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   onCompositionEnd={() => { setTimeout(() => { composingRef.current = false }, 0) }}
                   onKeyDown={e => e.key === 'Enter' && !composingRef.current && !isLoading && handleSubmit()}
                   placeholder={t('community.searchPlaceholder')}
-                  className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+                  className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 />
                 <button
                   onClick={handleSubmit}

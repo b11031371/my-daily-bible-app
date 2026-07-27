@@ -68,7 +68,7 @@ export default function QuestionEditorCard({
         rows={2}
         maxLength={200}
         placeholder={t('quiz.promptPlaceholder')}
-        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
       />
 
       <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function QuestionEditorCard({
                 disabled={disabled}
                 maxLength={80}
                 placeholder={t('quiz.optionN', { n: i + 1 })}
-                className="flex-1 min-w-0 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+                className="flex-1 min-w-0 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
               />
               <button
                 onClick={() => onChange({ correct_index: i })}
@@ -109,7 +109,7 @@ export default function QuestionEditorCard({
         disabled={disabled}
         maxLength={200}
         placeholder={t('quiz.explanationPlaceholder')}
-        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
       />
 
       <div className="flex items-center gap-2">

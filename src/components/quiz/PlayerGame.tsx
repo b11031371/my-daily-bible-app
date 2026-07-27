@@ -105,7 +105,7 @@ function JoinForm({ pin, onJoined }: { pin: string; onJoined: (id: PlayerIdentit
               onChange={e => setNickname(e.target.value)}
               maxLength={QUIZ_CONFIG.maxNicknameLength}
               placeholder={t('quiz.nicknamePlaceholder')}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             />
           </div>
         )}

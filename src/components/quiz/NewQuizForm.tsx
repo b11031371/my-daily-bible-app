@@ -117,7 +117,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
               onChange={e => setTitle(e.target.value)}
               maxLength={60}
               placeholder={t('quiz.quizTitlePlaceholder')}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             />
           </div>
 
@@ -132,7 +132,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
                   onChange={e => setBibleRange(e.target.value)}
                   maxLength={60}
                   placeholder={t('quiz.bibleRangePlaceholder')}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 />
               </div>
 
@@ -141,7 +141,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
                 <select
                   value={noteDate}
                   onChange={e => setNoteDate(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <option value="">{t('quiz.noneSelected')}</option>
                   {noteDates.map(d => (

@@ -27,7 +27,7 @@ export default function PlayPinEntry() {
             onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, QUIZ_CONFIG.pinLength))}
             placeholder={t('quiz.enterPin')}
             aria-label={t('quiz.enterPin')}
-            className="w-full border border-gray-200 rounded-2xl px-4 py-5 text-2xl tracking-[0.3em] text-center font-bold bg-surface focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-base placeholder:tracking-normal placeholder:font-normal"
+            className="w-full border border-gray-200 rounded-2xl px-4 py-5 text-2xl tracking-[0.3em] text-center font-bold bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary placeholder:text-base placeholder:tracking-normal placeholder:font-normal"
           />
           <button
             type="submit"

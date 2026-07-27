@@ -44,7 +44,7 @@ export default function NewGroupPage() {
             onChange={e => setName(e.target.value)}
             placeholder={t('group.namePlaceholder')}
             maxLength={20}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           />
         </div>
 

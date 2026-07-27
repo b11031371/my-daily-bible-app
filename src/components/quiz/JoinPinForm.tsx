@@ -28,7 +28,7 @@ export default function JoinPinForm() {
         onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, QUIZ_CONFIG.pinLength))}
         placeholder={t('quiz.enterPin')}
         aria-label={t('quiz.enterPin')}
-        className="flex-1 min-w-0 border border-gray-200 rounded-xl px-3 py-3 text-lg tracking-[0.3em] text-center font-semibold focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-sm placeholder:tracking-normal placeholder:font-normal"
+        className="flex-1 min-w-0 border border-gray-200 rounded-xl px-3 py-3 text-lg tracking-[0.3em] text-center font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary placeholder:text-sm placeholder:tracking-normal placeholder:font-normal"
       />
       <button
         type="submit"

@@ -28,6 +28,9 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
   const [checkinDays, setCheckinDays] = useState(monthlyCheckinDays)
   const [points, setPoints] = useState(monthlyPoints)
   const [checkedDates, setCheckedDates] = useState<Record<string, number>>(initialCheckins)
+  // 記哪一天失敗，而不是單純一個 error 字串——doCheckin 同時服務今日與三個補簽
+  // 列，訊息要出現在剛按下的那顆按鈕旁邊才看得懂。
+  const [failedDate, setFailedDate] = useState<string | null>(null)
 
   const pastDays = [1, 2, 3].map(n => {
     const [y, m, d] = today.split('-').map(Number)
@@ -36,6 +39,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
 
   async function doCheckin(date: string) {
     setLoading(true)
+    setFailedDate(null)
     const res = await fetch('/api/checkin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -50,7 +54,10 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       setCheckedDates(prev => ({ ...prev, [date]: data.points_earned }))
       if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
       router.refresh()
+      return
     }
+    // 失敗原本完全沒有出口：按鈕彈回來、畫面毫無變化，使用者只會以為沒按到。
+    setFailedDate(date)
   }
 
   return (
@@ -87,15 +94,20 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             {t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}
           </div>
         ) : (
-          <div className="animated-border press-wrap rounded-xl">
-            <button
-              onClick={() => doCheckin(today)}
-              disabled={loading}
-              className="w-full btn-gradient text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
-            >
-              {loading ? t('checkin.checkingIn') : <><SealCheck size={20} weight="fill" />{t('checkin.checkInNow')}</>}
-            </button>
-          </div>
+          <>
+            <div className="animated-border press-wrap rounded-xl">
+              <button
+                onClick={() => doCheckin(today)}
+                disabled={loading}
+                className="w-full btn-gradient text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
+              >
+                {loading ? t('checkin.checkingIn') : <><SealCheck size={20} weight="fill" />{t('checkin.checkInNow')}</>}
+              </button>
+            </div>
+            {failedDate === today && (
+              <p className="text-xs text-danger mt-2 text-center">{t('checkin.checkinFail')}</p>
+            )}
+          </>
         )}
       </div>
 
@@ -111,7 +123,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             const pts = POINTS_BY_DAYS_LATE[daysLate]
             return (
               <RetroRow key={date} date={date} daysLate={daysLate} points={pts}
-                isChecked={checkedDates[date] !== undefined}
+                isChecked={checkedDates[date] !== undefined} failed={failedDate === date}
                 onCheckin={() => doCheckin(date)} loading={loading} locale={locale} t={t} />
             )
           })}
@@ -121,15 +133,17 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
   )
 }
 
-function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, locale, t }: {
+function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, failed, locale, t }: {
   date: string; daysLate: number; points: number; onCheckin: () => void; loading: boolean; isChecked: boolean
-  locale: Locale; t: TFunc
+  failed: boolean; locale: Locale; t: TFunc
 }) {
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
       <div>
         <p className="text-sm text-gray-900">{formatDate(date, locale)}</p>
-        <p className="text-xs text-gray-400">{t('checkin.daysAgo', { days: daysLate, points })}</p>
+        {failed
+          ? <p className="text-xs text-danger">{t('checkin.checkinFail')}</p>
+          : <p className="text-xs text-gray-400">{t('checkin.daysAgo', { days: daysLate, points })}</p>}
       </div>
       {isChecked ? (
         <span className="text-xs text-gray-600 font-medium">{t('checkin.checked')}</span>

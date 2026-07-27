@@ -110,7 +110,7 @@ export default function QuizEditor({
             disabled={locked}
             maxLength={60}
             placeholder={t('quiz.quizTitlePlaceholder')}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
           />
         </div>
         {/* 編輯器留著這個欄位但標為選填：AI 產的測驗要改得到範圍，
@@ -123,7 +123,7 @@ export default function QuizEditor({
             disabled={locked}
             maxLength={60}
             placeholder={t('quiz.bibleRangePlaceholder')}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
           />
         </div>
       </div>

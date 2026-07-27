@@ -84,7 +84,7 @@ function CommentItem({
               onChange={e => setEditContent(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSave()}
               autoFocus
-              className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1 text-xs text-gray-900 focus:outline-none"
+              className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1 text-xs text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
             />
             <button onClick={handleSave} disabled={saving || !editContent.trim()} className="shrink-0 p-1 text-primary disabled:opacity-40">
               <Check size={14} weight="bold" />
@@ -258,7 +258,7 @@ function ReflectionCard({
             maxLength={1000}
             rows={4}
             autoFocus
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm leading-6 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm leading-6 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           />
           <div className="flex items-center justify-between mt-2">
             <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
@@ -389,7 +389,7 @@ function ReflectionCard({
                       onChange={e => setCommentInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
                       placeholder={t('community.commentPlaceholder')}
-                      className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                      className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                     />
                     <button
                       onClick={handleAddComment}

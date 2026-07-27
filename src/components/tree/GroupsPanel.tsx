@@ -40,7 +40,7 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={t('group.searchGroup')}
-            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
           />
         </div>
         {canCreateOrJoin && (

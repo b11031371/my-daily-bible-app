@@ -57,7 +57,7 @@ export default function GroupJoinForm({ canJoin }: Props) {
           onChange={e => setCode(e.target.value.toUpperCase())}
           placeholder={t('group.inviteCodePlaceholder')}
           maxLength={8}
-          className="flex-1 bg-surface border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary tracking-widest font-mono"
+          className="flex-1 bg-surface border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:border-primary tracking-widest font-mono"
         />
         <button
           type="submit"
