@@ -87,7 +87,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             {t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}
           </div>
         ) : (
-          <div className="animated-border rounded-xl">
+          <div className="animated-border press-wrap rounded-xl">
             <button
               onClick={() => doCheckin(today)}
               disabled={loading}
@@ -137,7 +137,7 @@ function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, local
         <button
           onClick={onCheckin}
           disabled={loading}
-          className="text-xs bg-primary-light text-gray-700 font-medium px-3 py-1.5 rounded-full hover:bg-primary hover:text-gray-900 transition-colors disabled:opacity-40"
+          className="text-xs bg-primary-light text-gray-700 font-medium px-3 py-1.5 rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors disabled:opacity-40"
         >
           {t('checkin.retroButton')}
         </button>

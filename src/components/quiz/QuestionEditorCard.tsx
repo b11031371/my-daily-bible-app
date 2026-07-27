@@ -38,7 +38,7 @@ export default function QuestionEditorCard({
             onClick={() => onMove(-1)}
             disabled={disabled || index === 0}
             aria-label={t('quiz.moveUp')}
-            className="p-1.5 hover:text-gray-600 transition-colors disabled:opacity-30"
+            className="p-1.5 hover:text-gray-600 active:opacity-50 transition-colors disabled:opacity-30"
           >
             <ArrowUp size={16} />
           </button>
@@ -46,7 +46,7 @@ export default function QuestionEditorCard({
             onClick={() => onMove(1)}
             disabled={disabled || index === total - 1}
             aria-label={t('quiz.moveDown')}
-            className="p-1.5 hover:text-gray-600 transition-colors disabled:opacity-30"
+            className="p-1.5 hover:text-gray-600 active:opacity-50 transition-colors disabled:opacity-30"
           >
             <ArrowDown size={16} />
           </button>
@@ -54,7 +54,7 @@ export default function QuestionEditorCard({
             onClick={onRemove}
             disabled={disabled || total === 1}
             aria-label={t('quiz.removeQuestion')}
-            className="p-1.5 hover:text-danger transition-colors disabled:opacity-30"
+            className="p-1.5 hover:text-danger active:opacity-50 transition-colors disabled:opacity-30"
           >
             <Trash size={16} />
           </button>
@@ -93,7 +93,7 @@ export default function QuestionEditorCard({
                 aria-label={t('quiz.markCorrect')}
                 aria-pressed={isCorrect}
                 className={`shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors disabled:opacity-30 ${
-                  isCorrect ? 'bg-success border-success text-white' : 'border-gray-200 text-gray-300 hover:border-success'
+                  isCorrect ? 'bg-success border-success text-white' : 'border-gray-200 text-gray-300 hover:border-success active:scale-90'
                 }`}
               >
                 <Check size={14} weight="bold" />
@@ -123,7 +123,7 @@ export default function QuestionEditorCard({
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors disabled:opacity-40 ${
                 question.time_limit_seconds === sec
                   ? 'bg-primary text-gray-900'
-                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100 active:bg-gray-200'
               }`}
             >
               {sec}s

@@ -44,7 +44,7 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
           />
         </div>
         {canCreateOrJoin && (
-          <Link href="/community/groups/new" className="shrink-0 bg-gray-100 rounded-xl p-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+          <Link href="/community/groups/new" className="shrink-0 bg-gray-100 rounded-xl p-2.5 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors">
             <Plus size={18} />
           </Link>
         )}

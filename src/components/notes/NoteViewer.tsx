@@ -54,7 +54,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           href={pdfUrl}
           target="_blank"
           rel="noreferrer"
-          className="ml-auto flex items-center gap-1 text-sm text-gray-700 font-medium px-3 py-1.5 border border-primary rounded-full hover:bg-primary hover:text-gray-900 transition-colors"
+          className="ml-auto flex items-center gap-1 text-sm text-gray-700 font-medium px-3 py-1.5 border border-primary rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors"
         >
           ↓ PDF
         </a>

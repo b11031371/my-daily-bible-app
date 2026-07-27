@@ -11,7 +11,7 @@ export default function PlayPinEntry() {
   const ready = pin.length === QUIZ_CONFIG.pinLength
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
+    <div className="min-h-svh flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-6">
         <h1 className="text-2xl font-bold text-heading text-center">{t('quiz.joinTitle')}</h1>
 

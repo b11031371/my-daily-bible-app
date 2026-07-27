@@ -302,6 +302,8 @@ export const zh: Dictionary = {
     edit: '編輯',
     host: '開房主持',
     deleteConfirm: '刪除這份測驗？題目也會一起刪掉。',
+    deleteAction: '刪除',
+    deleteFail: '刪不掉，請再試一次',
     // 建立
     newTitle: '建立測驗',
     modeManual: '自己出題',
@@ -354,6 +356,7 @@ export const zh: Dictionary = {
     seeResults: '看結果',
     endGame: '結束這場',
     endConfirm: '現在就結束這場遊戲？',
+    endAction: '結束',
     waitingPlayers: '等大家加入...',
     playersJoined: '已加入 {count} 人',
     pinLabel: '到 {url} 輸入 PIN',

@@ -24,8 +24,12 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
   const [origin, setOrigin] = useState('')
   useEffect(() => setOrigin(window.location.origin), [])
 
+  // 「結束這場」的確認改成就地展開（見下方 header），不再用會蓋住整個畫面的
+  // 原生 confirm()。advance 本身回歸單純執行，確認與否由呼叫端決定。
+  const [confirmingEnd, setConfirmingEnd] = useState(false)
+
   const advance = useCallback(async (action: Action) => {
-    if (action === 'end' && !confirm(t('quiz.endConfirm'))) return
+    setConfirmingEnd(false)
     setBusy(true)
     await fetch(`/api/play/${pin}/advance`, {
       method: 'POST',
@@ -36,7 +40,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
     await mutate()
     setBusy(false)
     if (action === 'end') router.refresh()
-  }, [pin, mutate, router, t])
+  }, [pin, mutate, router])
 
   if (loading || !state) {
     return <p className="max-w-lg mx-auto px-4 pt-10 text-center text-sm text-gray-400">…</p>
@@ -54,19 +58,44 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-8 space-y-5">
-      <div className="flex items-center justify-between gap-3">
+      <div className="relative flex items-center justify-between gap-3">
+        {/* 確認展開時點別處 = 取消 */}
+        {confirmingEnd && (
+          <div className="fixed inset-0 z-40" onClick={() => setConfirmingEnd(false)} />
+        )}
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/quiz" className="text-gray-400 hover:text-gray-600 text-lg shrink-0">‹</Link>
+          <Link href="/quiz" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg shrink-0">‹</Link>
+          {/* 標題本來就 truncate，確認條展開時再讓一點寬度出來 */}
           <h1 className="page-title font-bold text-heading truncate">{state.quiz.title}</h1>
         </div>
         {room.status !== 'ended' && (
-          <button
-            onClick={() => advance('end')}
-            disabled={busy}
-            className="shrink-0 text-xs text-gray-400 hover:text-danger transition-colors disabled:opacity-40"
-          >
-            {t('quiz.endGame')}
-          </button>
+          confirmingEnd ? (
+            <div className="relative z-50 flex items-center gap-2 shrink-0">
+              <span className="sr-only">{t('quiz.endConfirm')}</span>
+              <button
+                onClick={() => setConfirmingEnd(false)}
+                disabled={busy}
+                className="border border-gray-200 rounded-lg px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors disabled:opacity-40"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => advance('end')}
+                disabled={busy}
+                className="border border-danger-line bg-danger-soft rounded-lg px-2.5 py-1 text-xs font-semibold text-danger active:scale-95 transition-transform disabled:opacity-40"
+              >
+                {t('quiz.endAction')}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmingEnd(true)}
+              disabled={busy}
+              className="shrink-0 text-xs text-gray-400 hover:text-danger active:opacity-50 transition-colors disabled:opacity-40"
+            >
+              {t('quiz.endGame')}
+            </button>
+          )
         )}
       </div>
 
@@ -101,7 +130,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
 
             <button
               onClick={copyLink}
-              className="mt-4 block mx-auto text-xs font-medium text-primary-dark hover:underline"
+              className="mt-4 block mx-auto text-xs font-medium text-primary-dark hover:underline active:opacity-50"
             >
               {copied ? t('quiz.copied') : t('quiz.copyLink')}
             </button>
@@ -218,7 +247,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
           <Scoreboard players={players} />
           <Link
             href={`/quiz/${quizId}/edit`}
-            className="block text-center border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="block text-center border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
           >
             {t('quiz.edit')}
           </Link>

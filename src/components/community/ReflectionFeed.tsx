@@ -100,12 +100,12 @@ function CommentItem({
               <span className="text-[10px] text-gray-400">{relativeTime(comment.created_at, t)}</span>
               <div className="ml-auto flex items-center gap-1">
                 {isOwn && (
-                  <button onClick={() => setEditMode(true)} className="p-0.5 text-gray-300 hover:text-gray-500 transition-colors">
+                  <button onClick={() => setEditMode(true)} className="p-0.5 text-gray-300 hover:text-gray-500 active:opacity-50 transition-colors">
                     <PencilSimple size={11} />
                   </button>
                 )}
                 {canDelete && (
-                  <button onClick={() => onDelete(comment.id)} className="p-0.5 text-gray-300 hover:text-danger transition-colors">
+                  <button onClick={() => onDelete(comment.id)} className="p-0.5 text-gray-300 hover:text-danger active:opacity-50 transition-colors">
                     <Trash size={11} />
                   </button>
                 )}
@@ -273,7 +273,7 @@ function ReflectionCard({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setEditMode(false)}
-                className="text-xs text-gray-400 hover:text-gray-600"
+                className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50"
               >
                 {t('common.cancel')}
               </button>
@@ -299,21 +299,21 @@ function ReflectionCard({
               confirmDelete ? (
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-400">{t('community.confirmDelete')}</span>
-                  <button onClick={handleDelete} className="text-xs text-danger font-medium hover:opacity-70 transition-opacity">{t('community.delete')}</button>
-                  <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-600">{t('common.cancel')}</button>
+                  <button onClick={handleDelete} className="text-xs text-danger font-medium hover:opacity-70 active:opacity-50 transition-opacity">{t('community.delete')}</button>
+                  <button onClick={() => setConfirmDelete(false)} className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50">{t('common.cancel')}</button>
                 </div>
               ) : (
                 <div className="flex items-center gap-1">
                   <button
                     onClick={startEdit}
-                    className="p-1 text-gray-300 hover:text-gray-500 transition-colors"
+                    className="p-1 text-gray-300 hover:text-gray-500 active:opacity-50 transition-colors"
                     aria-label={t('community.edit')}
                   >
                     <PencilSimple size={14} weight="regular" />
                   </button>
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="p-1 text-gray-300 hover:text-danger transition-colors"
+                    className="p-1 text-gray-300 hover:text-danger active:opacity-50 transition-colors"
                     aria-label={t('community.delete')}
                   >
                     <Trash size={14} weight="regular" />
@@ -328,7 +328,7 @@ function ReflectionCard({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCommentsOpen(v => !v)}
-                className="flex items-center gap-1 p-1 text-gray-300 hover:text-gray-500 transition-colors"
+                className="flex items-center gap-1 p-1 text-gray-300 hover:text-gray-500 active:opacity-50 transition-colors"
                 aria-label={t('community.reply')}
               >
                 <ChatCircle size={18} weight="regular" />
@@ -355,7 +355,7 @@ function ReflectionCard({
                 >
                   {liked
                     ? <GradientHeartFill size={18} />
-                    : <Heart size={18} weight="regular" className="text-gray-300 hover:text-primary" />
+                    : <Heart size={18} weight="regular" className="text-gray-300 hover:text-primary active:opacity-50" />
                   }
                 </button>
               </div>
@@ -463,7 +463,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
               </div>
               <Link
                 href={`/notes/${date}#reflection`}
-                className="text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2"
+                className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 shrink-0 ml-2"
               >
                 {t('community.goToNote')}
               </Link>

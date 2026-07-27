@@ -90,7 +90,7 @@ export default function QuizEditor({
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-8">
       <div className="flex items-center gap-3">
-        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
+        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('quiz.editTitle')}</h1>
       </div>
       <TitleDivider />
@@ -146,7 +146,7 @@ export default function QuizEditor({
       {questions.length < QUIZ_CONFIG.maxQuestions && !locked && (
         <button
           onClick={() => update([...questions, emptyQuestion()])}
-          className="mt-4 w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-2xl py-3.5 text-sm font-medium text-gray-500 hover:border-primary hover:text-primary-dark transition-colors"
+          className="mt-4 w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-2xl py-3.5 text-sm font-medium text-gray-500 hover:border-primary hover:text-primary-dark active:opacity-50 transition-colors"
         >
           <Plus size={16} weight="bold" />
           {t('quiz.addQuestion')}

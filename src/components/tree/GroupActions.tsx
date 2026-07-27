@@ -75,7 +75,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
           ) : (
             <button
               onClick={() => setEditingName(true)}
-              className="text-sm text-gray-700 hover:text-gray-900 flex items-center gap-1.5"
+              className="text-sm text-gray-700 hover:text-gray-900 active:opacity-50 flex items-center gap-1.5"
             >
               <span>{groupName}</span>
               <PencilSimple size={13} className="text-gray-300" />
@@ -101,7 +101,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
           </div>
           <button
             onClick={handleCopyShareText}
-            className="w-full text-sm text-gray-500 hover:text-gray-700 py-1"
+            className="w-full text-sm text-gray-500 hover:text-gray-700 active:opacity-50 py-1"
           >
             {t('group.copyShareText')}
           </button>
@@ -121,7 +121,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               <button
                 onClick={handleLeave}
                 disabled={leaving}
-                className="flex-1 text-sm text-danger border border-danger-line rounded-xl py-2.5 hover:bg-danger-soft transition-colors disabled:opacity-50"
+                className="flex-1 text-sm text-danger border border-danger-line rounded-xl py-2.5 hover:bg-danger-soft active:scale-[0.98] transition-colors disabled:opacity-50"
               >
                 {leaving ? t('group.leaving') : t('group.confirmLeave')}
               </button>

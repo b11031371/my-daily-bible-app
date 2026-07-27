@@ -81,11 +81,11 @@ export default async function ProfilePage() {
         <h1 className="page-title font-bold text-heading">{t('nav.profile')}</h1>
         <div className="flex items-center gap-3">
           {profile?.role === 'admin' && (
-            <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-2.5 py-1">{t('profile.admin')}</Link>
+            <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 border border-gray-200 rounded-full px-2.5 py-1">{t('profile.admin')}</Link>
           )}
-          <Link href="/settings" className="text-gray-400 hover:text-gray-600"><Gear size={22} /></Link>
+          <Link href="/settings" className="text-gray-400 hover:text-gray-600 active:opacity-50"><Gear size={22} /></Link>
           <form action={handleSignOut}>
-            <button type="submit" className="text-sm text-gray-400 hover:text-gray-600">{t('profile.signOut')}</button>
+            <button type="submit" className="text-sm text-gray-400 hover:text-gray-600 active:opacity-50">{t('profile.signOut')}</button>
           </form>
         </div>
       </div>

@@ -302,6 +302,8 @@ export const en = {
     edit: 'Edit',
     host: 'Host',
     deleteConfirm: 'Delete this quiz? Questions will be deleted too.',
+    deleteAction: 'Delete',
+    deleteFail: 'Could not delete, please try again',
     // create
     newTitle: 'New quiz',
     modeManual: 'Write it myself',
@@ -354,6 +356,7 @@ export const en = {
     seeResults: 'See results',
     endGame: 'End game',
     endConfirm: 'End this game now?',
+    endAction: 'End',
     waitingPlayers: 'Waiting for players…',
     playersJoined: '{count} joined',
     pinLabel: 'Join at {url} with PIN',

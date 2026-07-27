@@ -25,7 +25,7 @@ export default function OpenRoomPrompt({
   return (
     <div className="max-w-lg mx-auto px-4 pt-6">
       <div className="flex items-center gap-3">
-        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
+        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('quiz.hostTitle')}</h1>
       </div>
       <TitleDivider />

@@ -59,7 +59,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-theme-bg px-4">
+    <div className="min-h-svh flex items-center justify-center bg-theme-bg px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-2">
@@ -113,7 +113,7 @@ export default function RegisterPage() {
                 onClick={() => setShowPw(v => !v)}
                 tabIndex={-1}
                 aria-label={showPw ? t('auth.hidePassword') : t('auth.showPassword')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors p-1"
               >
                 {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>
@@ -155,7 +155,7 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirm(v => !v)}
                 tabIndex={-1}
                 aria-label={showConfirm ? t('auth.hidePassword') : t('auth.showPassword')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors p-1"
               >
                 {showConfirm ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>

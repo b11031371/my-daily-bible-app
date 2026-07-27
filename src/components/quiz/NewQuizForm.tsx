@@ -70,7 +70,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-8">
       <div className="flex items-center gap-3">
-        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
+        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('quiz.newTitle')}</h1>
       </div>
       <TitleDivider />
@@ -79,7 +79,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
         <div className="space-y-3">
           <button
             onClick={() => setMode('manual')}
-            className="w-full bg-surface rounded-2xl p-5 shadow-sm text-left flex items-start gap-4 hover:shadow-md transition-shadow"
+            className="w-full bg-surface rounded-2xl p-5 shadow-sm text-left flex items-start gap-4 hover:shadow-md active:scale-[0.99] transition-shadow"
           >
             <span className="shrink-0 w-11 h-11 rounded-xl bg-primary-light text-primary-dark flex items-center justify-center">
               <PencilSimple size={22} weight="bold" />
@@ -93,7 +93,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
           <button
             onClick={() => setMode('ai')}
             disabled={!aiAvailable}
-            className="w-full bg-surface rounded-2xl p-5 shadow-sm text-left flex items-start gap-4 hover:shadow-md transition-shadow disabled:opacity-50 disabled:hover:shadow-sm"
+            className="w-full bg-surface rounded-2xl p-5 shadow-sm text-left flex items-start gap-4 hover:shadow-md active:scale-[0.99] transition-shadow disabled:opacity-50 disabled:hover:shadow-sm"
           >
             <span className="shrink-0 w-11 h-11 rounded-xl bg-accent-light text-accent flex items-center justify-center">
               <Sparkle size={22} weight="fill" />
@@ -159,7 +159,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
                       key={n}
                       onClick={() => setCount(n)}
                       className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        count === n ? 'bg-primary text-gray-900' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                        count === n ? 'bg-primary text-gray-900' : 'bg-gray-50 text-gray-500 hover:bg-gray-100 active:bg-gray-200'
                       }`}
                     >
                       {n}
@@ -176,7 +176,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
                       key={d}
                       onClick={() => setDifficulty(d)}
                       className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        difficulty === d ? 'bg-primary text-gray-900' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                        difficulty === d ? 'bg-primary text-gray-900' : 'bg-gray-50 text-gray-500 hover:bg-gray-100 active:bg-gray-200'
                       }`}
                     >
                       {t(`quiz.${d}`)}
@@ -201,7 +201,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
 
           <button
             onClick={() => { setMode(null); setError(null) }}
-            className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="w-full text-sm text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors"
           >
             {t('quiz.backToQuiz')}
           </button>

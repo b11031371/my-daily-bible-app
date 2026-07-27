@@ -95,7 +95,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
     <div className="max-w-lg mx-auto px-4 pt-4 pb-8 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <a href="/community?tab=groups" className="text-gray-400 hover:text-gray-600 text-lg">‹</a>
+        <a href="/community?tab=groups" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</a>
         <h1 className="text-base font-semibold text-gray-900 flex-1 truncate">{group.name}</h1>
       </div>
 
@@ -106,7 +106,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
         ) : (
           <a
             href={`/community/groups/${id}?month=${prevYM}`}
-            className="text-gray-400 hover:text-gray-600 px-2 py-1"
+            className="text-gray-400 hover:text-gray-600 active:opacity-50 px-2 py-1"
           >
             ←
           </a>
@@ -117,7 +117,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
         ) : (
           <a
             href={nextYM <= currentYM ? `/community/groups/${id}?month=${nextYM}` : `/community/groups/${id}`}
-            className="text-gray-400 hover:text-gray-600 px-2 py-1"
+            className="text-gray-400 hover:text-gray-600 active:opacity-50 px-2 py-1"
           >
             →
           </a>
