@@ -108,7 +108,7 @@ export default function ThemeSwitcher() {
   // 固定 px 尺寸：色票不隨字級（rem）放大，避免特大字級時擠在一起
   const ringCls = (active: boolean) =>
     `flex h-[28px] w-[28px] shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 transition ${
-      active ? 'ring-gray-800' : 'ring-gray-200 hover:ring-gray-300'
+      active ? 'ring-gray-800' : 'ring-gray-200 hover:ring-gray-300 active:scale-90'
     }`
 
   return (

@@ -20,7 +20,7 @@ export default function CommunityInfoButton() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-5 h-5 rounded-full border border-gray-300 text-gray-400 text-xs font-bold flex items-center justify-center hover:border-gray-400 hover:text-gray-500 transition-colors"
+        className="w-5 h-5 rounded-full border border-gray-300 text-gray-400 text-xs font-bold flex items-center justify-center hover:border-gray-400 hover:text-gray-500 active:opacity-50 transition-colors"
       >
         ?
       </button>

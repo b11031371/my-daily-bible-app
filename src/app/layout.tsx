@@ -11,19 +11,50 @@ const wenkai = LXGW_WenKai_TC({
   display: 'swap',
 })
 
+// 分享卡片的圖是 app/opengraph-image.png（Next 的檔案慣例，會自動產生 og:image
+// 與寬高/型別標籤）。og:image 需要絕對網址，所以要有 metadataBase：優先吃自己設的
+// 環境變數，其次是 Vercel 的正式網域（刻意用 PRODUCTION_URL 而非 VERCEL_URL——
+// 後者是每次部署的臨時網址，分享卡片不該指到那裡），本機開發才落回 localhost。
+// 換自訂網域後把 NEXT_PUBLIC_SITE_URL 設好即可。
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'http://localhost:3000')
+
+const APP_NAME = 'Sproutiv'
+const APP_TAGLINE = '每天讀聖經，一起成長'
+
 export const metadata: Metadata = {
-  title: 'Sproutiv',
-  applicationName: 'Sproutiv',
-  description: '每天讀聖經，一起成長',
+  metadataBase: new URL(siteUrl),
+  title: APP_NAME,
+  applicationName: APP_NAME,
+  description: APP_TAGLINE,
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    title: 'Sproutiv',
+    title: APP_NAME,
     statusBarStyle: 'default',
   },
   icons: {
     icon: "/icons/icon.svg",
     apple: "/icons/apple-touch-icon.png",
+  },
+  // 未登入的訪客會被 middleware 導到 /login，而 /login 也吃這份 root metadata，
+  // 所以登入牆不影響 LINE/IG 等平台抓到的預覽卡片。
+  openGraph: {
+    type: 'website',
+    siteName: APP_NAME,
+    title: APP_NAME,
+    description: APP_TAGLINE,
+    locale: 'zh_TW',
+    alternateLocale: ['en_US'],
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: APP_NAME,
+    description: APP_TAGLINE,
   },
 }
 

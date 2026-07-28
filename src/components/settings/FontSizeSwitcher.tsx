@@ -45,7 +45,7 @@ export default function FontSizeSwitcher() {
               className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-colors ${
                 active
                   ? 'bg-primary-light border-primary text-primary-dark'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                  : 'border-gray-200 text-gray-500 hover:border-gray-300 active:bg-gray-100'
               }`}
             >
               <span className={`${opt.textClass} font-bold leading-none`}>A</span>

@@ -22,14 +22,23 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
   const [copied, setCopied] = useState(false)
   const [leaving, setLeaving] = useState(false)
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
+  const [renameError, setRenameError] = useState('')
+  const [leaveError, setLeaveError] = useState('')
 
   async function handleRename() {
     if (!newName.trim() || newName.trim() === groupName) { setEditingName(false); return }
-    await fetch(`/api/groups/${groupId}`, {
+    setRenameError('')
+    const res = await fetch(`/api/groups/${groupId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newName.trim() }),
     })
+    // 原本不看結果就關掉編輯狀態並 refresh，改名失敗時名字會默默變回舊的，
+    // 看起來像自己打的字消失了。失敗就把輸入框留著。
+    if (!res.ok) {
+      setRenameError(t('group.renameFail'))
+      return
+    }
     setEditingName(false)
     router.refresh()
   }
@@ -49,7 +58,15 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
 
   async function handleLeave() {
     setLeaving(true)
-    await fetch(`/api/groups/${groupId}/leave`, { method: 'DELETE' })
+    setLeaveError('')
+    const res = await fetch(`/api/groups/${groupId}/leave`, { method: 'DELETE' })
+    // 原本無論成敗都導回 /community，退出失敗的人會以為自己已經退出了，
+    // 下次進來發現還在群組裡。失敗就留在原地說明。
+    if (!res.ok) {
+      setLeaving(false)
+      setLeaveError(t('group.leaveFail'))
+      return
+    }
     router.push('/community')
     router.refresh()
   }
@@ -61,21 +78,24 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
         <div className="bg-surface rounded-2xl p-4 shadow-sm">
           <p className="text-xs font-semibold text-gray-500 mb-2">{t('group.groupName')}</p>
           {editingName ? (
-            <div className="flex gap-2">
-              <input
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                maxLength={20}
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                autoFocus
-              />
-              <button onClick={handleRename} className="text-sm font-medium text-primary-dark px-3 py-2">{t('common.save')}</button>
-              <button onClick={() => setEditingName(false)} className="text-sm text-gray-400 px-2 py-2">{t('common.cancel')}</button>
-            </div>
+            <>
+              <div className="flex gap-2">
+                <input
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                  maxLength={20}
+                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  autoFocus
+                />
+                <button onClick={handleRename} className="text-sm font-medium text-primary-dark px-3 py-2">{t('common.save')}</button>
+                <button onClick={() => { setRenameError(''); setEditingName(false) }} className="text-sm text-gray-400 px-2 py-2">{t('common.cancel')}</button>
+              </div>
+              {renameError && <p className="text-xs text-danger mt-1.5">{renameError}</p>}
+            </>
           ) : (
             <button
               onClick={() => setEditingName(true)}
-              className="text-sm text-gray-700 hover:text-gray-900 flex items-center gap-1.5"
+              className="text-sm text-gray-700 hover:text-gray-900 active:opacity-50 flex items-center gap-1.5"
             >
               <span>{groupName}</span>
               <PencilSimple size={13} className="text-gray-300" />
@@ -101,7 +121,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
           </div>
           <button
             onClick={handleCopyShareText}
-            className="w-full text-sm text-gray-500 hover:text-gray-700 py-1"
+            className="w-full text-sm text-gray-500 hover:text-gray-700 active:opacity-50 py-1"
           >
             {t('group.copyShareText')}
           </button>
@@ -121,17 +141,18 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               <button
                 onClick={handleLeave}
                 disabled={leaving}
-                className="flex-1 text-sm text-danger border border-danger-line rounded-xl py-2.5 hover:bg-danger-soft transition-colors disabled:opacity-50"
+                className="flex-1 text-sm text-danger border border-danger-line rounded-xl py-2.5 hover:bg-danger-soft active:scale-[0.98] transition-colors disabled:opacity-50"
               >
                 {leaving ? t('group.leaving') : t('group.confirmLeave')}
               </button>
               <button
-                onClick={() => setShowLeaveConfirm(false)}
+                onClick={() => { setLeaveError(''); setShowLeaveConfirm(false) }}
                 className="flex-1 text-sm text-gray-600 bg-gray-50 rounded-xl py-2.5"
               >
                 {t('common.cancel')}
               </button>
             </div>
+            {leaveError && <p className="text-xs text-danger mt-2 text-center">{leaveError}</p>}
           </div>
         ) : (
           <button

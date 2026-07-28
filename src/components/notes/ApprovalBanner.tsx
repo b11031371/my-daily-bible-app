@@ -32,7 +32,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
         <button
           onClick={handleUnapprove}
           disabled={pending}
-          className="text-xs text-gray-400 hover:text-danger transition-colors disabled:opacity-50"
+          className="text-xs text-gray-400 hover:text-danger active:opacity-50 transition-colors disabled:opacity-50"
         >
           {pending ? t('approval.processing') : t('approval.unapprove')}
         </button>
@@ -40,7 +40,7 @@ export default function ApprovalBanner({ date, isApproved }: Props) {
         <button
           onClick={handleApprove}
           disabled={pending}
-          className="text-xs bg-primary-dark text-white px-3 py-1.5 rounded-full font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
+          className="text-xs bg-primary-dark text-white px-3 py-1.5 rounded-full font-medium hover:bg-primary-dark active:scale-95 transition-colors disabled:opacity-50"
         >
           {pending ? t('approval.processing') : t('approval.approve')}
         </button>

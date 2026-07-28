@@ -21,7 +21,7 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-8 space-y-5">
       <div className="flex items-center gap-3">
-        <Link href="/profile" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
+        <Link href="/profile" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('settings.title')}</h1>
       </div>
       <TitleDivider />
@@ -43,7 +43,7 @@ export default async function SettingsPage() {
           href="https://creativecommons.org/licenses/by/4.0/"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-2 hover:text-gray-600 transition-colors"
+          className="underline underline-offset-2 hover:text-gray-600 active:opacity-50 transition-colors"
         >
           {t('settings.creditsLicense')}
         </a>

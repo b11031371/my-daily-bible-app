@@ -30,7 +30,7 @@ export default function NewGroupPage() {
   return (
     <div className="max-w-lg mx-auto px-4 pt-6">
       <div className="flex items-center gap-3">
-        <Link href="/community" className="text-gray-400 hover:text-gray-600 text-lg">‹</Link>
+        <Link href="/community" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('group.createTitle')}</h1>
       </div>
       <TitleDivider />
@@ -44,7 +44,7 @@ export default function NewGroupPage() {
             onChange={e => setName(e.target.value)}
             placeholder={t('group.namePlaceholder')}
             maxLength={20}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           />
         </div>
 

@@ -55,7 +55,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
   }
 
   return (
-    <div className="animated-border rounded-2xl">
+    <div className="animated-border press-wrap rounded-2xl">
       <button
         onClick={handleCheckin}
         disabled={loading}

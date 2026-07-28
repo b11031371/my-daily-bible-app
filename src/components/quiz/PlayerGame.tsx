@@ -87,8 +87,9 @@ function JoinForm({ pin, onJoined }: { pin: string; onJoined: (id: PlayerIdentit
 
   const canJoin = loggedIn === true || nickname.trim().length > 0
 
+  // 加入畫面是垂直置中的短表單，用 svh 讓置中點固定；下面的遊戲畫面要填滿視窗，用 dvh。
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
+    <div className="min-h-svh flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-5">
         <div className="text-center">
           <p className="text-xs text-gray-400">PIN</p>
@@ -104,7 +105,7 @@ function JoinForm({ pin, onJoined }: { pin: string; onJoined: (id: PlayerIdentit
               onChange={e => setNickname(e.target.value)}
               maxLength={QUIZ_CONFIG.maxNicknameLength}
               placeholder={t('quiz.nicknamePlaceholder')}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             />
           </div>
         )}
@@ -119,7 +120,7 @@ function JoinForm({ pin, onJoined }: { pin: string; onJoined: (id: PlayerIdentit
           {loading ? t('quiz.joining') : t('quiz.joinGame')}
         </button>
 
-        <Link href="/play" className="block text-center text-sm text-gray-400 hover:text-gray-600">
+        <Link href="/play" className="block text-center text-sm text-gray-400 hover:text-gray-600 active:opacity-50">
           {t('quiz.backToQuiz')}
         </Link>
       </div>
@@ -175,7 +176,7 @@ function GameView({
 
   if (loading || !state) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="min-h-dvh flex items-center justify-center px-6">
         <p className="text-sm text-gray-400">{error ? t('quiz.roomNotFound') : '…'}</p>
       </div>
     )
@@ -185,7 +186,7 @@ function GameView({
   const locked = chosen !== null || me?.answered === true || expired
 
   return (
-    <div className="min-h-screen flex flex-col max-w-lg mx-auto px-4 py-5">
+    <div className="min-h-dvh flex flex-col max-w-lg mx-auto px-4 py-5">
       {/* 自己的名次與分數常駐在最上面 */}
       {me && (
         <div className="flex items-center gap-2.5 mb-4">
@@ -291,7 +292,7 @@ function GameView({
           <Scoreboard players={players} highlightId={me?.player_id} />
           <Link
             href="/play"
-            className="block text-center border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="block text-center border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
           >
             {t('quiz.backToQuiz')}
           </Link>

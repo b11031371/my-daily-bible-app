@@ -267,7 +267,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
           )}
           <button
             onClick={() => isOpen ? handleClose() : setIsOpen(true)}
-            className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors"
             aria-label={t('community.aiSearchAria')}
           >
             <MagnifyingGlass size={18} weight="regular" />
@@ -284,7 +284,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               <Sparkle size={13} weight="fill" className="text-heading" />
               {t('community.aiSearchTitle')}
             </span>
-            <button onClick={handleClose} className="p-0.5 text-gray-300 hover:text-gray-500 transition-colors">
+            <button onClick={handleClose} className="p-0.5 text-gray-300 hover:text-gray-500 active:opacity-50 transition-colors">
               <X size={15} weight="bold" />
             </button>
           </div>
@@ -304,7 +304,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         <button
                           key={chip}
                           onClick={() => handleChooseFilter(chip)}
-                          className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-xl border border-gray-200 hover:bg-gray-200 transition-colors text-left"
+                          className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-xl border border-gray-200 hover:bg-gray-200 active:scale-95 transition-colors text-left"
                         >
                           {chip}
                         </button>
@@ -313,13 +313,13 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         <span key={chip} className="flex items-center gap-0.5 bg-gray-100 rounded-xl pl-2.5 pr-1 py-1 border border-gray-200">
                           <button
                             onClick={() => handleChooseFilter(chip)}
-                            className="text-xs text-gray-700 hover:text-gray-900 transition-colors"
+                            className="text-xs text-gray-700 hover:text-gray-900 active:opacity-50 transition-colors"
                           >
                             {chip}
                           </button>
                           <button
                             onClick={() => saveFilterChips(customFilterChips.filter(c => c !== chip))}
-                            className="p-0.5 text-gray-300 hover:text-danger transition-colors"
+                            className="p-0.5 text-gray-300 hover:text-danger active:opacity-50 transition-colors"
                           >
                             <X size={10} weight="bold" />
                           </button>
@@ -342,7 +342,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             if (e.key === 'Escape') { setAddingFilterChip(false); setNewFilterChip('') }
                           }}
                           placeholder={t('community.chipFilterPlaceholder')}
-                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                         />
                         <button
                           onClick={() => {
@@ -362,7 +362,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                     ) : (
                       <button
                         onClick={() => setAddingFilterChip(true)}
-                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
+                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors mt-2"
                       >
                         <Plus size={11} /> {t('community.addQuestion')}
                       </button>
@@ -379,7 +379,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         <button
                           key={chip}
                           onClick={() => handleChooseSummary(chip)}
-                          className="text-xs bg-primary-light text-primary-dark px-2.5 py-1 rounded-xl border border-primary hover:bg-primary-light transition-colors text-left"
+                          className="text-xs bg-primary-light text-primary-dark px-2.5 py-1 rounded-xl border border-primary hover:bg-primary-light active:scale-95 transition-colors text-left"
                         >
                           {chip}
                         </button>
@@ -388,13 +388,13 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                         <span key={chip} className="flex items-center gap-0.5 bg-primary-light rounded-xl pl-2.5 pr-1 py-1 border border-primary">
                           <button
                             onClick={() => handleChooseSummary(chip)}
-                            className="text-xs text-primary-dark hover:text-primary-dark transition-colors"
+                            className="text-xs text-primary-dark hover:text-primary-dark active:opacity-50 transition-colors"
                           >
                             {chip}
                           </button>
                           <button
                             onClick={() => saveSummaryChips(customSummaryChips.filter(c => c !== chip))}
-                            className="p-0.5 text-primary hover:text-danger transition-colors"
+                            className="p-0.5 text-primary hover:text-danger active:opacity-50 transition-colors"
                           >
                             <X size={10} weight="bold" />
                           </button>
@@ -417,7 +417,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                             if (e.key === 'Escape') { setAddingSummaryChip(false); setNewSummaryChip('') }
                           }}
                           placeholder={t('community.chipSummaryPlaceholder')}
-                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                          className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                         />
                         <button
                           onClick={() => {
@@ -437,7 +437,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                     ) : (
                       <button
                         onClick={() => setAddingSummaryChip(true)}
-                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-2"
+                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors mt-2"
                       >
                         <Plus size={11} /> {t('community.addQuestion')}
                       </button>
@@ -459,7 +459,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   onCompositionEnd={() => { setTimeout(() => { composingRef.current = false }, 0) }}
                   onKeyDown={e => e.key === 'Enter' && !composingRef.current && !isLoading && handleSubmit()}
                   placeholder={t('community.searchPlaceholder')}
-                  className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+                  className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 />
                 <button
                   onClick={handleSubmit}
@@ -478,7 +478,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               <p className="text-xs text-gray-500 mb-2">{t('community.chooseMode')}</p>
               <button
                 onClick={() => handleChooseFilter()}
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors text-left"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left"
               >
                 <ListBullets size={20} className="text-gray-500 shrink-0" />
                 <div>
@@ -488,7 +488,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               </button>
               <button
                 onClick={() => handleChooseSummary()}
-                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light transition-colors text-left"
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary-light active:scale-[0.99] transition-colors text-left"
               >
                 <Sparkle size={20} className="text-primary-dark shrink-0" />
                 <div>
@@ -515,7 +515,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                 </button>
                 <button
                   onClick={() => { setStep('input'); setParsedConditions(null) }}
-                  className="px-4 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors"
                 >
                   {t('community.editDescription')}
                 </button>
@@ -543,7 +543,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               </p>
               <button
                 onClick={handleClearFilter}
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors underline"
+                className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors underline"
               >
                 {t('community.clearFilter')}
               </button>
@@ -564,7 +564,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               <div className="mt-2 flex items-center gap-3 flex-wrap">
                 <button
                   onClick={handleDownload}
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 active:opacity-50 transition-colors"
                 >
                   <DownloadSimple size={14} />
                   {t('community.shareDownload')}
@@ -575,14 +575,14 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                     setCopied(true)
                     setTimeout(() => setCopied(false), 2000)
                   }}
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 active:opacity-50 transition-colors"
                 >
                   {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
                   {copied ? t('community.copied') : t('community.copyText')}
                 </button>
                 <button
                   onClick={() => { setStep('input'); setAnswer(null); setQuery('') }}
-                  className="text-xs text-gray-400 hover:text-gray-600 transition-colors underline ml-auto"
+                  className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors underline ml-auto"
                 >
                   {t('community.reDescribe')}
                 </button>

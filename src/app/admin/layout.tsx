@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-dvh bg-gray-50">
       <nav className="bg-[#1a1a1a] text-white px-2 py-1.5 flex gap-1 items-center text-sm overflow-x-auto">
         <Link href="/notes" className="text-gray-400 hover:text-white shrink-0 py-2 px-3 rounded-lg transition-colors">← 回網站</Link>
         <span className="text-gray-600 shrink-0 select-none">|</span>

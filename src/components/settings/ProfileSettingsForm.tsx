@@ -89,7 +89,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
         <input
           value={name}
           onChange={e => setName(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           placeholder={t('settings.nicknamePlaceholder')}
           maxLength={20}
         />
@@ -133,14 +133,14 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           type="password"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           placeholder={t('settings.newPwPlaceholder')}
         />
         <input
           type="password"
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           placeholder={t('settings.confirmPwPlaceholder')}
         />
         <div className="flex items-center justify-between">

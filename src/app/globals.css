@@ -180,6 +180,53 @@ body {
   color: #2C1A0E;
 }
 
+/* ── 按壓回饋 ────────────────────────────────────────────────────────────────
+   手機沒有 hover，主行動按鈕原本按下去完全沒反應，網路一慢使用者就不確定按到
+   沒有。這裡一次覆蓋全站 .btn-gradient 按鈕。
+   刻意限定 button/a：.btn-gradient 也用在非互動元素上（首頁一週進度方格、
+   未上稿的灰色卡片），那些跟著縮會變成假的可點暗示。
+   transition 要把 filter 一起寫進來——本檔未進 @layer，會蓋掉元素上的
+   transition-[filter]，漏寫的話 hover:brightness-95 會變成瞬跳。 */
+button.btn-gradient,
+a.btn-gradient {
+  transition: transform 120ms ease-out, filter 150ms ease-out;
+}
+
+button.btn-gradient:active,
+a.btn-gradient:active {
+  transform: scale(0.97);
+}
+
+/* .animated-border 靠 2px padding 露出流動漸層當外框。只縮內層按鈕的話，那圈
+   邊框會瞬間變粗再彈回，看起來像按鈕從框裡鬆脫，所以改成外框連按鈕整個一起縮。
+   由包按鈕的外層自己掛 .press-wrap（見 QuickCheckinButton / CheckinSection）。
+
+   這裡刻意不用 :has()。先前寫成 .animated-border:has(> button:active) 會讓
+   Chrome 對每次 hover/active 變化都往上做失效檢查，捲動時游標下的元素持續改變
+   就觸發大量 style recalc；開著 DevTools 時成本再放大，主執行緒被卡到整頁像是
+   捲不動。:active 本來就會套用到被啟動元素的祖先，用不到 :has()。 */
+.press-wrap {
+  transition: transform 120ms ease-out;
+}
+
+.press-wrap:active {
+  transform: scale(0.97);
+}
+
+/* 外框已經縮了，內層再縮一次會變兩倍。 */
+.press-wrap > button.btn-gradient:active {
+  transform: none;
+}
+
+/* 動態效果減量偏好：關掉縮放，保留顏色變化。 */
+@media (prefers-reduced-motion: reduce) {
+  button.btn-gradient:active,
+  a.btn-gradient:active,
+  .press-wrap:active {
+    transform: none;
+  }
+}
+
 /* 主題色文字（標題、區塊小標、統計圖示）：跟隨主題（亮色=主題深色調；深色模式改用
    較亮主色，見 data-mode 覆蓋）。用一般類別避免 @theme 裁剪 var 值。 */
 :root { --color-heading: var(--color-primary-dark); }

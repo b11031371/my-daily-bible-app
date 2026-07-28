@@ -6,16 +6,25 @@ export default function DeleteReflectionButton({ id }: { id: string }) {
   const router = useRouter()
   const [confirming, setConfirming] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
 
   async function handleDelete() {
     setLoading(true)
-    await fetch(`/api/admin/reflections/${id}`, { method: 'DELETE' })
+    setFailed(false)
+    const res = await fetch(`/api/admin/reflections/${id}`, { method: 'DELETE' })
+    setLoading(false)
+    if (!res.ok) {
+      // 原本無論成敗都直接 refresh，刪不掉時該列還在，看起來像沒按到。
+      setFailed(true)
+      return
+    }
     router.refresh()
   }
 
   if (confirming) {
     return (
-      <div className="flex gap-1 shrink-0">
+      <div className="flex items-center gap-1 shrink-0">
+        {failed && <span className="text-xs text-danger">刪除失敗</span>}
         <button
           onClick={handleDelete}
           disabled={loading}

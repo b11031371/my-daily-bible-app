@@ -40,11 +40,11 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={t('group.searchGroup')}
-            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
           />
         </div>
         {canCreateOrJoin && (
-          <Link href="/community/groups/new" className="shrink-0 bg-gray-100 rounded-xl p-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+          <Link href="/community/groups/new" className="shrink-0 bg-gray-100 rounded-xl p-2.5 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors">
             <Plus size={18} />
           </Link>
         )}

@@ -5,7 +5,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import { GameController } from '@phosphor-icons/react'
 
 const CLASSES =
-  'ml-auto shrink-0 w-10 h-10 rounded-full text-primary-dark flex items-center justify-center hover:bg-primary-light transition-colors'
+  'ml-auto shrink-0 w-10 h-10 rounded-full text-primary-dark flex items-center justify-center hover:bg-primary-light active:scale-90 transition-colors'
 
 /**
  * 社群頁右上角的測驗入口。總開關關著時，一般用戶還是看得到圖示（先讓大家有印象），
