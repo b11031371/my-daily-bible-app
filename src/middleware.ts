@@ -76,5 +76,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // badges/ 與 icons/ 同樣是靜態資源，必須排除：否則每張徽章圖都會多跑一次
   // session 查詢，且未登入（或 session 過期）時會被導向 /login 而載不到圖。
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|icons/|badges/|api/).*)'],
+  //
+  // opengraph-image.png 更是非排除不可：來抓分享卡片的是 LINE／Facebook 這類
+  // 爬蟲，它們永遠是未登入狀態。被導去 /login 的話拿到的是 HTML 不是圖，卡片就
+  // 沒有預覽圖了。
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|opengraph-image|icons/|badges/|api/).*)'],
 }
