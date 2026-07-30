@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatDateZH, todayString } from '@/lib/utils'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { setApprovalMode, setQuizAiOpen, setQuizOpen } from './actions'
+import SyncNoteMetaButton from './SyncNoteMetaButton'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -14,6 +15,7 @@ export default async function AdminDashboard() {
     { data: quizAiSetting },
     { data: quizOpenSetting },
     { data: recentCheckins },
+    { count: noteMetaCount },
   ] = await Promise.all([
     supabase.from('checkins').select('*', { count: 'exact', head: true }).eq('note_date', today),
     supabase.from('reflections').select('*', { count: 'exact', head: true }).eq('note_date', today),
@@ -26,6 +28,7 @@ export default async function AdminDashboard() {
       .order('note_date', { ascending: false })
       .order('checked_in_at', { ascending: true })
       .limit(100),
+    supabase.from('note_meta').select('*', { count: 'exact', head: true }).not('bible_range', 'is', null),
   ])
 
   const approvalMode = (approvalSetting as any)?.value === 'true'
@@ -99,6 +102,9 @@ export default async function AdminDashboard() {
           </button>
         </form>
       </div>
+
+      {/* Note passage range sync */}
+      <SyncNoteMetaButton syncedCount={noteMetaCount ?? 0} />
 
       {/* Today stats */}
       <div className="grid grid-cols-2 gap-4">
