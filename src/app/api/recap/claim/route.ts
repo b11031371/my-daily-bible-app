@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { buildRecap, MONTH_RE } from '@/lib/recap'
+import { getRecapAccess } from '@/lib/recap-access'
 import { monthRange, prevMonth, todayString } from '@/lib/utils'
 
 /**
@@ -32,6 +33,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (!force) {
+    // 後台總開關關閉時，一般用戶完全不跳彈窗；admin 不受影響。
+    // 開發逃生門（force）刻意跳過這關——本機測試不該被線上的開關擋住。
+    const { canUseRecap } = await getRecapAccess(supabase, user.id)
+    if (!canUseRecap) return NextResponse.json({ recap: null })
+
     // 帳號是在被回顧的月份結束之後才建立的，那個月不可能有東西。
     // 這裡直接回、且不寫認領紀錄——之後真的有資料時邏輯才不會被鎖死。
     const { data: profile } = await supabase

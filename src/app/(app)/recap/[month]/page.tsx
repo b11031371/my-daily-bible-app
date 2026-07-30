@@ -5,6 +5,7 @@ import { X } from '@phosphor-icons/react/dist/ssr'
 import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { buildRecap, MONTH_RE } from '@/lib/recap'
+import { getRecapAccess } from '@/lib/recap-access'
 import { formatMonth, todayString } from '@/lib/utils'
 import TitleDivider from '@/components/layout/TitleDivider'
 import RecapContent from '@/components/recap/RecapContent'
@@ -18,6 +19,10 @@ export default async function RecapPage({ params }: { params: Promise<{ month: s
 
   const [user, supabase, { locale, t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   if (!user) redirect('/login')
+
+  // 後台總開關關掉時，一般用戶連貼網址直接進來都不行——不只是藏入口。
+  const { canUseRecap } = await getRecapAccess(supabase, user.id)
+  if (!canUseRecap) redirect('/profile')
 
   const recap = await buildRecap(supabase, user.id, month)
 

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { formatDateZH, todayString } from '@/lib/utils'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
-import { setApprovalMode, setQuizAiOpen, setQuizOpen } from './actions'
+import { setApprovalMode, setQuizAiOpen, setQuizOpen, setRecapEnabled } from './actions'
 import SyncNoteMetaButton from './SyncNoteMetaButton'
 
 export default async function AdminDashboard() {
@@ -14,6 +14,7 @@ export default async function AdminDashboard() {
     { data: approvalSetting },
     { data: quizAiSetting },
     { data: quizOpenSetting },
+    { data: recapEnabledSetting },
     { data: recentCheckins },
     { count: noteMetaCount },
   ] = await Promise.all([
@@ -22,6 +23,7 @@ export default async function AdminDashboard() {
     (supabase as any).from('app_settings').select('value').eq('key', 'approval_mode').single(),
     (supabase as any).from('app_settings').select('value').eq('key', 'quiz_ai_open').maybeSingle(),
     (supabase as any).from('app_settings').select('value').eq('key', 'quiz_open').maybeSingle(),
+    (supabase as any).from('app_settings').select('value').eq('key', 'recap_enabled').maybeSingle(),
     supabase
       .from('checkins')
       .select('note_date, is_retro, checked_in_at, profiles(display_name, avatar_seed)')
@@ -34,6 +36,8 @@ export default async function AdminDashboard() {
   const approvalMode = (approvalSetting as any)?.value === 'true'
   const quizAiOpen = (quizAiSetting as any)?.value === 'true'
   const quizOpen = (quizOpenSetting as any)?.value === 'true'
+  // 找不到這筆設定就當作開啟，跟 lib/recap-access.ts 的判斷一致。
+  const recapEnabled = (recapEnabledSetting as any)?.value !== 'false'
 
   // Group checkins by date
   type CheckinRow = { note_date: string; is_retro: boolean; profiles: { display_name: string; avatar_seed: string } | null }
@@ -99,6 +103,24 @@ export default async function AdminDashboard() {
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${quizAiOpen ? 'bg-primary' : 'bg-gray-200'}`}
           >
             <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${quizAiOpen ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </form>
+      </div>
+
+      {/* Recap feature kill switch */}
+      <div className="bg-surface rounded-xl p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p className="font-medium text-gray-900">開放每月回顧</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {recapEnabled ? '開啟中 · 所有登入用戶簽到後都可能看到回顧彈窗' : '關閉中 · 一般用戶簽到不跳彈窗、個人頁也看不到月曆入口，僅 admin 可用'}
+          </p>
+        </div>
+        <form action={setRecapEnabled.bind(null, !recapEnabled)}>
+          <button
+            type="submit"
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${recapEnabled ? 'bg-primary' : 'bg-gray-200'}`}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${recapEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
           </button>
         </form>
       </div>

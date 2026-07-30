@@ -39,3 +39,14 @@ export async function setQuizAiOpen(enabled: boolean) {
   revalidatePath('/quiz/new')
   revalidatePath('/admin')
 }
+
+// 每月回顧的總開關（見 lib/recap-access.ts）。關閉時一般用戶簽到不跳彈窗、
+// 個人頁也不會出現月曆圖示；admin 不受影響。
+export async function setRecapEnabled(enabled: boolean) {
+  const { supabase } = await assertAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from('app_settings').update({ value: enabled ? 'true' : 'false' }).eq('key', 'recap_enabled')
+  revalidatePath('/profile')
+  revalidatePath('/recap/[month]', 'page')
+  revalidatePath('/admin')
+}

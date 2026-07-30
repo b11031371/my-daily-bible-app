@@ -12,6 +12,7 @@ import { Gear, Diamond, Fire, Star, SealCheck } from '@phosphor-icons/react/dist
 import PushSubscribeButton from '@/components/PushSubscribeButton'
 import RecapMonthMenu from '@/components/recap/RecapMonthMenu'
 import RecapDevTestButton from '@/components/recap/RecapDevTestButton'
+import { getRecapAccess } from '@/lib/recap-access'
 
 type PointEntry = { date: string; label: string; points: number; tag?: string }
 
@@ -34,7 +35,7 @@ export default async function ProfilePage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any
 
-  const [{ data: profile }, { data: badges }, { data: userBadges }, { data: checkins }, { data: reflections }, { data: earnedBadges }, { count: totalCheckinCount }] = await Promise.all([
+  const [{ data: profile }, { data: badges }, { data: userBadges }, { data: checkins }, { data: reflections }, { data: earnedBadges }, { count: totalCheckinCount }, { canUseRecap }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('badges').select('*').order('condition_value'),
     supabase.from('user_badges').select('*').eq('user_id', user.id),
@@ -42,6 +43,7 @@ export default async function ProfilePage({
     sb.from('reflections').select('note_date, points_earned').eq('user_id', user.id).gt('points_earned', 0).gte('note_date', monthStart).lt('note_date', monthEnd).order('note_date', { ascending: true }),
     sb.from('user_badges').select('earned_at, badges(name_zh, name_i18n, points_bonus)').eq('user_id', user.id).gte('earned_at', monthStart).lt('earned_at', monthEnd).order('earned_at', { ascending: true }),
     supabase.from('checkins').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+    getRecapAccess(supabase, user.id),
   ])
 
   const earnedMap = new Map((userBadges ?? []).map((ub: { badge_id: string; earned_at: string }) => [ub.badge_id, ub.earned_at]))
@@ -91,11 +93,14 @@ export default async function ProfilePage({
           {profile?.role === 'admin' && (
             <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 border border-gray-200 rounded-full px-2.5 py-1">{t('profile.admin')}</Link>
           )}
-          <RecapMonthMenu
-            createdAt={profile?.created_at ?? today}
-            currentMonth={today.slice(0, 7)}
-            showTip={recapTip === '1'}
-          />
+          {/* 後台總開關關掉時，一般用戶連入口都看不到——不是進得去看空的 */}
+          {canUseRecap && (
+            <RecapMonthMenu
+              createdAt={profile?.created_at ?? today}
+              currentMonth={today.slice(0, 7)}
+              showTip={recapTip === '1'}
+            />
+          )}
           <RecapDevTestButton />
           <Link href="/settings" className="flex items-center text-gray-400 hover:text-gray-600 active:opacity-50"><Gear size={22} /></Link>
           <form action={handleSignOut}>
