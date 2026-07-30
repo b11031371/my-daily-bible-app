@@ -10,11 +10,19 @@ import BadgeGrid from '@/components/profile/BadgeGrid'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { Gear, Diamond, Fire, Star, SealCheck } from '@phosphor-icons/react/dist/ssr'
 import PushSubscribeButton from '@/components/PushSubscribeButton'
+import RecapMonthMenu from '@/components/recap/RecapMonthMenu'
+import RecapDevTestButton from '@/components/recap/RecapDevTestButton'
 
 type PointEntry = { date: string; label: string; points: number; tag?: string }
 
-export default async function ProfilePage() {
-  const [user, supabase, { locale, t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ recapTip?: string }>
+}) {
+  const [user, supabase, { locale, t }, { recapTip }] = await Promise.all([
+    getUser(), createClient(), getServerI18n(), searchParams,
+  ])
   if (!user) redirect('/login')
 
   const today = todayString()
@@ -83,7 +91,13 @@ export default async function ProfilePage() {
           {profile?.role === 'admin' && (
             <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 border border-gray-200 rounded-full px-2.5 py-1">{t('profile.admin')}</Link>
           )}
-          <Link href="/settings" className="text-gray-400 hover:text-gray-600 active:opacity-50"><Gear size={22} /></Link>
+          <RecapMonthMenu
+            createdAt={profile?.created_at ?? today}
+            currentMonth={today.slice(0, 7)}
+            showTip={recapTip === '1'}
+          />
+          <RecapDevTestButton />
+          <Link href="/settings" className="flex items-center text-gray-400 hover:text-gray-600 active:opacity-50"><Gear size={22} /></Link>
           <form action={handleSignOut}>
             <button type="submit" className="text-sm text-gray-400 hover:text-gray-600 active:opacity-50">{t('profile.signOut')}</button>
           </form>
