@@ -162,7 +162,17 @@ export interface Database {
           earned_at?: string
         }
         Update: Record<string, never>
-        Relationships: []
+        // 宣告出來，select('badges(...)') 這種內嵌查詢才推得出型別，
+        // 呼叫端不必為了 join 而整個 client 轉成 any。
+        Relationships: [
+          {
+            foreignKeyName: 'user_badges_badge_id_fkey'
+            columns: ['badge_id']
+            isOneToOne: false
+            referencedRelation: 'badges'
+            referencedColumns: ['id']
+          },
+        ]
       }
       leaderboard_snapshots: {
         Row: {
@@ -253,7 +263,23 @@ export interface Database {
           left_at?: string | null
           role?: 'admin' | 'member'
         }
-        Relationships: []
+        // 宣告出來，select('profiles(...)') 這種內嵌查詢才推得出型別。
+        Relationships: [
+          {
+            foreignKeyName: 'group_members_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'group_members_group_id_fkey'
+            columns: ['group_id']
+            isOneToOne: false
+            referencedRelation: 'groups'
+            referencedColumns: ['id']
+          },
+        ]
       }
       quizzes: {
         Row: {
@@ -409,6 +435,60 @@ export interface Database {
           created_at?: string
         }
         Update: Record<string, never>
+        Relationships: []
+      }
+      recap_views: {
+        Row: {
+          user_id: string
+          month: string
+          viewed_at: string
+        }
+        Insert: {
+          user_id: string
+          month: string
+          viewed_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
+      recap_summaries: {
+        Row: {
+          user_id: string
+          month: string
+          locale: string
+          summary: { book: string; summary: string }[]
+          model: string | null
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          month: string
+          locale: string
+          summary: { book: string; summary: string }[]
+          model?: string | null
+          created_at?: string
+        }
+        Update: {
+          summary?: { book: string; summary: string }[]
+          model?: string | null
+        }
+        Relationships: []
+      }
+      note_meta: {
+        Row: {
+          date: string
+          bible_range: string | null
+          synced_at: string
+        }
+        Insert: {
+          date: string
+          bible_range?: string | null
+          synced_at?: string
+        }
+        Update: {
+          bible_range?: string | null
+          synced_at?: string
+        }
         Relationships: []
       }
     }

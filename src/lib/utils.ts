@@ -55,6 +55,42 @@ export function getLastSevenDays(): string[] {
   })
 }
 
+// 'YYYY-MM-DD' 或 'YYYY-MM' → 前一個月的 'YYYY-MM'。月份運算一律走 Date.UTC，
+// 伺服器本身的時區才不會滲進來（跟 getLastSevenDays 同一套寫法）。
+export function prevMonth(dateOrMonth: string): string {
+  const [y, m] = dateOrMonth.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 2, 1)).toISOString().slice(0, 7)
+}
+
+// 'YYYY-MM' → 下一個月的 'YYYY-MM'。
+export function nextMonth(month: string): string {
+  const [y, m] = month.split('-').map(Number)
+  return new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7)
+}
+
+/**
+ * 一個月份的查詢邊界，皆為半開區間（結束值用 .lt() 比）。
+ *
+ * 分成兩組是因為兩種欄位型別的比法不同：DATE 欄位（checkins/reflections.note_date）
+ * 沒有時區，直接比日期字串；TIMESTAMPTZ 欄位（user_badges.earned_at）一定要帶
+ * +08:00，只寫 '2026-06-01' 會被當成 UTC 午夜，等於台北 6/1 早上 8 點——月初 8 小時
+ * 內拿到的徽章會漏掉、上個月最後 8 小時的則被誤算進來。
+ */
+export function monthRange(month: string) {
+  const end = nextMonth(month)
+  return {
+    dateStart: `${month}-01`,
+    dateEnd: `${end}-01`,
+    tsStart: `${month}-01T00:00:00+08:00`,
+    tsEnd: `${end}-01T00:00:00+08:00`,
+  }
+}
+
+// TIMESTAMPTZ 的 ISO 字串 → 台北曆日 'YYYY-MM-DD'，跟 todayString() 同一套規則。
+export function toTaipeiDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' })
+}
+
 export function getPeriodLabel(type: 'weekly' | 'monthly', date = new Date()): string {
   if (type === 'monthly') {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
