@@ -232,6 +232,13 @@ a.btn-gradient:active {
 :root { --color-heading: var(--color-primary-dark); }
 .text-heading { color: var(--color-heading); }
 
+/* 給 .recap-book 混色用的別名。--color-accent 會在 .recap-book 裡被覆寫成往墨色
+   混過的版本，如果直接在那條規則裡寫 var(--color-accent) 會變成自我參照
+   （同一個屬性在同一顆元素上引用自己），瀏覽器判定為循環、整個屬性直接失效，
+   結果是日曆頁「寫了反思」那顆點的顏色變成 invalid、整顆消失。
+   這裡先把當下主題的原始值存到另一個名字，.recap-book 才能安全地讀到它。 */
+:root { --color-accent-src: var(--color-accent); }
+
 /* 頁面大標題：略大字級。搭配 text-heading 使用。 */
 .page-title {
   font-size: 1.375rem;   /* 略大於 text-xl（1.25rem） */
@@ -282,4 +289,362 @@ a.btn-gradient:active {
   background-size: 400% 400%;
   animation: gradient-flow 6s ease infinite;
   padding: 2px;
+}
+
+/* ── 每月回顧 ─────────────────────────────────────────────────────────────── */
+
+/* 足跡一格一格長出來。延遲由行內 --i（第幾格）決定，用 CSS 變數而不是為每格生
+   一個 class，避免 Tailwind 產出 31 種只差延遲的樣式。
+   backwards 讓元素在延遲期間就先套用起始狀態，否則會先閃現一下完成樣態。 */
+@keyframes recap-step-in {
+  from { opacity: 0; transform: scale(0.72); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.recap-cell {
+  animation: recap-step-in 260ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  /* 上限 700ms：月底那幾格不該讓人等半天 */
+  animation-delay: min(calc(var(--i) * 22ms), 700ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-cell { animation: none; }
+}
+
+/* 回顧手冊的翻頁。
+   透視放在容器上，翻的那一頁沿左側書脊（transform-origin: left）旋轉。
+
+   一張「紙」是兩個面疊在一起（preserve-3d + backface-visibility: hidden）：正面
+   是內容，背面是空白紙。少了背面的話，翻過 90 度後那頁會直接消失，看起來像內容
+   被抽走而不是被翻過去。 */
+/* 手冊內部固定亮色，不跟著 data-mode="dark" 反轉。
+   這是一本紙本子——深色模式下把紙變黑、字變白，就不是那個東西了。
+   做法是在這裡把灰階和 surface 重新宣告成亮色值，底下所有 text-gray-*／bg-surface
+   都會取到這一組（選擇器比 :root[data-mode] 更近）。 */
+.recap-book {
+  perspective: 1400px;
+
+  --color-surface:  #FDF8EC;
+  --color-gray-50:  #F7F0E2;
+  --color-gray-100: #EFE5D3;
+  --color-gray-200: #DCCCB4;
+  --color-gray-300: #B8A18A;
+  /* 300-600 比全站的灰階再暗一階：底色是米黃紙而不是白，同一組灰在上面會偏淡 */
+  --color-gray-400: #8A705C;
+  --color-gray-500: #6B5140;
+  --color-gray-600: #52392A;
+  --color-gray-700: #3F2A1C;
+  --color-gray-800: #2E1D12;
+  --color-gray-900: #211208;
+  /* 主題色往墨色混，而不是直接搬進書裡：七套主題色（金/綠/藍/紫/玫瑰/青/板岩）
+     直接放在米黃紙上、外面又包一圈棕皮革，冷色系（藍、紫、玫瑰）會讀成兩個不相干
+     的東西疊在一起。混 62% 墨棕之後色相還在，只是全部變成「舊紙上的墨」——
+     這本書該長什麼樣不該因為使用者選了哪個主題色而變調。
+     accent（反思標記那顆點）同理，混得更深一點：它只是個小點綴，不必是主角。 */
+  --color-heading: color-mix(in oklab, var(--color-primary-dark) 62%, #3F2A1C);
+  --color-accent:  color-mix(in oklab, var(--color-accent-src) 70%, #52392A);
+}
+
+.recap-flipper {
+  transform-style: preserve-3d;
+  /* 支點在左下：rotateY 只吃 origin 的 X，但 rotateZ 吃 Y——把支點放到底邊，
+     負的 rotateZ 才會把右下角先掀起來，讀成「從角落翻」而不是整頁平轉。
+     實際角度由 JS 逐格算（見 RecapBook 的 sheetStyle），拖曳才跟得上手指。 */
+  transform-origin: left bottom;
+}
+
+.recap-flipper > .recap-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
+.recap-face-back { transform: rotateY(180deg); }
+
+/* 書脊側落下的陰影，讓紙有厚度；書口（右緣）加一線亮邊——這是紙有厚度、
+   而且朝著光的唯一證據，翻頁時最容易被感知到。 */
+.recap-page {
+  box-shadow:
+    -1px 0 0 rgb(92 66 36 / 0.06),
+    0 2px 12px rgb(92 66 36 / 0.10),
+    inset -1px 0 0 rgb(255 252 244 / 0.6);
+}
+
+/* 舊筆記本的內頁。
+   紙色不寫死：在 surface 上疊一層暖調，亮色模式變象牙、深色模式維持暖棕，
+   兩邊都成立。純白讀起來是 app，米黃才是筆記本。
+   再疊一層四周濃、中間透的暖褐 vignette——舊紙的邊緣本來就比中間深。 */
+.recap-paper {
+  background-image:
+    radial-gradient(125% 105% at 50% 50%, transparent 52%, rgb(146 102 56 / 0.13) 100%),
+    linear-gradient(rgb(196 146 86 / 0.075), rgb(196 146 86 / 0.075));
+}
+
+/* 紙纖維。三層不同角度、不同週期（4/7/5px）疊在一起，最小公倍數大到看不出重複，
+   比單一規則網點自然得多。 */
+.recap-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image:
+    repeating-linear-gradient(97deg, rgb(90 60 30 / 0.030) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(3deg, rgb(90 60 30 / 0.022) 0 1px, transparent 1px 7px),
+    radial-gradient(rgb(90 60 30 / 0.028) 1px, transparent 1px);
+  background-size: auto, auto, 5px 5px;
+}
+
+/* 書脊側的內陰影，讓頁面看起來是從裝訂處翻開的而不是一張浮卡。 */
+.recap-spine::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(to right, rgb(0 0 0 / 0.07), transparent);
+}
+
+/* 翻到一頁之後，內容依序浮上來。只有翻頁在動、內容已經擺好的話，
+   會像投影片切換而不是翻開一頁。 */
+@keyframes recap-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.recap-stagger > * {
+  animation: recap-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.recap-stagger > *:nth-child(1) { animation-delay: 90ms; }
+.recap-stagger > *:nth-child(2) { animation-delay: 160ms; }
+.recap-stagger > *:nth-child(3) { animation-delay: 230ms; }
+.recap-stagger > *:nth-child(4) { animation-delay: 300ms; }
+.recap-stagger > *:nth-child(5) { animation-delay: 370ms; }
+.recap-stagger > *:nth-child(n+6) { animation-delay: 430ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-stagger > * { animation: none; }
+}
+
+/* ── 回顧手冊：書的實體 ────────────────────────────────────────────────────── */
+
+/* 書封板。內頁外面包一圈皮革，比內頁大一點，這圈溢邊就是書封。
+   固定皮革色而不用主題色：封面是「一本舊本子」，不該跟著介面換色。 */
+.recap-board {
+  background: linear-gradient(160deg, #4A3327, #33221A);
+  box-shadow: 0 14px 34px rgb(28 16 8 / 0.4), inset 0 1px 0 rgb(255 235 200 / 0.12);
+}
+
+/* 封面的皮革。三種尺度的粒面加兩組斜向纖維，週期互質所以看不出重複。 */
+.recap-leather {
+  background-color: #4A3327;
+  background-image:
+    radial-gradient(64% 50% at 40% 26%, rgb(255 228 190 / 0.16), transparent 74%),
+    radial-gradient(rgb(24 12 5 / 0.20) 1.2px, transparent 1.5px),
+    radial-gradient(rgb(255 228 190 / 0.07) 0.9px, transparent 1.2px),
+    radial-gradient(rgb(24 12 5 / 0.10) 0.6px, transparent 0.9px),
+    repeating-linear-gradient(102deg, rgb(24 12 5 / 0.05) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(11deg, rgb(255 228 190 / 0.03) 0 1px, transparent 1px 7px);
+  background-size: auto, 9px 9px, 13px 13px, 5px 5px, auto, auto;
+}
+
+/* 使用感：幾塊沒有邊界的深淺不勻 + 四周壓深。
+   刻意不畫刮痕——貫穿整面、角度一致的線讀不成磨損，只像渲染瑕疵。真實皮革的
+   痕跡是短的、有起訖的、方向不一的，要做就得逐道畫，成本遠高於它的價值。 */
+.recap-leather::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(38% 22% at 22% 18%, rgb(24 12 5 / 0.10), transparent 70%),
+    radial-gradient(30% 26% at 78% 62%, rgb(24 12 5 / 0.09), transparent 72%),
+    radial-gradient(26% 16% at 62% 88%, rgb(255 236 202 / 0.045), transparent 74%),
+    radial-gradient(122% 100% at 50% 46%, transparent 48%, rgb(20 10 4 / 0.50) 100%);
+}
+
+/* 主題色的字在米黃紙上加一道極細的深色描邊。
+   7 套主題的 primary-dark 明度差很多（金黃 #E8A500 最亮），壓在米黃紙上對比會
+   不夠。與其為了最亮的那套把顏色壓深、犧牲其他六套的鮮豔，不如讓顏色維持主題色，
+   可讀性交給描邊。
+
+   描邊色從 gray-900 取（手冊內固定亮色模式，所以那是深墨色），跟著 token 走。
+   paint-order 讓描邊畫在字身後面，字形不會被吃細。 */
+.recap-book .text-heading {
+  -webkit-text-stroke: 0.5px color-mix(in oklab, var(--color-gray-900) 52%, transparent);
+  paint-order: stroke fill;
+}
+
+/* 大數字的描邊加粗一階：字級大、筆畫粗，同樣的 0.5px 在上面幾乎看不出來。 */
+.recap-book .recap-figure {
+  -webkit-text-stroke: 0.9px color-mix(in oklab, var(--color-gray-900) 58%, transparent);
+  paint-order: stroke fill;
+}
+
+/* 封面用明體 + Garamond，跟內頁的楷體區隔。楷體是手寫的骨架，明體和 Garamond
+   都是刻印的骨架，氣質對得上。拉丁字母排前面所以吃 Garamond，中文自動落到
+   Noto Serif TC。見 layout.tsx 對這兩支字型的註解。 */
+.recap-cover-face {
+  font-family: var(--font-cover-latin), var(--font-cover-cjk), serif;
+}
+
+/* 鎖扣打開。
+   鎖片是釘在封面上的，不會動；動的是從封底繞過來、扣進鎖片的那條皮帶。
+   它以自己的右緣為軸向外鬆開——那一端連著封底，本來就轉不走。
+
+   分三拍：先往回頂一下（扣件鬆脫前會先卡住）、鬆開、末端減速。
+   轉出去之後皮帶側面朝光源背面，所以壓暗，這是它有厚度的證據。 */
+.recap-clasp { perspective: 320px; }
+
+.recap-strap {
+  transform-origin: right center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.recap-strap[data-open='true'] {
+  animation: recap-unstrap 620ms cubic-bezier(0.32, 0.86, 0.28, 1) forwards;
+}
+
+@keyframes recap-unstrap {
+  0%   { transform: rotateY(0deg); filter: brightness(1); }
+  14%  { transform: rotateY(5deg); filter: brightness(1.05); }
+  100% { transform: rotateY(-64deg) translateX(7px); filter: brightness(0.7); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-strap[data-open='true'] { animation-duration: 1ms; }
+}
+
+/* 書脊：裝訂處的暗帶（緩降，不是硬邊色帶）＋ 縫線點只落在貼近裝訂線的窄幅內。
+   16px／峰值 0.55／縫線橫跨全寬 → 32px／峰值 0.40／多兩個停點讓它是曲線衰減
+   而非線性；縫線收窄到內側 6px，才像線頭而不是一條橫跨整個書溝的虛線。
+   內頁的 pl-7（28px）已經留了空間，排版不必再動。 */
+.recap-spine-band {
+  background-image:
+    linear-gradient(to right,
+      rgb(20 10 4 / 0.40) 0%,
+      rgb(20 10 4 / 0.14) 35%,
+      rgb(20 10 4 / 0.04) 70%,
+      transparent 100%),
+    repeating-linear-gradient(to bottom, transparent 0 12px, rgb(255 228 190 / 0.14) 12px 15px);
+  background-size: 100% 100%, 6px 100%;
+  background-position: left, left;
+  background-repeat: no-repeat, no-repeat;
+}
+
+/* 日曆的手繪感。
+   格子不畫框、不填色——那是表格。改成把腳印像印章一樣蓋在紙上：每個印子有自己
+   的角度和輕重（由日期決定，同一天永遠一樣），邊緣用 multiply 混色讓它吃進紙紋。 */
+.recap-stamp {
+  transform: rotate(calc(var(--tilt) * 1deg));
+  mix-blend-mode: multiply;
+}
+
+/* 手繪的圈選：橢圓稍微歪一點、線條粗細不勻，看起來像用筆圈起來的。 */
+.recap-circled {
+  outline: none;
+}
+
+.recap-circled::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1.5px solid var(--color-primary-dark);
+  border-radius: 50% 48% 52% 50% / 50% 52% 48% 50%;
+  transform: rotate(-6deg);
+  opacity: 0.75;
+}
+
+/* 紙堆邊緣。--sheets 由 React 依「還剩幾頁」給值，翻越後面右邊越薄、左邊越厚，
+   讓人感覺得到這本書有長度。 */
+.recap-sheets {
+  width: calc(var(--sheets) * 1px);
+  background: repeating-linear-gradient(
+    to right,
+    var(--color-surface) 0 1px,
+    rgb(0 0 0 / 0.10) 1px 2px
+  );
+}
+
+
+/* 統計頁的段落依序浮現。間隔比 .recap-stagger 長，因為這裡一段就是一個獨立的
+   小結論，要讓人一段一段讀完，不是四段一起砸上來。 */
+@keyframes recap-reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.recap-reveal {
+  animation: recap-reveal 500ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(180ms + var(--n) * 320ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-reveal { animation: none; }
+}
+
+/* 已經看過的頁：所有進場動畫直接跳到終點（class 由 RecapPage 依 RecapAnim 掛上）。
+   第一次翻開值得慢慢演，來回翻的時候同一套動畫再跑一遍就只是等待——統計頁四段
+   演完要一秒半，加上翻頁本身，回看一頁會等超過兩秒。
+   選擇器多一層 class，特異性高於原本的規則，放在哪都蓋得掉。 */
+.recap-static .recap-stagger > *,
+.recap-static .recap-reveal,
+.recap-static .recap-cell {
+  animation: none;
+}
+
+
+/* 回顧彈窗的入場。遮罩先淡入 → 前言浮現 → 書從下方升起，三拍分開，
+   使用者才有時間讀完那句「為什麼跳出來」。 */
+@keyframes recap-scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes recap-intro-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes recap-enter-in {
+  from { opacity: 0; transform: translateY(48px) scale(0.94); }
+  to   { opacity: 1; transform: none; }
+}
+
+.recap-scrim { animation: recap-scrim-in 220ms ease-out; }
+
+.recap-intro {
+  animation: recap-intro-in 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: 260ms;
+}
+
+.recap-enter {
+  animation: recap-enter-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-scrim,
+  .recap-intro,
+  .recap-enter { animation: none; }
+}
+
+/* 「輕觸繼續」的呼吸感。前言要等使用者點才會動，這行字得自己被看見。 */
+@keyframes recap-breathe {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 0.95; }
+}
+
+.recap-breathe {
+  animation: recap-breathe 2.4s ease-in-out infinite;
+  animation-delay: 900ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-breathe { animation: none; opacity: 0.8; }
 }
