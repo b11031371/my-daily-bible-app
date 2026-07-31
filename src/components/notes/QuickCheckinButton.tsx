@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { todayString } from '@/lib/utils'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
+import { BADGE_TOAST_GAP, useRecap } from '@/components/recap/RecapProvider'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { SealCheck } from '@phosphor-icons/react'
 
@@ -13,6 +14,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { showBadges } = useBadgeToast()
+  const { checkRecap } = useRecap()
   const { t } = useI18n()
 
   useEffect(() => {
@@ -42,7 +44,11 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
       const data = await res.json()
       try { sessionStorage.setItem(SS_KEY, '1') } catch {}
       setCheckedIn(true)
-      if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
+      const unlocked = data.badges_unlocked?.length ?? 0
+      if (unlocked) showBadges(data.badges_unlocked)
+      // 每個月第一次簽到才會真的跳，該不該跳由伺服器判斷。同時解鎖徽章時往後挪。
+      // 刻意不放進下面「已經簽到」的救援分支——那條路徑沒有真的新增簽到。
+      checkRecap(unlocked ? BADGE_TOAST_GAP : 0)
       router.refresh()
     } else {
       const data = await res.json()

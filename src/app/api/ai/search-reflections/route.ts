@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { GoogleGenerativeAI, FunctionCallingMode, SchemaType, type FunctionDeclaration } from '@google/generative-ai'
 import { createClient, getUser } from '@/lib/supabase/server'
+import { withRetry } from '@/lib/ai'
 
 function buildSystemInstruction(today: string, displayName: string | null, uiLangName: string) {
   const userLine = displayName
@@ -135,21 +136,6 @@ async function executeSearchReflections(args: SearchArgs) {
   }
 }
 
-async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
-  let lastError: unknown
-  for (let i = 0; i < maxRetries; i++) {
-    try { return await fn() } catch (e) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((e as any)?.status === 503 || (e as any)?.status === 429) {
-        lastError = e
-        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)))
-        continue
-      }
-      throw e
-    }
-  }
-  throw lastError
-}
 
 // ── provider implementations ──────────────────────────────────────────────────
 async function callOpenAI(apiKey: string, query: string, systemInstruction: string): Promise<string> {

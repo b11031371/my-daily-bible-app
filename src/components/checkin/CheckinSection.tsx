@@ -6,6 +6,7 @@ import { POINTS_BY_DAYS_LATE } from '@/lib/points'
 import StampCard from '@/components/checkin/StampCard'
 import { Fire, Star, Diamond, Confetti, SealCheck } from '@phosphor-icons/react'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
+import { BADGE_TOAST_GAP, useRecap } from '@/components/recap/RecapProvider'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { Locale, TFunc } from '@/lib/i18n'
 
@@ -23,6 +24,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
   const monthLabel = formatMonth(today, locale)
   const router = useRouter()
   const { showBadges } = useBadgeToast()
+  const { checkRecap } = useRecap()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ points: number; badges: string[] } | null>(null)
   const [checkinDays, setCheckinDays] = useState(monthlyCheckinDays)
@@ -52,7 +54,11 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       setCheckinDays(d => d + 1)
       setPoints(p => p + data.points_earned)
       setCheckedDates(prev => ({ ...prev, [date]: data.points_earned }))
-      if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
+      const unlocked = data.badges_unlocked?.length ?? 0
+      if (unlocked) showBadges(data.badges_unlocked)
+      // 每個月第一次簽到才會真的跳，該不該跳由伺服器判斷。
+      // 同時解鎖徽章時往後挪，讓徽章通知先亮完。
+      checkRecap(unlocked ? BADGE_TOAST_GAP : 0)
       router.refresh()
       return
     }
