@@ -4,6 +4,7 @@ const BRANCH = 'main'
 
 const RAW_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`
 const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`
+const PAGES_BASE = `https://${OWNER}.github.io/${REPO}`
 
 export async function fetchAvailableDates(): Promise<string[]> {
   const res = await fetch(`${API_BASE}/contents/`, {
@@ -32,13 +33,21 @@ export async function fetchPassageRange(date: string, noteLang: 'zh' | 'en' = 'z
   return noteLang === 'zh' ? null : fetchPassageRange(date, 'zh')
 }
 
+// 主來源走 GitHub Pages：跟 PDF 同一個網域，經 CDN 送出，沒有流量限制。
+// raw.githubusercontent.com 對未登入請求有反爬蟲限流，量一上來就整片回 429
+// （帶 token 也擋），md 一失敗這裡就 return null，全部日期的筆記同時變空白。
+// raw 只留作退路：push 之後 Pages 要重新建置十幾秒到一分鐘，那段空窗期新上傳
+// 的檔案在 Pages 上還是 404，改由 raw 補上。
 export async function fetchMarkdown(date: string, lang: 'zh' | 'en'): Promise<string | null> {
   const filename = lang === 'zh' ? 'note_zh.md' : 'note_en.md'
-  const res = await fetch(`${RAW_BASE}/${date}/${filename}`, {
-    next: { revalidate: 3600, tags: ['bible-notes'] },
-  })
-  if (!res.ok) return null
-  return res.text()
+  const cache = { next: { revalidate: 3600, tags: ['bible-notes'] } }
+
+  const res = await fetch(`${PAGES_BASE}/${date}/${filename}`, cache)
+  if (res.ok) return res.text()
+
+  const fallback = await fetch(`${RAW_BASE}/${date}/${filename}`, cache)
+  if (!fallback.ok) return null
+  return fallback.text()
 }
 
 export function getPdfUrl(date: string, lang: 'zh' | 'en'): string {
