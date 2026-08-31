@@ -459,6 +459,10 @@ export interface Database {
           summary: { book: string; summary: string }[]
           model: string | null
           created_at: string
+          refresh_count: number
+          source_count: number
+          source_updated_at: string | null
+          updated_at: string
         }
         Insert: {
           user_id: string
@@ -467,10 +471,18 @@ export interface Database {
           summary: { book: string; summary: string }[]
           model?: string | null
           created_at?: string
+          refresh_count?: number
+          source_count?: number
+          source_updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           summary?: { book: string; summary: string }[]
           model?: string | null
+          refresh_count?: number
+          source_count?: number
+          source_updated_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

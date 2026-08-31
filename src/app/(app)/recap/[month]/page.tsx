@@ -6,7 +6,7 @@ import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { buildRecap, MONTH_RE } from '@/lib/recap'
 import { getRecapAccess } from '@/lib/recap-access'
-import { formatMonth, todayString } from '@/lib/utils'
+import { currentMonth, formatMonth } from '@/lib/utils'
 import TitleDivider from '@/components/layout/TitleDivider'
 import RecapContent from '@/components/recap/RecapContent'
 
@@ -15,7 +15,7 @@ export default async function RecapPage({ params }: { params: Promise<{ month: s
   const { month } = await params
   if (!MONTH_RE.test(month)) notFound()
   // 未來的月份沒東西可看，字串比對就夠（兩邊都是 YYYY-MM）
-  if (month > todayString().slice(0, 7)) notFound()
+  if (month > currentMonth()) notFound()
 
   const [user, supabase, { locale, t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
   if (!user) redirect('/login')
