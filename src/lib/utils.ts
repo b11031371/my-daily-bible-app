@@ -68,6 +68,12 @@ export function nextMonth(month: string): string {
   return new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 7)
 }
 
+// 台北曆的當月 'YYYY-MM'。月份比較全站一律用同格式的字串比大小
+// （month < currentMonth() 就是「這個月已經過完了」），不繞 Date。
+export function currentMonth(): string {
+  return todayString().slice(0, 7)
+}
+
 /**
  * 一個月份的查詢邊界，皆為半開區間（結束值用 .lt() 比）。
  *

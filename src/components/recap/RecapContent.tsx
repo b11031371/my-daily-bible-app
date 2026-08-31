@@ -41,8 +41,7 @@ export default function RecapContent({ recap }: { recap: MonthRecap }) {
     node: (
       <RecapSummaryPage
         page={pages.length}
-        state={summary.state}
-        onRetry={summary.retry}
+        summary={summary}
         hasReflections={recap.reflectionCount > 0}
       />
     ),
