@@ -5,7 +5,7 @@ import { ChatCircle } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
 import { useI18n } from '@/components/i18n/I18nProvider'
-import { PromptGhost, PromptHeaderControls, PromptSwapRow, useReflectionHint } from './ReflectionPromptHint'
+import { PromptGhost, PromptHeaderControls, useReflectionHint } from './ReflectionPromptHint'
 
 export default function ReflectionForm({ date, bibleRange, lang }: { date: string; bibleRange: string | null; lang: 'zh' | 'en' }) {
   const router = useRouter()
@@ -97,7 +97,7 @@ export default function ReflectionForm({ date, bibleRange, lang }: { date: strin
       {/* relative：ⓘ 的說明卡片以這一列為定位基準 */}
       <div className="relative mb-2 flex items-center justify-between gap-2">
         {title}
-        <PromptHeaderControls hintsOn={ai.hintsOn} onToggle={ai.toggleHints} />
+        <PromptHeaderControls hint={ai.hint} hintsOn={ai.hintsOn} onToggle={ai.toggleHints} canSwap={ai.showGhost} />
       </div>
 
       {/* 輸入框和提示疊在同一格：提示比較長時，輸入框會跟著撐高 */}
@@ -112,10 +112,8 @@ export default function ReflectionForm({ date, bibleRange, lang }: { date: strin
           placeholder={ai.showGhost ? '' : t('community.thoughtPlaceholder')}
           className="col-start-1 row-start-1 w-full touch-manipulation border border-gray-200 rounded-xl px-4 py-3 text-sm leading-6 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
-        {ai.showGhost && <PromptGhost loading={ai.hint.loading} prompt={ai.hint.prompt} typed={ai.typed} typing={ai.typing} />}
+        {ai.showGhost && <PromptGhost loading={ai.hint.loading} failed={ai.hint.failed} prompt={ai.hint.prompt} typed={ai.typed} typing={ai.typing} />}
       </div>
-
-      {ai.showGhost && <PromptSwapRow hint={ai.hint} />}
 
       {error && <p className="text-xs text-danger mt-1.5">{error}</p>}
       <div className="flex items-center justify-between mt-2">

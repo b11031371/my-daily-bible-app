@@ -21,9 +21,14 @@ export function useReflectionPrompt(date: string, lang: 'zh' | 'en', enabled: bo
   const [failed, setFailed] = useState(false)
   // 這次打開以來看過的建議，換一個時傳給後端，請模型別重複
   const seenRef = useRef<string[]>([])
+  // 已經載入過哪份筆記哪個語言。關掉提示再打開時，同一份就直接沿用手上的句子，
+  // 不再打 API（就算命中快取也要約半秒，會先閃一下載入狀態）
+  const loadedKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!enabled) return
+    const key = `${date}:${lang}`
+    if (loadedKeyRef.current === key) return
     let cancelled = false
     setLoading(true)
     setFailed(false)
@@ -34,6 +39,7 @@ export function useReflectionPrompt(date: string, lang: 'zh' | 'en', enabled: bo
         if (cancelled || !data) return
         setState({ prompt: data.prompt, remaining: data.remaining, limit: data.limit, unlimited: !!data.unlimited })
         if (data.prompt) seenRef.current = [data.prompt]
+        loadedKeyRef.current = key
       })
       .catch(() => {})
       .finally(() => {
