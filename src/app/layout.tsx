@@ -81,9 +81,12 @@ export const metadata: Metadata = {
   },
 }
 
+// maximumScale: 1 擋掉 iOS Safari 點進輸入框（字級小於 16px）時的自動放大。
+// 代價是使用者也不能雙指放大畫面；這是刻意的取捨，輸入框維持原本的字級。
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
