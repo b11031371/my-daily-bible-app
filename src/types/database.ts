@@ -503,6 +503,50 @@ export interface Database {
         }
         Relationships: []
       }
+      reflection_prompt_cache: {
+        Row: {
+          note_date: string
+          lang: 'zh' | 'en'
+          prompt: string
+          source_hash: string
+          model: string | null
+          created_at: string
+        }
+        Insert: {
+          note_date: string
+          lang: 'zh' | 'en'
+          prompt: string
+          source_hash: string
+          model?: string | null
+          created_at?: string
+        }
+        Update: {
+          prompt?: string
+          source_hash?: string
+          model?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      reflection_prompt_usage: {
+        Row: {
+          user_id: string
+          usage_date: string
+          swap_count: number
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          usage_date: string
+          swap_count?: number
+          updated_at?: string
+        }
+        Update: {
+          swap_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {

@@ -70,11 +70,12 @@ export default function RegisterPage() {
         </div>
         <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
           {error && (
-            <div className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
+            <div role="alert" className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.register.nickname')}</label>
+            <label htmlFor="register-name" className="block text-sm font-medium text-gray-700 mb-1">{t('auth.register.nickname')}</label>
             <input
+              id="register-name"
               type="text"
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
@@ -85,8 +86,9 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
+            <label htmlFor="register-email" className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
             <input
+              id="register-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -97,9 +99,10 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
+            <label htmlFor="register-password" className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
             <div className="relative">
               <input
+                id="register-password"
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -111,9 +114,8 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPw(v => !v)}
-                tabIndex={-1}
                 aria-label={showPw ? t('auth.hidePassword') : t('auth.showPassword')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors p-1"
+                className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors"
               >
                 {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>
@@ -135,9 +137,10 @@ export default function RegisterPage() {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.register.confirmPassword')}</label>
+            <label htmlFor="register-confirm-password" className="block text-sm font-medium text-gray-700 mb-1">{t('auth.register.confirmPassword')}</label>
             <div className="relative">
               <input
+                id="register-confirm-password"
                 type={showConfirm ? 'text' : 'password'}
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
@@ -153,15 +156,14 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirm(v => !v)}
-                tabIndex={-1}
                 aria-label={showConfirm ? t('auth.hidePassword') : t('auth.showPassword')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors p-1"
+                className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors"
               >
                 {showConfirm ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {confirmMismatch && (
-              <p className="mt-1 text-xs text-danger">{t('auth.register.mismatch')}</p>
+              <p role="alert" className="mt-1 text-xs text-danger">{t('auth.register.mismatch')}</p>
             )}
           </div>
           <button

@@ -25,7 +25,8 @@
   --color-gray-100: #F5EFE8;
   --color-gray-200: #E8DDD5;
   --color-gray-300: #D4C4B8;
-  --color-gray-400: #B89A8A;
+  /* WCAG AA on both white cards and the ivory page background. */
+  --color-gray-400: #8E6D5C;
   --color-gray-500: #8C6B5A;
   --color-gray-600: #6B4C3B;
   --color-gray-700: #4F3425;
@@ -146,7 +147,7 @@
   --color-gray-100: #2B251D;
   --color-gray-200: #3A3228;
   --color-gray-300: #4E4638;
-  --color-gray-400: #8B8073;
+  --color-gray-400: #9B9082;
   --color-gray-500: #A99E90;
   --color-gray-600: #C7BCAD;
   --color-gray-700: #E3D9CB;
@@ -171,6 +172,43 @@ body {
   background-color: var(--color-theme-bg);
   color: var(--color-gray-800);   /* 亮色=深棕字、深色=淺字，隨模式反轉 */
   -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Keyboard users get one predictable focus treatment across themes. Existing
+   component rings can still add shape-specific emphasis. */
+:where(a, button, input, select, textarea, [role="button"], [role="switch"]):focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 3px;
+}
+
+:root[data-mode="dark"] :where(a, button, input, select, textarea, [role="button"], [role="switch"]):focus-visible {
+  outline-color: var(--color-primary);
+}
+
+:where(button, input, select, textarea):disabled {
+  cursor: not-allowed;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  color: var(--color-gray-900);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 24px rgba(75, 49, 31, 0.16);
+  transition: transform 150ms ease-out;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 /* 主題化的 CTA 漸層（取代寫死的 from-[#FFD880] to-[#FFB85A]） */
@@ -258,6 +296,17 @@ a.btn-gradient:active {
 /* 設定頁區塊標題橫幅（取代 from-[#FFF5CC] to-[#FFD880]） */
 .section-band {
   background-image: linear-gradient(to right, var(--color-primary-light), var(--color-grad-from));
+}
+
+/* 筆記頁標題列的閱讀進度填色（見 ReadingProgressHeader）。用半透明的主題漸層，
+   疊在頁面底色上：淺色模式文字是深色、深色模式文字是淺色，兩邊都讀得清楚。
+   漸層鋪滿整條、再用 clip-path 從左往右露出，填到一半時看到的就是左半段的淡色。 */
+.reading-fill {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-grad-from) 22%, transparent),
+    color-mix(in srgb, var(--color-grad-to) 62%, transparent)
+  );
 }
 
 /* 深色模式：標題橫幅改為低調深色漸層，讓亮色標題文字可讀 */

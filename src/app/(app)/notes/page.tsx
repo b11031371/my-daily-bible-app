@@ -6,6 +6,7 @@ import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
 import QuickCheckinButton from '@/components/notes/QuickCheckinButton'
+import TodayReadingProgress from '@/components/notes/TodayReadingProgress'
 import { Fire, Users, ChatCircle, Medal, Check } from '@phosphor-icons/react/dist/ssr'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import type { Profile } from '@/types/app'
@@ -95,10 +96,12 @@ export default async function NotesPage() {
                 <span className="text-sm text-black/60">{formatDate(today, locale)}</span>
               </div>
               <p className="text-xl font-bold leading-snug mb-4">{passageRange}</p>
-              <div className="flex items-center gap-1 text-sm text-black/60 font-medium">
-                <span>{t('notesList.readToday')}</span>
-                <span>›</span>
-              </div>
+              <TodayReadingProgress
+                userId={user!.id}
+                date={today}
+                readLabel={t('notesList.readToday')}
+                progressLabel={t('notesList.readingProgress')}
+              />
             </div>
           </div>
         </Link>

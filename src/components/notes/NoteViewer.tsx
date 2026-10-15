@@ -5,7 +5,8 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import MarkdownRenderer from './MarkdownRenderer'
 import ReflectionForm from '@/components/community/ReflectionForm'
 import ApprovalBanner from './ApprovalBanner'
-import { FilePdf, ChatCircle } from '@phosphor-icons/react'
+import { NOTE_END_ID } from './ReadingProgressHeader'
+import { FilePdf } from '@phosphor-icons/react'
 
 interface Props {
   date: string
@@ -40,6 +41,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           <button
             key={l}
             onClick={() => setLang(l)}
+            aria-pressed={lang === l}
             className={cn(
               'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
               lang === l
@@ -54,6 +56,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           href={pdfUrl}
           target="_blank"
           rel="noreferrer"
+          aria-label={`${t('noteView.pdfTitle', { date })} PDF`}
           className="ml-auto flex items-center gap-1 text-sm text-gray-700 font-medium px-3 py-1.5 border border-primary rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors"
         >
           ↓ PDF
@@ -83,14 +86,13 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           </div>
         )}
       </div>
+      {/* 閱讀進度的終點（見 ReadingProgressHeader） */}
+      <div id={NOTE_END_ID} aria-hidden="true" />
 
       {/* Reflection form */}
+      {/* 標題在 ReflectionForm 裡面：AI 提示的開關要跟標題放同一列 */}
       <div id="reflection" className="bg-surface rounded-2xl shadow-sm p-5">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-heading mb-3">
-          <ChatCircle size={16} weight="fill" />
-          {t('noteView.shareThoughts')}
-        </h3>
-        <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
+        <ReflectionForm date={date} bibleRange={bibleRange ?? null} lang={lang} />
       </div>
     </div>
   )

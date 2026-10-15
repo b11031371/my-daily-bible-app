@@ -15,7 +15,7 @@ type Msg = { ok: boolean; text: string } | null
 function StatusMsg({ msg }: { msg: Msg }) {
   if (!msg) return null
   return (
-    <span className={`text-xs inline-flex items-center gap-1 ${msg.ok ? 'text-gray-700' : 'text-danger'}`}>
+    <span role={msg.ok ? 'status' : 'alert'} aria-live={msg.ok ? 'polite' : 'assertive'} className={`text-xs inline-flex items-center gap-1 ${msg.ok ? 'text-gray-700' : 'text-danger'}`}>
       {msg.ok && <Check size={12} weight="bold" />}
       {msg.text}
     </span>
@@ -86,7 +86,9 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
         <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.nickname')}</h2>
         </div>
+        <label htmlFor="profile-display-name" className="sr-only">{t('settings.nickname')}</label>
         <input
+          id="profile-display-name"
           value={name}
           onChange={e => setName(e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -114,7 +116,10 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
           {AVATAR_SEEDS.map(s => (
             <button
               key={s}
+              type="button"
               onClick={() => saveAvatar(s)}
+              aria-label={`${t('settings.avatar')} ${AVATAR_SEEDS.indexOf(s) + 1}`}
+              aria-pressed={seed === s}
               className={`rounded-full border-2 transition-colors ${seed === s ? 'border-primary' : 'border-transparent'}`}
             >
               <BibleAvatar seed={s} className="w-full aspect-square" />
@@ -129,14 +134,18 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
         <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.changePassword')}</h2>
         </div>
+        <label htmlFor="settings-new-password" className="sr-only">{t('settings.newPwPlaceholder')}</label>
         <input
+          id="settings-new-password"
           type="password"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           placeholder={t('settings.newPwPlaceholder')}
         />
+        <label htmlFor="settings-confirm-password" className="sr-only">{t('settings.confirmPwPlaceholder')}</label>
         <input
+          id="settings-confirm-password"
           type="password"
           value={confirmPassword}
           onChange={e => setConfirmPassword(e.target.value)}

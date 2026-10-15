@@ -19,6 +19,7 @@ export default function RecapDevTestButton() {
       type="button"
       onClick={() => checkRecap(0, prevMonth(todayString()))}
       title="測試回顧彈窗（上個月）"
+      aria-label="測試回顧彈窗（上個月）"
       className="flex items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50"
     >
       <Bug size={20} />
