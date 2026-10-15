@@ -31,6 +31,7 @@ export const en = {
     title: 'Daily Notes',
     todayBadge: 'Today',
     readToday: "Read today's note",
+    readingProgress: "Today's reading progress",
     notUploaded: "Today's note isn't up yet",
     checkBackLater: 'Check back later',
     streak: '{count}-day streak',

@@ -91,7 +91,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const htmlLang = getLocaleMeta(locale).htmlLang
 
   return (
-    <html lang={htmlLang} className={`h-full ${wenkai.className} ${coverCjk.variable} ${coverLatin.variable}`} suppressHydrationWarning>
+    // data-scroll-behavior：globals.css 對 html 開了 smooth scroll，Next 16 起換頁時不再
+    // 自動關掉它，換頁的「捲回頂端」會變成慢慢捲。加這個屬性讓換頁維持瞬間捲動。
+    <html lang={htmlLang} data-scroll-behavior="smooth" className={`h-full ${wenkai.className} ${coverCjk.variable} ${coverLatin.variable}`} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#FFCC66" />
         <script dangerouslySetInnerHTML={{ __html: `try{var d=document.documentElement;var s=localStorage.getItem('bible-font-size');if(s)d.style.fontSize=s;var th=localStorage.getItem('bible-theme');if(th)d.setAttribute('data-theme',th);var rv=null;if(th==='random'){rv=localStorage.getItem('bible-random');if(rv)d.style.cssText+=';'+rv;}var md=localStorage.getItem('bible-mode');if(md)d.setAttribute('data-mode',md);var TC={gold:'#FFCC66',forest:'#5BC79A',ocean:'#5CB3E6',indigo:'#8B7CE8',rose:'#F27EA8',teal:'#3FB8C4',slate:'#6E88A8'};var col=md==='dark'?'#15120D':(th==='random'&&rv?(((rv.match(/--color-primary\\s*:\\s*([^;]+)/)||[])[1])||'').trim()||'#FFCC66':(TC[th]||'#FFCC66'));var mt=document.querySelector('meta[name=\"theme-color\"]');if(!mt){mt=document.createElement('meta');mt.setAttribute('name','theme-color');document.head.appendChild(mt);}mt.setAttribute('content',col);}catch(e){}` }} />

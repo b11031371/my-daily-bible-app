@@ -32,6 +32,7 @@ export const zh: Dictionary = {
     title: '每日筆記',
     todayBadge: '今日',
     readToday: '閱讀今日筆記',
+    readingProgress: '今日閱讀進度',
     notUploaded: '今日筆記尚未上傳',
     checkBackLater: '稍後再來看看',
     streak: '{count} 天連續',

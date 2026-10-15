@@ -1,11 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
-import Link from 'next/link'
 import { fetchMarkdown, getPdfUrl } from '@/lib/github/api'
 import { formatDate } from '@/lib/utils'
 import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
 import NoteViewer from '@/components/notes/NoteViewer'
+import ReadingProgressHeader from '@/components/notes/ReadingProgressHeader'
 
 interface Props {
   params: Promise<{ date: string }>
@@ -44,11 +44,16 @@ export default async function NotePage({ params }: Props) {
   const bibleRange = bibleRangeMatch?.[1]?.trim() ?? null
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-4 pb-6">
-      <div className="flex items-center gap-3 mb-4">
-        <Link href="/notes" aria-label={locale === 'zh' ? '返回筆記列表' : 'Back to notes'} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
-        <h1 className="text-base font-semibold text-gray-900">{formatDate(date, locale)}</h1>
-      </div>
+    // 頂端不留 padding：標題列（同時是閱讀進度條）要從一開始就貼齊畫面頂端
+    <div className="max-w-lg mx-auto px-4 pb-6">
+      <ReadingProgressHeader
+        userId={user.id}
+        date={date}
+        title={formatDate(date, locale)}
+        backHref="/notes"
+        backLabel={locale === 'zh' ? '返回筆記列表' : 'Back to notes'}
+        progressLabel={locale === 'zh' ? '閱讀進度' : 'Reading progress'}
+      />
       <NoteViewer
         date={date}
         zhContent={zhContent}

@@ -5,6 +5,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import MarkdownRenderer from './MarkdownRenderer'
 import ReflectionForm from '@/components/community/ReflectionForm'
 import ApprovalBanner from './ApprovalBanner'
+import { NOTE_END_ID } from './ReadingProgressHeader'
 import { FilePdf, ChatCircle } from '@phosphor-icons/react'
 
 interface Props {
@@ -85,6 +86,8 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           </div>
         )}
       </div>
+      {/* 閱讀進度的終點（見 ReadingProgressHeader） */}
+      <div id={NOTE_END_ID} aria-hidden="true" />
 
       {/* Reflection form */}
       <div id="reflection" className="bg-surface rounded-2xl shadow-sm p-5">
