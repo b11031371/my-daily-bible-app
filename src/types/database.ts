@@ -528,6 +528,27 @@ export interface Database {
         }
         Relationships: []
       }
+      reflection_prompt_picks: {
+        Row: {
+          user_id: string
+          note_date: string
+          lang: 'zh' | 'en'
+          prompt: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          note_date: string
+          lang: 'zh' | 'en'
+          prompt: string
+          updated_at?: string
+        }
+        Update: {
+          prompt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reflection_prompt_usage: {
         Row: {
           user_id: string

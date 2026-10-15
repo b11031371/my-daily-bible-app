@@ -12,8 +12,8 @@ import {
 } from '@/lib/reflection-prompt'
 
 // 心得框的 AI 下筆建議。
-//   GET  ?date=YYYY-MM-DD&lang=zh|en  第一句建議（全站共用快取）＋今天剩幾次，不扣次數
-//   POST { date, lang, previous }     「換一個」：扣一次、即時產生一句，只回給這個人
+//   GET  ?date=YYYY-MM-DD&lang=zh|en  這個人換過的句子（沒有就給全站共用的第一句）＋今天剩幾次，不扣次數
+//   POST { date, lang, previous }     「換一個」：扣一次、即時產生一句，只給這個人，並記下來
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 type Lang = 'zh' | 'en'
@@ -61,6 +61,28 @@ async function readSwapCount(admin: Admin, userId: string, usageDate: string): P
   return data?.swap_count ?? 0
 }
 
+async function readPick(admin: Admin, userId: string, date: string, lang: Lang): Promise<string | null> {
+  const { data } = await admin
+    .from('reflection_prompt_picks')
+    .select('prompt')
+    .eq('user_id', userId)
+    .eq('note_date', date)
+    .eq('lang', lang)
+    .maybeSingle()
+  return data?.prompt ?? null
+}
+
+/** 記下這個人在這份筆記、這個語言最後換到的句子，重新整理或回來時 GET 會優先給它。 */
+async function savePick(admin: Admin, userId: string, date: string, lang: Lang, prompt: string) {
+  await admin.from('reflection_prompt_picks').upsert({
+    user_id: userId,
+    note_date: date,
+    lang,
+    prompt,
+    updated_at: new Date().toISOString(),
+  })
+}
+
 function quota(isAdmin: boolean, used: number): Pick<ReflectionPromptResponse, 'remaining' | 'limit' | 'unlimited'> {
   return isAdmin
     ? { remaining: PROMPT_SWAP_LIMIT, limit: PROMPT_SWAP_LIMIT, unlimited: true }
@@ -76,10 +98,14 @@ export async function GET(req: NextRequest) {
   if (auth instanceof NextResponse) return auth
 
   const admin = createAdminClient()
-  const [source, used] = await Promise.all([
-    loadSource(date, lang),
+  const [pick, used] = await Promise.all([
+    readPick(admin, auth.userId, date, lang),
     readSwapCount(admin, auth.userId, todayString()),
   ])
+  // 換過就給換到的那句，不必讀筆記、也不必碰共用快取
+  if (pick) return NextResponse.json<ReflectionPromptResponse>({ prompt: pick, ...quota(auth.isAdmin, used) })
+
+  const source = await loadSource(date, lang)
   if (!source) return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(auth.isAdmin, used) })
 
   const sourceHash = hashSource(source)
@@ -140,6 +166,7 @@ export async function POST(req: NextRequest) {
   // admin 不扣次數，直接產生
   if (auth.isAdmin) {
     const result = await generateReflectionPrompt(source, lang, previous)
+    if (result) await savePick(admin, auth.userId, date, lang, result.prompt)
     return NextResponse.json<ReflectionPromptResponse>({ prompt: result?.prompt ?? null, ...quota(true, 0) })
   }
 
@@ -178,5 +205,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) })
   }
 
+  await savePick(admin, auth.userId, date, lang, result.prompt)
   return NextResponse.json<ReflectionPromptResponse>({ prompt: result.prompt, ...quota(false, claimedCount) })
 }
