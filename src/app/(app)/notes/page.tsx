@@ -90,7 +90,8 @@ export default async function NotesPage() {
       {showHeroCard ? (
         <Link href={`/notes/${today}`} className="block active:opacity-90 transition-opacity">
           <div className="animated-border rounded-3xl shadow-lg">
-            <div className="btn-gradient rounded-[22px] p-6 text-gray-900">
+            {/* relative overflow-hidden：閱讀進度的細線貼在這張卡片的底邊，被圓角裁切 */}
+            <div className="btn-gradient relative overflow-hidden rounded-[22px] p-6 text-gray-900">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs bg-black/10 px-2.5 py-1 rounded-full font-medium">{t('notesList.todayBadge')}</span>
                 <span className="text-sm text-black/60">{formatDate(today, locale)}</span>

@@ -1,6 +1,6 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { Check } from '@phosphor-icons/react'
+import { useLayoutEffect, useState } from 'react'
+import { Plant } from '@phosphor-icons/react'
 import { readProgress } from '@/lib/reading-progress'
 
 interface Props {
@@ -11,59 +11,65 @@ interface Props {
 }
 
 /**
- * 首頁今日卡片的底部：沒讀過顯示「閱讀今日筆記 ›」，讀過換成進度條和百分比，
- * 讀完時百分比換成一個勾。進度是筆記頁存下的「最高進度」（只進不退）。
+ * 首頁今日卡片的閱讀進度：卡片底邊一條淡底軌，已讀的部分加深，線尾一棵嫩芽跟著往右長，
+ * 「閱讀今日筆記 ›」那一行最右邊一個小小的百分比。進度是筆記頁存下的「最高進度」（只進不退），
+ * 0% 也照樣顯示。
+ *
+ * 這些都用 absolute 貼在卡片底邊，外層卡片要有 relative overflow-hidden（見 notes/page.tsx），
+ * 底軌和線才會被卡片的圓角裁切。
  */
 export default function TodayReadingProgress({ userId, date, readLabel, progressLabel }: Props) {
   const [max, setMax] = useState(0)
   const [width, setWidth] = useState(0)
+  // 讀到裝置上的進度之前不畫：整頁載入時伺服器讀不到 localStorage，先畫的話會閃一個錯的 0%
+  const [loaded, setLoaded] = useState(false)
 
-  useEffect(() => {
+  // 在畫面畫出來之前讀進度，免得先畫一次空的再跳
+  useLayoutEffect(() => {
     const value = readProgress(userId, date).max
     setMax(value)
-    // 先以 0 畫出來，下一幀再拉到實際寬度，進度條才會有長出來的過程
+    setLoaded(true)
+    // 先以 0 畫出來，下一幀再拉到實際長度，線和嫩芽才會有長出來的過程
     const frame = requestAnimationFrame(() => setWidth(value))
     return () => cancelAnimationFrame(frame)
   }, [userId, date])
 
-  if (max === 0) {
-    return (
+  // 卡片底是固定的亮色漸層：線、嫩芽、數字都用低透明度的深咖啡色（同 .btn-gradient 的字色），
+  // 看得出進度又不搶標題的眼；顏色寫死，深色模式也不反轉
+  return (
+    <>
+      {/* 百分比放在這一行最右邊：放在底邊的話，讀到 100% 時會跟線尾的嫩芽撞在一起 */}
       <div className="flex items-center gap-1 text-sm text-black/60 font-medium">
         <span>{readLabel}</span>
         <span>›</span>
-      </div>
-    )
-  }
-
-  const done = max >= 100
-
-  // 卡片底是固定的亮色漸層：進度用深咖啡色，但透明度壓低，看得出進度又不搶標題的眼；
-  // 底條再淡一階。顏色都固定寫死（同 .btn-gradient 的字色），深色模式也不反轉。
-  return (
-    <div className="flex items-center gap-3 text-sm font-semibold text-black/60">
-      <div
-        role="progressbar"
-        aria-label={progressLabel}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={max}
-        className="h-2 flex-1 overflow-hidden rounded-full bg-[#2C1A0E]/10"
-      >
-        <div
-          className="h-full rounded-full bg-[#2C1A0E]/35 transition-[width] duration-500 ease-out"
-          style={{ width: `${width}%` }}
-        />
-      </div>
-      <span className="inline-flex min-w-[2.75rem] justify-end tabular-nums">
-        {done ? (
-          // 勾用卡片漸層的主題色，像在圓上挖空，看到的是卡片底色；換主題也跟著變
-          <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full bg-[#2C1A0E]/35 text-[var(--color-grad-from)]">
-            <Check size={12} weight="bold" />
+        {loaded && (
+          <span aria-hidden="true" className="ml-auto text-xs font-semibold tabular-nums text-black/55">
+            {max}%
           </span>
-        ) : (
-          `${max}%`
         )}
-      </span>
-    </div>
+      </div>
+      {loaded && (
+        <>
+          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-[#2C1A0E]/10" />
+          <span
+            role="progressbar"
+            aria-label={progressLabel}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={max}
+            className={`absolute bottom-0 left-0 h-1 bg-[#2C1A0E]/40 transition-[width] duration-700 ease-out ${max >= 100 ? '' : 'rounded-r-full'}`}
+            style={{ width: `${width}%` }}
+          />
+          {/* 嫩芽站在線尾；到兩端時夾住，不被卡片圓角切掉 */}
+          <Plant
+            aria-hidden="true"
+            size={15}
+            weight="fill"
+            className="absolute bottom-[3px] text-[#2C1A0E]/60 transition-[left] duration-700 ease-out"
+            style={{ left: `clamp(4px, calc(${width}% - 7px), calc(100% - 19px))` }}
+          />
+        </>
+      )}
+    </>
   )
 }
