@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { readProgress, saveProgress } from '@/lib/reading-progress'
 
@@ -36,15 +36,23 @@ function finishScrollTop(): number | null {
 export default function ReadingProgressHeader({ userId, date, title, backHref, backLabel, progressLabel }: Props) {
   const [progress, setProgress] = useState(0)
   const [shown, setShown] = useState(0)
+  // 讀到裝置上的進度之前不顯示數字：整頁載入時伺服器讀不到 localStorage，
+  // 送來的 HTML 只能是 0%，等 JS 接手前就會先閃一個錯的 0%
+  const [loaded, setLoaded] = useState(false)
   const maxRef = useRef(0)
+
+  // 在畫面第一次畫出來之前就讀進度、直接顯示（數字不從 0 滾上去）。
+  // 用 useEffect 的話第一個畫面一定是 0%，裝置慢一點（iPhone、正式環境）就看得到「先 0% 再跳回來」。
+  useLayoutEffect(() => {
+    const max = readProgress(userId, date).max
+    maxRef.current = max
+    setProgress(max)
+    setShown(max)
+    setLoaded(true)
+  }, [userId, date])
 
   useEffect(() => {
     const saved = readProgress(userId, date)
-    maxRef.current = saved.max
-
-    // 一進來就直接顯示存下的進度，數字不從 0 滾上去，免得看起來像進度又重跑了一次
-    setProgress(saved.max)
-    setShown(saved.max)
 
     let frame = 0
     // 捲回上次位置之前的捲動事件不記，否則會把存下的位置蓋成 0
@@ -92,16 +100,19 @@ export default function ReadingProgressHeader({ userId, date, title, backHref, b
   }, [userId, date])
 
   // 百分比用追趕的方式滾到目標值，數字會動但不跳格；減少動態偏好時直接顯示。
+  // 只往上滾：進度本來就只增不減，目標比目前顯示的小（元件剛掛上、還是初始 0 的那一輪）就不動，
+  // 否則數字會先往 0 掉再爬回來。
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setShown(progress)
+      setShown(prev => Math.max(prev, progress))
       return
     }
     let frame = 0
     function step() {
       setShown(prev => {
+        if (prev >= progress) return prev
         const diff = progress - prev
-        const next = Math.abs(diff) < 0.6 ? progress : prev + diff * 0.22
+        const next = diff < 0.6 ? progress : prev + diff * 0.22
         if (next !== progress) frame = requestAnimationFrame(step)
         return next
       })
@@ -134,7 +145,7 @@ export default function ReadingProgressHeader({ userId, date, title, backHref, b
         aria-valuenow={progress}
         className="min-w-[3em] text-right text-sm font-semibold tabular-nums text-gray-600"
       >
-        {Math.round(shown)}%
+        {loaded ? `${Math.round(shown)}%` : ''}
       </span>
     </div>
   )
