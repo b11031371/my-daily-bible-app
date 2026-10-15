@@ -6,7 +6,7 @@ import MarkdownRenderer from './MarkdownRenderer'
 import ReflectionForm from '@/components/community/ReflectionForm'
 import ApprovalBanner from './ApprovalBanner'
 import { NOTE_END_ID } from './ReadingProgressHeader'
-import { FilePdf, ChatCircle } from '@phosphor-icons/react'
+import { FilePdf } from '@phosphor-icons/react'
 
 interface Props {
   date: string
@@ -90,12 +90,9 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       <div id={NOTE_END_ID} aria-hidden="true" />
 
       {/* Reflection form */}
+      {/* 標題在 ReflectionForm 裡面：AI 提示的開關要跟標題放同一列 */}
       <div id="reflection" className="bg-surface rounded-2xl shadow-sm p-5">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-heading mb-3">
-          <ChatCircle size={16} weight="fill" />
-          {t('noteView.shareThoughts')}
-        </h3>
-        <ReflectionForm date={date} bibleRange={bibleRange ?? null} />
+        <ReflectionForm date={date} bibleRange={bibleRange ?? null} lang={lang} />
       </div>
     </div>
   )
