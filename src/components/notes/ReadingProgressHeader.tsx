@@ -111,7 +111,8 @@ export default function ReadingProgressHeader({ userId, date, title, backHref, b
   }, [progress])
 
   return (
-    <div className="sticky top-0 z-30 -mx-4 mb-4 isolate flex items-center gap-2 overflow-hidden border-b border-gray-100 bg-theme-bg/95 py-1.5 pl-1.5 pr-4 backdrop-blur">
+    // 手機上 -mx-4 撐到貼齊螢幕兩側；寬螢幕（sm 以上）收回跟下面的內容卡片同寬
+    <div className="sticky top-0 z-30 -mx-4 sm:mx-0 mb-4 isolate flex items-center gap-2 overflow-hidden border-b border-gray-100 bg-theme-bg/95 py-1.5 pl-1.5 pr-4 backdrop-blur">
       <span
         aria-hidden="true"
         className="reading-fill absolute inset-0 -z-10 transition-[clip-path] duration-150 ease-linear"

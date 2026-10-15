@@ -37,7 +37,8 @@ export default function TodayReadingProgress({ userId, date, readLabel, progress
 
   const done = max >= 100
 
-  // 卡片底是固定的亮色漸層，進度條和勾一律用固定深色（同 .btn-gradient），深色模式也不反轉
+  // 卡片底是固定的亮色漸層：進度用深咖啡色，但透明度壓低，看得出進度又不搶標題的眼；
+  // 底條再淡一階。顏色都固定寫死（同 .btn-gradient 的字色），深色模式也不反轉。
   return (
     <div className="flex items-center gap-3 text-sm font-semibold text-black/60">
       <div
@@ -46,16 +47,17 @@ export default function TodayReadingProgress({ userId, date, readLabel, progress
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={max}
-        className="h-2 flex-1 overflow-hidden rounded-full bg-black/10"
+        className="h-2 flex-1 overflow-hidden rounded-full bg-[#2C1A0E]/10"
       >
         <div
-          className="h-full rounded-full bg-[#2C1A0E]/75 transition-[width] duration-500 ease-out"
+          className="h-full rounded-full bg-[#2C1A0E]/35 transition-[width] duration-500 ease-out"
           style={{ width: `${width}%` }}
         />
       </div>
       <span className="inline-flex min-w-[2.75rem] justify-end tabular-nums">
         {done ? (
-          <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full bg-[#2C1A0E]/80 text-[#FFD880]">
+          // 勾用卡片漸層的主題色，像在圓上挖空，看到的是卡片底色；換主題也跟著變
+          <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full bg-[#2C1A0E]/35 text-[var(--color-grad-from)]">
             <Check size={12} weight="bold" />
           </span>
         ) : (

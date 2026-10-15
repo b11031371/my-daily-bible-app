@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useRef, useState, type RefObject } from 'react'
-import { Info, Sparkle } from '@phosphor-icons/react'
+import { ArrowClockwise, Info, Sparkle } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { useReflectionPrompt } from './useReflectionPrompt'
 
-// 心得框的 AI 下筆建議：狀態（useReflectionHint）和畫面（標題列控制、疊在輸入框上的提示、換一個）。
+// 心得框的 AI 下筆建議：狀態（useReflectionHint）和畫面（標題列的換一個／說明／開關、疊在輸入框上的提示）。
 // ReflectionForm 只負責把這些組進表單。
 
 // 「AI 提示」開關記在這台裝置，關掉之後就不再打 API
@@ -124,11 +124,45 @@ export function useReflectionHint({ date, lang, content, setContent, submitted, 
   return { hint, hintsOn, toggleHints, typed, typing, showGhost, canAccept, textareaProps }
 }
 
-/** 標題列右側：ⓘ 說明卡片＋「提示」開關。 */
-export function PromptHeaderControls({ hintsOn, onToggle }: { hintsOn: boolean | null; onToggle: () => void }) {
+interface PromptHeaderControlsProps {
+  hint: Hint
+  hintsOn: boolean | null
+  onToggle: () => void
+  /** 提示正顯示在輸入框裡（框是空的）；已經開始打字時換了也看不到，換一個就停用 */
+  canSwap: boolean
+}
+
+/** 標題列右側：↻ 換一個＋ⓘ 使用說明＋AI 開關。 */
+export function PromptHeaderControls({ hint, hintsOn, onToggle, canSwap }: PromptHeaderControlsProps) {
   const { t } = useI18n()
+  const swapLabel = hint.unlimited ? t('community.promptSwap') : t('community.promptSwapLabel', { count: hint.remaining })
   return (
     <div className="flex items-center">
+      {hintsOn && (
+        <button
+          type="button"
+          onClick={hint.swap}
+          disabled={!canSwap || hint.loading || (!hint.unlimited && hint.remaining === 0)}
+          aria-label={swapLabel}
+          title={swapLabel}
+          className="grid min-h-11 w-9 place-items-center rounded-xl text-gray-400 hover:text-gray-600 disabled:opacity-40 disabled:hover:text-gray-400"
+        >
+          <span className="relative">
+            <ArrowClockwise size={17} aria-hidden="true" className={hint.loading ? 'animate-spin' : ''} />
+            {/* 剩餘次數：像 iPhone 未讀數字的紅底白字小圓。用完（0）就不顯示，按鈕本身會變灰。
+                箭頭尖端佔了圖示右上角一大塊，小圓整個移到圖示右上外側（左緣貼齊圖示右緣），
+                再加一圈卡片底色的外框跟圖案隔開 */}
+            {!hint.unlimited && hint.remaining > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute -top-2.5 left-4 grid h-4 min-w-4 place-items-center rounded-full bg-[#FF3B30] px-1 text-[10px] font-semibold leading-none text-white tabular-nums ring-2 ring-surface"
+              >
+                {hint.remaining}
+              </span>
+            )}
+          </span>
+        </button>
+      )}
       <PromptInfoButton />
       <button
         type="button"
@@ -136,15 +170,18 @@ export function PromptHeaderControls({ hintsOn, onToggle }: { hintsOn: boolean |
         aria-checked={hintsOn === true}
         aria-label={t('community.promptToggleLabel')}
         onClick={onToggle}
-        className="inline-flex min-h-11 items-center gap-1.5 pl-1 text-xs text-gray-500"
+        className="inline-flex min-h-11 items-center pl-1"
       >
-        <Sparkle size={14} weight="fill" aria-hidden="true" className={hintsOn ? 'text-heading' : 'text-gray-400'} />
-        {t('community.promptToggle')}
+        {/* 開關本身就是標示：圓鈕上寫 AI，不另外放文字 */}
         <span
           aria-hidden="true"
-          className={`flex h-5 w-9 items-center rounded-full px-0.5 transition-colors ${hintsOn ? 'bg-primary-dark' : 'bg-gray-200'}`}
+          className={`flex h-6 w-11 items-center rounded-full px-0.5 transition-colors ${hintsOn ? 'bg-primary-dark' : 'bg-gray-200'}`}
         >
-          <span className={`h-4 w-4 rounded-full bg-surface shadow transition-transform ${hintsOn ? 'translate-x-4' : ''}`} />
+          <span
+            className={`grid h-5 w-5 place-items-center rounded-full bg-surface text-[8px] font-bold leading-none shadow transition-transform ${hintsOn ? 'translate-x-5 text-primary-dark' : 'text-gray-400'}`}
+          >
+            AI
+          </span>
         </span>
       </button>
     </div>
@@ -155,7 +192,7 @@ export function PromptHeaderControls({ hintsOn, onToggle }: { hintsOn: boolean |
  * 疊在輸入框上的提示文字。父層要是 grid，讓它和 textarea 疊在同一格（col-start-1 row-start-1），
  * 提示比較長時輸入框才會跟著撐高。
  */
-export function PromptGhost({ loading, prompt, typed, typing }: { loading: boolean; prompt: string | null; typed: string; typing: boolean }) {
+export function PromptGhost({ loading, failed, prompt, typed, typing }: { loading: boolean; failed: boolean; prompt: string | null; typed: string; typing: boolean }) {
   const { t } = useI18n()
   return (
     <>
@@ -165,7 +202,8 @@ export function PromptGhost({ loading, prompt, typed, typing }: { loading: boole
       >
         <span className="inline-flex items-center gap-1 text-[11px] leading-4 text-heading">
           <Sparkle size={11} weight="fill" />
-          {loading ? t('community.promptLoading') : t('community.promptLabel')}
+          {/* 換一個失敗時，原本的建議句留著，這行改成提示失敗 */}
+          {loading ? t('community.promptLoading') : failed ? t('community.promptFailed') : t('community.promptLabel')}
         </span>
         {loading ? (
           <span className="h-10 rounded-lg bg-gray-100 animate-pulse" />
@@ -182,32 +220,9 @@ export function PromptGhost({ loading, prompt, typed, typing }: { loading: boole
       </div>
       {/* 給螢幕閱讀器：textarea 的 aria-describedby 指向這裡 */}
       {!loading && prompt && <span id="reflection-hint" className="sr-only">{prompt}</span>}
+      {/* 上面那層是 aria-hidden，失敗訊息另外給螢幕閱讀器唸 */}
+      {failed && <span role="status" className="sr-only">{t('community.promptFailed')}</span>}
     </>
-  )
-}
-
-/** 輸入框下方的「換一個」與剩餘次數。 */
-export function PromptSwapRow({ hint }: { hint: Hint }) {
-  const { t } = useI18n()
-  return (
-    <div className="mt-1 flex items-center gap-2">
-      <button
-        type="button"
-        onClick={hint.swap}
-        disabled={hint.loading || (!hint.unlimited && hint.remaining === 0)}
-        aria-label={hint.unlimited ? t('community.promptSwap') : t('community.promptSwapLabel', { count: hint.remaining })}
-        className="inline-flex min-h-11 items-center gap-1 text-xs text-gray-500 disabled:opacity-40"
-      >
-        <Sparkle size={13} weight="fill" aria-hidden="true" className="text-heading" />
-        {t('community.promptSwap')}
-        {!hint.unlimited && (
-          <span aria-hidden="true" className="ml-0.5 inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-gray-100 px-1.5 text-[11px] tabular-nums text-gray-500">
-            {hint.remaining}
-          </span>
-        )}
-      </button>
-      {hint.failed && <span role="status" className="text-xs text-gray-400">{t('community.promptFailed')}</span>}
-    </div>
   )
 }
 
@@ -259,11 +274,19 @@ function PromptInfoButton() {
             <Sparkle size={14} weight="fill" aria-hidden="true" className="text-heading" />
             {t('community.promptInfoTitle')}
           </p>
+          <p className="mb-1.5 font-semibold text-gray-800">{t('community.promptInfoAbout')}</p>
           <ul className="list-disc space-y-1 pl-4">
-            <li>{t('community.promptInfoAbout')}</li>
             <li><b className="text-gray-900">{t('community.promptInfoUseLabel')}</b>{t('community.promptInfoUse')}</li>
-            <li><b className="text-gray-900">{t('community.promptInfoSwapLabel')}</b>{t('community.promptInfoSwap')}</li>
-            <li>{t('community.promptInfoOff')}</li>
+            <li>
+              <b className="text-gray-900">{t('community.promptInfoSwapLabel')}</b>
+              {/* 文案裡的 {icon} 換成跟標題列同一個重新整理圖示，兩邊才對得起來 */}
+              {t('community.promptInfoSwap').split('{icon}').map((part, i) => (
+                <span key={i}>
+                  {i > 0 && <ArrowClockwise size={13} aria-label="↻" className="mx-0.5 inline-block -translate-y-px align-middle text-gray-500" />}
+                  {part}
+                </span>
+              ))}
+            </li>
           </ul>
         </div>
       )}
