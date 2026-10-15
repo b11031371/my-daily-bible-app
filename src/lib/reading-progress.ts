@@ -35,4 +35,29 @@ export function saveProgress(userId: string, date: string, progress: ReadingProg
   try {
     localStorage.setItem(keyFor(userId, date), JSON.stringify(progress))
   } catch {}
+  pruneOldProgress()
+}
+
+// 舊進度留著沒用：首頁只看今天，筆記頁也很少回頭翻兩個月前的。
+const KEEP_DAYS = 60
+// 一次頁面載入只掃一次；saveProgress 在捲動時會一直被呼叫，不能每次都掃整個 localStorage
+let pruned = false
+
+/** 刪掉 KEEP_DAYS 天前的進度紀錄。依日期判斷，這台裝置上其他帳號的舊紀錄也一併清掉。 */
+function pruneOldProgress() {
+  if (pruned) return
+  pruned = true
+  try {
+    // 跟 todayString() 一樣以台灣日期計；YYYY-MM-DD 可以直接用字串比大小
+    const cutoff = new Date(Date.now() - KEEP_DAYS * 24 * 60 * 60 * 1000)
+      .toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' })
+    const stale: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key?.startsWith(KEY_PREFIX)) continue
+      const date = key.slice(key.lastIndexOf(':') + 1)
+      if (date < cutoff) stale.push(key)
+    }
+    stale.forEach(key => localStorage.removeItem(key))
+  } catch {}
 }
