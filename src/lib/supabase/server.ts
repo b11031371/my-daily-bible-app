@@ -25,6 +25,8 @@ export const createClient = cache(async () => {
 
 export const getUser = cache(async () => {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  return session?.user ?? null
+  // getSession() only decodes the locally stored cookie. getUser() verifies the
+  // token with Supabase Auth before the result is used for authorization.
+  const { data: { user } } = await supabase.auth.getUser()
+  return user ?? null
 })

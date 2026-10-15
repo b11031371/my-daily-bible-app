@@ -19,14 +19,19 @@ export default function CommunityInfoButton() {
   return (
     <div ref={ref} className="relative">
       <button
+        type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-5 h-5 rounded-full border border-gray-300 text-gray-400 text-xs font-bold flex items-center justify-center hover:border-gray-400 hover:text-gray-500 active:opacity-50 transition-colors"
+        aria-label={t('community.pointsInfoTitle')}
+        aria-expanded={open}
+        className="min-h-11 min-w-11 rounded-full border border-transparent text-gray-400 text-sm font-bold flex items-center justify-center hover:border-gray-300 hover:text-gray-500 active:opacity-50 transition-colors"
       >
         ?
       </button>
 
       {open && (
         <div
+          role="dialog"
+          aria-label={t('community.pointsInfoTitle')}
           className="fixed left-4 right-4 top-16 z-50 mx-auto w-auto max-w-[320px] rounded-2xl border border-gray-100 bg-surface p-4 shadow-lg"
           onClick={e => e.stopPropagation()}
         >

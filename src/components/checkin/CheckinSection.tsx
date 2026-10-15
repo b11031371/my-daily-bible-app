@@ -111,7 +111,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
               </button>
             </div>
             {failedDate === today && (
-              <p className="text-xs text-danger mt-2 text-center">{t('checkin.checkinFail')}</p>
+              <p role="alert" className="text-xs text-danger mt-2 text-center">{t('checkin.checkinFail')}</p>
             )}
           </>
         )}
@@ -148,7 +148,7 @@ function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, faile
       <div>
         <p className="text-sm text-gray-900">{formatDate(date, locale)}</p>
         {failed
-          ? <p className="text-xs text-danger">{t('checkin.checkinFail')}</p>
+          ? <p role="alert" className="text-xs text-danger">{t('checkin.checkinFail')}</p>
           : <p className="text-xs text-gray-400">{t('checkin.daysAgo', { days: daysLate, points })}</p>}
       </div>
       {isChecked ? (

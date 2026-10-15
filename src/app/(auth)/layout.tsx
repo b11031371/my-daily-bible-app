@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="absolute right-4 top-4 z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <LocaleToggle />
       </div>
-      {children}
+      <main id="main-content" tabIndex={-1}>{children}</main>
     </div>
   )
 }

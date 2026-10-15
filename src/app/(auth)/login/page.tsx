@@ -42,11 +42,12 @@ export default function LoginPage() {
         </div>
         <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
           {error && (
-            <div className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
+            <div role="alert" className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
+            <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
             <input
+              id="login-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -58,13 +59,14 @@ export default function LoginPage() {
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-gray-700">{t('auth.password')}</label>
+              <label htmlFor="login-password" className="text-sm font-medium text-gray-700">{t('auth.password')}</label>
               <Link href="/forgot-password" className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
             <div className="relative">
               <input
+                id="login-password"
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -76,9 +78,8 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPw(v => !v)}
-                tabIndex={-1}
                 aria-label={showPw ? t('auth.hidePassword') : t('auth.showPassword')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors p-1"
+                className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50 transition-colors"
               >
                 {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
               </button>

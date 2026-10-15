@@ -103,21 +103,27 @@ export default function PushSubscribeButton({ initialHour }: Props) {
           </p>
         </div>
         <button
+          type="button"
+          role="switch"
+          aria-label={t('push.title')}
+          aria-checked={state === 'subscribed'}
+          aria-busy={busy}
           onClick={state === 'subscribed' ? unsubscribe : subscribe}
           disabled={busy}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${state === 'subscribed' ? 'bg-primary' : 'bg-gray-200'}`}
+          className={`relative inline-flex h-11 w-14 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${state === 'subscribed' ? 'bg-primary' : 'bg-gray-200'}`}
         >
-          <span className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${state === 'subscribed' ? 'translate-x-6' : 'translate-x-1'}`} />
+          <span aria-hidden="true" className={`inline-block h-6 w-6 transform rounded-full bg-surface shadow transition-transform ${state === 'subscribed' ? 'translate-x-7' : 'translate-x-1'}`} />
         </button>
       </div>
 
       {state === 'subscribed' && (
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-500">{t('push.reminderTime')}</p>
+          <label htmlFor="notification-hour" className="text-xs text-gray-500">{t('push.reminderTime')}</label>
           <select
+            id="notification-hour"
             value={hour}
             onChange={e => updateHour(Number(e.target.value))}
-            className="text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-700 bg-surface"
+            className="min-h-11 text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-700 bg-surface"
           >
             {HOURS.map(h => (
               <option key={h} value={h}>{formatHour(h)}</option>
