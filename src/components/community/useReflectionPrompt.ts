@@ -36,12 +36,18 @@ export function useReflectionPrompt(date: string, lang: 'zh' | 'en', enabled: bo
     fetch(`/api/reflection/prompt?date=${date}&lang=${lang}`)
       .then(res => (res.ok ? (res.json() as Promise<ReflectionPromptResponse>) : null))
       .then(data => {
-        if (cancelled || !data) return
+        if (cancelled) return
+        if (!data) {
+          setFailed(true)
+          return
+        }
         setState({ prompt: data.prompt, remaining: data.remaining, limit: data.limit, unlimited: !!data.unlimited })
         if (data.prompt) seenRef.current = [data.prompt]
         loadedKeyRef.current = key
       })
-      .catch(() => {})
+      .catch(() => {
+        if (!cancelled) setFailed(true)
+      })
       .finally(() => {
         if (!cancelled) setLoading(false)
       })
@@ -67,8 +73,8 @@ export function useReflectionPrompt(date: string, lang: 'zh' | 'en', enabled: bo
         limit: data.limit ?? prev.limit,
         unlimited: !!data.unlimited,
       }))
-      if (data.prompt) seenRef.current = [...seenRef.current, data.prompt]
-      else if (res.ok) setFailed(true)
+      if (data.prompt && res.ok) seenRef.current = [...seenRef.current, data.prompt]
+      if (!res.ok || !data.prompt) setFailed(true)
     } catch {
       setFailed(true)
     } finally {

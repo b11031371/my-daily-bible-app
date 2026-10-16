@@ -265,6 +265,165 @@ a.btn-gradient:active {
   }
 }
 
+/* Home: keep the original large controls with subtle press feedback. */
+.home-week-date {
+  display: inline-flex;
+  min-width: 2ch;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  line-height: 1.2;
+}
+.home-week-date::after {
+  content: '';
+  width: 0.75rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+.home-reading-card {
+  box-shadow: 0 7px 20px color-mix(in srgb, var(--color-primary-dark) 15%, transparent);
+  transition: box-shadow 180ms ease-out;
+}
+.home-reading-link { transition: transform 120ms ease-out, opacity 150ms ease-out; }
+.home-reading-link:active { transform: scale(0.99); }
+.home-checkin-button {
+  box-shadow: 0 3px 11px color-mix(in srgb, var(--color-primary-dark) 13%, transparent);
+}
+.home-checkin-button:active { transform: scale(0.985); }
+@media (hover: hover) {
+  .home-reading-link:hover .home-reading-card {
+    box-shadow: 0 9px 24px color-mix(in srgb, var(--color-primary-dark) 20%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-reading-card, .home-reading-link, .home-checkin-button { transition: none; }
+  .home-reading-link:active, .home-checkin-button:active { transform: none; }
+}
+
+/* ── 首頁風景（見 components/notes/HomeScenery） ──────────────────────────────
+   由上而下：天空 → 太陽／月亮 → 兩層遠山 → 山腳淡出到底色，卡片改成半透明。
+   天色分四個時段（data-time 由元件依手機時間設定），每段顏色都和主題色混合，
+   深色模式另有一組壓暗的版本。太陽月亮的高度由行內 --alt（0 地平線～1 最高）決定。 */
+.sky-scene { position: relative; }
+.sky-backdrop { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; animation: sky-fade-in .6s ease-out both; }
+.sky-backdrop > * { position: absolute; }
+
+.sky-scene[data-time="morning"] {
+  --sky1: color-mix(in srgb, #FFC4A0 70%, var(--color-primary)); --sky2: color-mix(in srgb, #FFE6CF 70%, var(--color-primary-light)); --sky3: color-mix(in srgb, #FFF2E4 60%, var(--color-primary-light));
+  --hill1: color-mix(in srgb, #EBB89C 55%, var(--color-primary)); --hill2: color-mix(in srgb, #F7DCC8 55%, var(--color-primary-light));
+  --sky-title: color-mix(in srgb, var(--color-primary-dark) 45%, #3B2214);
+}
+.sky-scene[data-time="noon"] {
+  --sky1: color-mix(in srgb, var(--color-primary) 40%, #E6F3FF); --sky2: color-mix(in srgb, var(--color-primary) 18%, #F3F9FF); --sky3: color-mix(in srgb, var(--color-primary-light) 80%, #FFFFFF);
+  --hill1: color-mix(in srgb, var(--color-primary) 45%, #FFFFFF); --hill2: color-mix(in srgb, var(--color-primary) 22%, #FFFFFF);
+  --sky-title: color-mix(in srgb, var(--color-primary-dark) 45%, #3B2214);
+}
+.sky-scene[data-time="dusk"] {
+  --sky1: color-mix(in srgb, #7E62A8 60%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #F5AA6A 80%, var(--color-accent)); --sky3: color-mix(in srgb, #FCDCA8 75%, var(--color-primary-light));
+  --hill1: color-mix(in srgb, #8C6278 75%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #D9A584 80%, var(--color-accent));
+  --sky-title: #FFFFFF;
+}
+.sky-scene[data-time="night"] {
+  --sky1: color-mix(in srgb, #12142F 85%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #2B2858 82%, var(--color-primary-dark)); --sky3: color-mix(in srgb, #8E80AE 60%, var(--color-primary-light));
+  --hill1: color-mix(in srgb, #23234A 90%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #3E3A6C 85%, var(--color-primary-dark));
+  --sky-title: #FFFFFF;
+}
+/* 深色模式：保留各時段的色相，整體壓暗，往下淡入暖黑底 */
+:root[data-mode="dark"] .sky-scene[data-time="morning"] {
+  --sky1: color-mix(in srgb, #2E1E3C 75%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #6B3F33 65%, var(--color-primary)); --sky3: color-mix(in srgb, #2A1F17 85%, var(--color-primary));
+  --hill1: color-mix(in srgb, #3A2830 85%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #261D17 88%, var(--color-primary));
+  --sky-title: #FFE9CF;
+}
+:root[data-mode="dark"] .sky-scene[data-time="noon"] {
+  --sky1: color-mix(in srgb, #1C3650 75%, var(--color-primary)); --sky2: color-mix(in srgb, #182634 82%, var(--color-primary)); --sky3: color-mix(in srgb, #181712 88%, var(--color-primary));
+  --hill1: color-mix(in srgb, #20344A 80%, var(--color-primary)); --hill2: color-mix(in srgb, #1A211C 86%, var(--color-primary));
+  --sky-title: var(--color-primary);
+}
+:root[data-mode="dark"] .sky-scene[data-time="dusk"] {
+  --sky1: color-mix(in srgb, #24163A 82%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #6E3E26 80%, var(--color-accent)); --sky3: color-mix(in srgb, #2A1C12 88%, var(--color-accent));
+  --hill1: color-mix(in srgb, #382230 86%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #281D16 88%, var(--color-accent));
+  --sky-title: #FFE8D0;
+}
+:root[data-mode="dark"] .sky-scene[data-time="night"] {
+  --sky1: color-mix(in srgb, #06071A 90%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #11132E 88%, var(--color-primary-dark)); --sky3: color-mix(in srgb, #17151F 88%, var(--color-primary-dark));
+  --hill1: color-mix(in srgb, #10112A 92%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #19182C 90%, var(--color-primary-dark));
+  --sky-title: #F3F0FF;
+}
+
+/* 標題壓在天色上：傍晚、夜晚改亮字，並加一層淡陰影（亮的天空用白光托，暗的天空用暗影托），
+   太陽月亮從後面經過時字也清楚 */
+.sky-scene[data-time] .sky-title { color: var(--sky-title); text-shadow: var(--sky-title-shadow); transition: color .4s; }
+.sky-scene[data-time="morning"], .sky-scene[data-time="noon"] { --sky-title-shadow: 0 1px 3px rgba(255, 255, 255, .55); }
+.sky-scene[data-time="dusk"], .sky-scene[data-time="night"] { --sky-title-shadow: 0 1px 8px rgba(0, 0, 0, .28); }
+:root[data-mode="dark"] .sky-scene[data-time] { --sky-title-shadow: 0 1px 8px rgba(0, 0, 0, .35); }
+
+/* 夜晚的星星 */
+.sky-stars { inset: 0 0 auto 0; height: var(--scene-h); display: none; }
+.sky-scene[data-time="night"] .sky-stars { display: block; }
+.sky-stars span { position: absolute; border-radius: 50%; background: #FFFFFF; animation: sky-fade-in .9s ease-out both; }
+
+/* 卡片改半透明毛玻璃，讓背景從後面透出來；頂邊一道細亮線加上柔和的落影，看起來像一片
+   浮起來的玻璃。只挑「bg-surface + rounded-2xl + shadow-sm」這種內容卡片：彈出選單
+   （shadow-lg）、開關圓鈕（rounded-full）、輸入框都不會被選到，避免文字壓在半透明底上看不清楚。 */
+.sky-scene .bg-surface.rounded-2xl.shadow-sm {
+  background-color: color-mix(in srgb, var(--color-surface) 68%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid color-mix(in srgb, var(--color-surface) 70%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .7),
+    0 1px 2px rgba(44, 26, 14, .05),
+    0 10px 24px -14px color-mix(in srgb, var(--color-primary-dark) 35%, transparent);
+}
+:root[data-mode="dark"] .sky-scene .bg-surface.rounded-2xl.shadow-sm {
+  border-color: rgba(255, 255, 255, .07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .3), 0 10px 24px -14px rgba(0, 0, 0, .6);
+}
+
+.home-scene { --scene-h: 240px; }
+.home-sky { inset: 0 0 auto 0; height: var(--scene-h); background: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 30%, var(--sky3) 60%); }
+.home-hills { left: 0; top: 0; width: 100%; height: var(--scene-h); }
+.home-hill-back { fill: var(--hill1); }
+/* 前山從稜線往下漸變（見 HomeScenery 的 SVG 漸層）：稜線是 --hill-front-top，往下變成 --hill-fade，
+   山腳再從 --hill-fade 淡出到底色，整段連續。夜晚和傍晚兩層山顏色接近，稜線直接用前山色往下淡就很自然；
+   白天後山深、前山很淺，前山稜線會變成一條明顯的線，所以白天讓稜線處接近後山的顏色，再往下淡成前山色。 */
+.home-scene { --hill-front-top: var(--hill2); --hill-fade: color-mix(in srgb, var(--hill2) 70%, var(--color-theme-bg)); }
+.home-scene:is([data-time="morning"], [data-time="noon"]) { --hill-front-top: color-mix(in srgb, var(--hill1) 80%, var(--hill2)); --hill-fade: var(--hill2); }
+.home-hill-base { left: 0; right: 0; top: calc(var(--scene-h) - 2px); height: 220px;
+  background: linear-gradient(180deg, var(--hill-fade), var(--color-theme-bg)); }
+
+/* 太陽月亮：left 由元件給（%），高度沿弧線換算成 px。地平線（--alt: 0）落在遠山稜線附近，
+   剛升起和快落下時半露在山邊 */
+.home-orb { top: calc(var(--scene-h) * (0.5 - 0.42 * var(--alt, 0.5))); width: 0; height: 0; transition: left 1s ease, top 1s ease; }
+.home-orb-rise { position: absolute; animation: home-orb-rise 2s cubic-bezier(.2, .7, .2, 1) both; }
+/* 太陽的光暈用固定暖色，不跟主題：紫色、藍色主題配上紫藍色的太陽會很怪 */
+.home-sun { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(255,255,255,.95) 0 22%, rgba(255,214,140,.55) 40%, transparent 70%); }
+.home-scene[data-time="noon"] .home-sun { width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,.95) 0 25%, rgba(255,241,210,.3) 45%, transparent 70%); }
+.home-scene[data-time="dusk"] .home-sun { width: 150px; height: 150px; background: radial-gradient(circle, rgba(255,244,214,.97) 0 20%, rgba(255,186,110,.5) 44%, transparent 70%); }
+:root[data-mode="dark"] .home-sun { opacity: .75; }
+/* 深色中午的天空是暗的，大片白光會糊成一團灰霧：縮小並帶一點暖色 */
+:root[data-mode="dark"] .home-scene[data-time="noon"] .home-sun { width: 150px; height: 150px; opacity: .85;
+  background: radial-gradient(circle, rgba(255,246,220,.9) 0 16%, rgba(255,214,140,.35) 38%, transparent 70%); }
+.home-moon { position: absolute; width: 40px; height: 40px; transform: translate(-50%, -50%); overflow: visible; }
+/* 暗面只留一點地球反照的微光 */
+.home-moon-dark { fill: #E8E4D8; opacity: .08; }
+.home-moon-maria circle { fill: #B9AC8A; opacity: .28; }
+.home-moon-glow { position: absolute; width: 96px; height: 96px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,248,226,.32) 0, rgba(255,248,226,.12) 35%, transparent 68%); }
+.home-horizon-glow { top: calc(var(--scene-h) * 0.5 - 40px); width: 220px; height: 80px; transform: translateX(-50%); border-radius: 50%; background: #FF9A6A; filter: blur(16px); transition: opacity 1s ease; }
+/* 晨光偏淡金，橘紅留給晚霞 */
+.home-scene[data-time="morning"] .home-horizon-glow { background: rgba(255, 222, 160, .75); }
+.home-scene[data-time="dusk"] .home-horizon-glow { background: #FFB46E; }
+
+@keyframes sky-fade-in { from { opacity: 0; } }
+@keyframes home-orb-rise { from { transform: translateY(calc(var(--scene-h) * 0.3)); } }
+@media (prefers-reduced-motion: reduce) {
+  .sky-backdrop, .home-orb-rise, .sky-stars span { animation: none; }
+  .home-orb, .sky-scene[data-time] .sky-title { transition: none; }
+}
+
 /* 主題色文字（標題、區塊小標、統計圖示）：跟隨主題（亮色=主題深色調；深色模式改用
    較亮主色，見 data-mode 覆蓋）。用一般類別避免 @theme 裁剪 var 值。 */
 :root { --color-heading: var(--color-primary-dark); }

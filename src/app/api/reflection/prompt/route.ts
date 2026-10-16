@@ -74,13 +74,14 @@ async function readPick(admin: Admin, userId: string, date: string, lang: Lang):
 
 /** 記下這個人在這份筆記、這個語言最後換到的句子，重新整理或回來時 GET 會優先給它。 */
 async function savePick(admin: Admin, userId: string, date: string, lang: Lang, prompt: string) {
-  await admin.from('reflection_prompt_picks').upsert({
+  const { error } = await admin.from('reflection_prompt_picks').upsert({
     user_id: userId,
     note_date: date,
     lang,
     prompt,
     updated_at: new Date().toISOString(),
   })
+  return !error
 }
 
 function quota(isAdmin: boolean, used: number): Pick<ReflectionPromptResponse, 'remaining' | 'limit' | 'unlimited'> {
@@ -166,45 +167,45 @@ export async function POST(req: NextRequest) {
   // admin 不扣次數，直接產生
   if (auth.isAdmin) {
     const result = await generateReflectionPrompt(source, lang, previous)
-    if (result) await savePick(admin, auth.userId, date, lang, result.prompt)
+    if (result && !(await savePick(admin, auth.userId, date, lang, result.prompt))) {
+      return NextResponse.json({ error: 'Could not save prompt' }, { status: 503 })
+    }
     return NextResponse.json<ReflectionPromptResponse>({ prompt: result?.prompt ?? null, ...quota(true, 0) })
   }
 
-  // 先扣次數再呼叫 AI。先確保今天這一列存在，再用條件更新（WHERE swap_count = 剛讀到的值）
-  // 當樂觀鎖：連點或兩個分頁同時按，只有一個扣得到，另一個拿回 0 列。
-  await admin
-    .from('reflection_prompt_usage')
-    .upsert({ user_id: auth.userId, usage_date: usageDate }, { onConflict: 'user_id,usage_date', ignoreDuplicates: true })
-  const used = await readSwapCount(admin, auth.userId, usageDate)
-  if (used >= PROMPT_SWAP_LIMIT) {
-    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) }, { status: 429 })
+  // DB RPC 在交易中原子認領次數，並為這次請求建立可獨立退款的 claim。
+  const claimId = crypto.randomUUID()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: claimedCount, error: claimError } = await (admin as any).rpc('claim_reflection_prompt_swap', {
+    p_user_id: auth.userId,
+    p_usage_date: usageDate,
+    p_claim_id: claimId,
+  })
+  if (claimError) {
+    const used = await readSwapCount(admin, auth.userId, usageDate)
+    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) }, { status: 503 })
   }
-  const claimedCount = used + 1
-  const { data: claimed } = await admin
-    .from('reflection_prompt_usage')
-    .update({ swap_count: claimedCount, updated_at: new Date().toISOString() })
-    .eq('user_id', auth.userId)
-    .eq('usage_date', usageDate)
-    .eq('swap_count', used)
-    .select('swap_count')
-  if (!claimed?.length) {
-    const latest = await readSwapCount(admin, auth.userId, usageDate)
-    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, latest) }, { status: 409 })
+  if (claimedCount === null) {
+    const used = await readSwapCount(admin, auth.userId, usageDate)
+    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) }, { status: 429 })
   }
 
   const result = await generateReflectionPrompt(source, lang, previous)
   if (!result) {
     // AI 兩家都掛了，使用者什麼都沒拿到，把剛扣的那次退回去。
     // 同樣用條件更新：這段期間如果又扣了一次（另一個分頁），就不退，免得把對方那次也吃掉。
-    await admin
-      .from('reflection_prompt_usage')
-      .update({ swap_count: used, updated_at: new Date().toISOString() })
-      .eq('user_id', auth.userId)
-      .eq('usage_date', usageDate)
-      .eq('swap_count', claimedCount)
-    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: refunded } = await (admin as any).rpc('refund_reflection_prompt_swap', { p_claim_id: claimId })
+    const used = await readSwapCount(admin, auth.userId, usageDate)
+    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) }, { status: refunded ? 200 : 503 })
   }
 
-  await savePick(admin, auth.userId, date, lang, result.prompt)
+  if (!(await savePick(admin, auth.userId, date, lang, result.prompt))) {
+    // 生成成功但無法保存時，退款只會撤銷本次 claim，不影響其他分頁已使用的額度。
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (admin as any).rpc('refund_reflection_prompt_swap', { p_claim_id: claimId })
+    const used = await readSwapCount(admin, auth.userId, usageDate)
+    return NextResponse.json<ReflectionPromptResponse>({ prompt: null, ...quota(false, used) }, { status: 503 })
+  }
   return NextResponse.json<ReflectionPromptResponse>({ prompt: result.prompt, ...quota(false, claimedCount) })
 }
