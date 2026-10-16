@@ -110,9 +110,9 @@ export default function PushSubscribeButton({ initialHour }: Props) {
           aria-busy={busy}
           onClick={state === 'subscribed' ? unsubscribe : subscribe}
           disabled={busy}
-          className={`relative inline-flex h-11 w-14 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${state === 'subscribed' ? 'bg-primary' : 'bg-gray-200'}`}
+          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${state === 'subscribed' ? 'bg-primary' : 'bg-gray-200'}`}
         >
-          <span aria-hidden="true" className={`inline-block h-6 w-6 transform rounded-full bg-surface shadow transition-transform ${state === 'subscribed' ? 'translate-x-7' : 'translate-x-1'}`} />
+          <span aria-hidden="true" className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition-transform ${state === 'subscribed' ? 'translate-x-6' : 'translate-x-1'}`} />
         </button>
       </div>
 

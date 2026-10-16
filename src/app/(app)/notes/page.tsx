@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import TitleDivider from '@/components/layout/TitleDivider'
 import { fetchAvailableDates, fetchPassageRange } from '@/lib/github/api'
 import { formatDate, todayString, getLastSevenDays } from '@/lib/utils'
 import { createClient, getUser } from '@/lib/supabase/server'
@@ -9,6 +8,7 @@ import QuickCheckinButton from '@/components/notes/QuickCheckinButton'
 import TodayReadingProgress from '@/components/notes/TodayReadingProgress'
 import WeeklyReadingRecord from '@/components/notes/WeeklyReadingRecord'
 import RecentNoteStatus from '@/components/notes/RecentNoteStatus'
+import HomeScenery from '@/components/notes/HomeScenery'
 import { Users, ChatCircle, Medal } from '@phosphor-icons/react/dist/ssr'
 import { localizeBibleRange } from '@/lib/bible-books'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
@@ -103,9 +103,11 @@ export default async function NotesPage() {
   })))
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">
-      <h1 className="page-title font-bold text-heading">{t('notesList.title')}</h1>
-      <TitleDivider />
+    <HomeScenery className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">
+      {/* 首頁上方是天空：標題往下放到遠山稜線上方，把天空留給太陽月亮；
+          不放其他頁那條標題分隔線，免得像一道欄杆橫在風景前面 */}
+      <div aria-hidden="true" className="h-22" />
+      <h1 className="sky-title page-title font-bold text-heading">{t('notesList.title')}</h1>
 
       {/* Hero card */}
       {showHeroCard ? (
@@ -214,6 +216,6 @@ export default async function NotesPage() {
           </div>
         </div>
       )}
-    </div>
+    </HomeScenery>
   )
 }
