@@ -23,9 +23,9 @@ export default function CommunityInfoButton() {
         onClick={() => setOpen(v => !v)}
         aria-label={t('community.pointsInfoTitle')}
         aria-expanded={open}
-        className="min-h-11 min-w-11 rounded-full border border-transparent text-gray-400 text-sm font-bold flex items-center justify-center hover:border-gray-300 hover:text-gray-500 active:opacity-50 transition-colors"
+        className="group grid min-h-11 w-9 place-items-center rounded-xl text-gray-400 hover:text-gray-500 active:opacity-50 transition-colors"
       >
-        ?
+        <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 text-[11px] font-bold leading-none transition-colors group-hover:border-gray-400">?</span>
       </button>
 
       {open && (

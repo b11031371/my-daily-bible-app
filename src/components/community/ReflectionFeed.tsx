@@ -160,23 +160,37 @@ function ReflectionCard({
   const [commentsOpen, setCommentsOpen] = useState(false)
   const [commentInput, setCommentInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [actionError, setActionError] = useState(false)
+  const [likePending, setLikePending] = useState(false)
 
   async function handleAddComment() {
     if (!commentInput.trim() || submitting) return
     setSubmitting(true)
-    await fetch(`/api/reflections/${r.id}/comments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: commentInput.trim() }),
-    })
-    setCommentInput('')
-    setSubmitting(false)
-    router.refresh()
+    setActionError(false)
+    try {
+      const res = await fetch(`/api/reflections/${r.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: commentInput.trim() }),
+      })
+      if (!res.ok) setActionError(true)
+      else {
+        setCommentInput('')
+        router.refresh()
+      }
+    } catch {
+      setActionError(true)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   async function handleDeleteComment(commentId: string) {
-    await fetch(`/api/reflections/${r.id}/comments/${commentId}`, { method: 'DELETE' })
-    router.refresh()
+    try {
+      const res = await fetch(`/api/reflections/${r.id}/comments/${commentId}`, { method: 'DELETE' })
+      if (res.ok) router.refresh()
+      else setActionError(true)
+    } catch { setActionError(true) }
   }
 
   // Restore like state from sessionStorage after mount (survives tab switching)
@@ -197,8 +211,10 @@ function ReflectionCard({
   }, [r.id])
 
   async function toggleLike() {
-    if (!currentUserId) return
+    if (!currentUserId || likePending) return
     const next = !liked
+    setLikePending(true)
+    setActionError(false)
     setLiked(next)
     setCount(c => c + (next ? 1 : -1))
     ssSet(r.id, next)
@@ -209,7 +225,17 @@ function ReflectionCard({
     } else if (!next && currentUserAvatarSeed) {
       setDisplaySeeds(prev => prev.filter(s => s !== currentUserAvatarSeed))
     }
-    await fetch(`/api/reflections/${r.id}/like`, { method: next ? 'POST' : 'DELETE' })
+    try {
+      const res = await fetch(`/api/reflections/${r.id}/like`, { method: next ? 'POST' : 'DELETE' })
+      if (!res.ok) throw new Error('Like update failed')
+    } catch {
+      setLiked(!next)
+      setCount(c => c + (next ? -1 : 1))
+      ssSet(r.id, !next)
+      if (next && currentUserAvatarSeed) setDisplaySeeds(prev => prev.filter(s => s !== currentUserAvatarSeed))
+      else if (currentUserAvatarSeed) setDisplaySeeds(prev => currentUserAvatarSeed && !prev.includes(currentUserAvatarSeed) ? [currentUserAvatarSeed, ...prev].slice(0, 3) : prev)
+      setActionError(true)
+    } finally { setLikePending(false) }
   }
 
   async function handleDelete() {
@@ -349,7 +375,7 @@ function ReflectionCard({
                 )}
                 <button
                   onClick={toggleLike}
-                  disabled={!currentUserId}
+                  disabled={!currentUserId || likePending}
                   className="p-1 rounded-full transition-colors disabled:cursor-default"
                   aria-label={liked ? t('community.unlike') : t('community.like')}
                 >
@@ -361,6 +387,8 @@ function ReflectionCard({
               </div>
             </div>
           </div>
+
+          {actionError && <p role="status" className="mt-2 text-xs text-danger">{t('community.submitFail')}</p>}
 
           {/* Comments section */}
           {commentsOpen && (

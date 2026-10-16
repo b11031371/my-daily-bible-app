@@ -16,6 +16,8 @@ export default function ReflectionForm({ date, bibleRange, lang }: { date: strin
   const [loading, setLoading] = useState(false)
   const [pointsEarned, setPointsEarned] = useState(0)
   const [error, setError] = useState('')
+  const [draftOwnerId, setDraftOwnerId] = useState<string | null>(null)
+  const [draftReady, setDraftReady] = useState(false)
   const { showBadges } = useBadgeToast()
   const MAX = 1000
 
@@ -24,45 +26,73 @@ export default function ReflectionForm({ date, bibleRange, lang }: { date: strin
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
-      supabase
+    let cancelled = false
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user || cancelled) return
+      setDraftOwnerId(user.id)
+      const { data } = await supabase
         .from('reflections')
         .select('content, is_anonymous')
         .eq('user_id', user.id)
         .eq('note_date', date)
         .maybeSingle()
-        .then(({ data }) => {
-          if (data) {
-            setContent(data.content)
-            setIsAnonymous(data.is_anonymous)
-            setSubmitted(true)
+      if (cancelled) return
+      if (data) {
+        setContent(data.content)
+        setIsAnonymous(data.is_anonymous)
+        setSubmitted(true)
+      } else {
+        try {
+          const draft = localStorage.getItem(`reflection-draft:${user.id}:${date}`)
+          if (draft) {
+            const parsed = JSON.parse(draft) as { content?: unknown; isAnonymous?: unknown }
+            if (typeof parsed.content === 'string') setContent(parsed.content.slice(0, MAX))
+            if (typeof parsed.isAnonymous === 'boolean') setIsAnonymous(parsed.isAnonymous)
           }
-        })
+        } catch {}
+      }
+      setDraftReady(true)
     })
+    return () => { cancelled = true }
   }, [date])
+
+  useEffect(() => {
+    if (!draftReady || !draftOwnerId || submitted) return
+    try {
+      const key = `reflection-draft:${draftOwnerId}:${date}`
+      if (!content && !isAnonymous) localStorage.removeItem(key)
+      else localStorage.setItem(key, JSON.stringify({ content, isAnonymous }))
+    } catch {}
+  }, [content, isAnonymous, date, draftOwnerId, draftReady, submitted])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const res = await fetch('/api/reflection', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ note_date: date, content, is_anonymous: isAnonymous, bible_range: bibleRange }),
-    })
-    const data = await res.json()
-    if (res.ok) {
-      setPointsEarned(data.points_earned ?? 0)
-      if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
-      setSubmitted(true)
-      router.refresh()
-      router.push(`/community?scrollTo=${date}`)
-    } else {
-      // 失敗原本靜默：按鈕彈回、文字還在框裡，看起來像沒送出也像送出了。
+    try {
+      const res = await fetch('/api/reflection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note_date: date, content, is_anonymous: isAnonymous, bible_range: bibleRange }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        setPointsEarned(data.points_earned ?? 0)
+        if (data.badges_unlocked?.length) showBadges(data.badges_unlocked)
+        setSubmitted(true)
+        if (draftOwnerId) {
+          try { localStorage.removeItem(`reflection-draft:${draftOwnerId}:${date}`) } catch {}
+        }
+        router.refresh()
+        router.push(`/community?scrollTo=${date}`)
+      } else {
+        setError(t('community.submitFail'))
+      }
+    } catch {
       setError(t('community.submitFail'))
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const title = (

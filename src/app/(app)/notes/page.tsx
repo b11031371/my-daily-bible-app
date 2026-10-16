@@ -7,7 +7,10 @@ import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
 import QuickCheckinButton from '@/components/notes/QuickCheckinButton'
 import TodayReadingProgress from '@/components/notes/TodayReadingProgress'
-import { Fire, Users, ChatCircle, Medal, Check } from '@phosphor-icons/react/dist/ssr'
+import WeeklyReadingRecord from '@/components/notes/WeeklyReadingRecord'
+import RecentNoteStatus from '@/components/notes/RecentNoteStatus'
+import { Users, ChatCircle, Medal } from '@phosphor-icons/react/dist/ssr'
+import { localizeBibleRange } from '@/lib/bible-books'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import type { Profile } from '@/types/app'
 
@@ -81,6 +84,24 @@ export default async function NotesPage() {
     ? allPastDates.filter(d => approvedDates.has(d)).slice(0, 2)
     : allPastDates.slice(0, 2)
 
+  // Read just the visible dates. Cached metadata avoids downloading each note
+  // again; legacy dates without metadata fall back to the existing fetch cache.
+  const [{ data: pastMeta }, { data: pastReflections }] = pastDates.length
+    ? await Promise.all([
+      supabase.from('note_meta').select('date, bible_range').in('date', pastDates),
+      supabase.from('reflections').select('note_date').eq('user_id', user!.id).in('note_date', pastDates),
+    ])
+    : [{ data: [] }, { data: [] }]
+  const rangeByDate = new Map((pastMeta ?? []).map(note => [note.date, note.bible_range]))
+  const reflectionDates = new Set((pastReflections ?? []).map(note => note.note_date))
+  const pastNotes = await Promise.all(pastDates.map(async date => ({
+    date,
+    range: localizeBibleRange(
+      rangeByDate.get(date) || await fetchPassageRange(date, 'zh').catch(() => null),
+      locale,
+    ),
+  })))
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-2 space-y-4">
       <h1 className="page-title font-bold text-heading">{t('notesList.title')}</h1>
@@ -88,8 +109,8 @@ export default async function NotesPage() {
 
       {/* Hero card */}
       {showHeroCard ? (
-        <Link href={`/notes/${today}`} className="block active:opacity-90 transition-opacity">
-          <div className="animated-border rounded-3xl shadow-lg">
+        <Link href={`/notes/${today}`} className="home-reading-link block active:opacity-90 transition-opacity">
+          <div className="home-reading-card animated-border rounded-3xl">
             {/* relative overflow-hidden：閱讀進度的細線貼在這張卡片的底邊，被圓角裁切 */}
             <div className="btn-gradient relative overflow-hidden rounded-[22px] p-6 text-gray-900">
               <div className="flex items-center gap-2 mb-3">
@@ -122,31 +143,29 @@ export default async function NotesPage() {
       )}
 
       {/* Streak + week progress */}
-      <div className="bg-surface rounded-2xl p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Fire size={20} weight="fill" className="text-heading" />
-            <span className="font-bold text-gray-900">{t('notesList.streak', { count: profile?.streak_current ?? 0 })}</span>
+      <WeeklyReadingRecord
+        streak={profile?.streak_current ?? 0}
+        days={weekDates.map(date => ({ date, checked: checkedDates.has(date), retro: retroDates.has(date) }))}
+      >
+        {(checkinCount ?? 0) > 0 && (
+          <div className="mt-3 -mx-4 -mb-4 flex items-center gap-3 rounded-b-2xl border-t border-gray-100 px-4 py-3">
+            <div className="flex -space-x-2 shrink-0">
+              {orderedProfiles.map(p => (
+                <BibleAvatar key={p.id} seed={p.avatar_seed ?? 'alpha'} className="w-8 h-8 border-2 border-surface" />
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 leading-snug">
+              {(() => {
+                const names = orderedProfiles.map(p => p.display_name).slice(0, 2).join(t('common.listSeparator'))
+                const total = checkinCount ?? 0
+                if (total === 1) return t('notesList.checkedInOne', { names })
+                if (total === 2) return t('notesList.checkedInTwo', { names })
+                return t('notesList.checkedInMany', { names, count: total })
+              })()}
+            </p>
           </div>
-          <span className="text-xs text-gray-400">{t('notesList.lastSevenDays')}</span>
-        </div>
-        <div className="flex gap-1.5">
-          {weekDates.map(date => {
-            const isToday = date === today
-            const done = checkedDates.has(date)
-            const isRetro = retroDates.has(date)
-            return (
-              <div key={date} className="flex-1 flex flex-col items-center gap-1">
-                <div className={`w-full aspect-square rounded-lg flex items-center justify-center text-sm
-                  ${done && !isRetro ? 'btn-gradient text-gray-900 font-black' : done && isRetro ? 'bg-primary/40 text-gray-700 font-black' : isToday ? 'border-2 border-primary text-gray-800' : 'bg-gray-100 text-gray-300'}`}>
-                  {done && <Check size={14} weight="bold" />}
-                </div>
-                <span className="text-[10px] text-gray-400">{date.slice(8)}</span>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+        )}
+      </WeeklyReadingRecord>
 
       {/* Quick checkin */}
       <QuickCheckinButton initialCheckedIn={userCheckedIn} />
@@ -166,46 +185,28 @@ export default async function NotesPage() {
         ))}
       </div>
 
-      {/* Community preview */}
-      {(checkinCount ?? 0) > 0 && (
-        <div className="bg-surface rounded-2xl px-4 py-3 shadow-sm flex items-center gap-3">
-          <div className="flex -space-x-2 shrink-0">
-            {orderedProfiles.map((p) => (
-              <BibleAvatar
-                key={p.id}
-                seed={p.avatar_seed ?? 'alpha'}
-                className="w-8 h-8 border-2 border-white"
-              />
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 leading-snug">
-            {(() => {
-              const names = orderedProfiles.map(p => p.display_name).slice(0, 2).join(t('common.listSeparator'))
-              const total = checkinCount ?? 0
-              if (total === 1) return t('notesList.checkedInOne', { names })
-              if (total === 2) return t('notesList.checkedInTwo', { names })
-              return t('notesList.checkedInMany', { names, count: total })
-            })()}
-          </p>
-        </div>
-      )}
-
       {/* Past notes */}
       {pastDates.length > 0 && (
         <div>
           <h2 className="text-xs font-semibold text-gray-400 mb-2 px-1">{t('notesList.recentNotes')}</h2>
           <div className="space-y-2">
-            {pastDates.map(date => (
+            {pastNotes.map(({ date, range }) => (
               <Link
                 key={date}
                 href={`/notes/${date}`}
                 className="flex items-center justify-between bg-surface rounded-2xl px-5 py-3.5 shadow-sm"
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-900">{formatDate(date, locale)}</span>
-                  {approvalMode && isAdmin && !approvedDates.has(date) && (
-                    <span className="text-[10px] text-primary-dark bg-primary-light px-1.5 py-0.5 rounded-full">{t('notesList.pendingReview')}</span>
-                  )}
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm text-gray-900">{formatDate(date, locale)}</span>
+                    {approvalMode && isAdmin && !approvedDates.has(date) && (
+                      <span className="text-[10px] text-primary-dark bg-primary-light px-1.5 py-0.5 rounded-full">{t('notesList.pendingReview')}</span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    {range && <span className="text-xs text-gray-600">{range}</span>}
+                    <RecentNoteStatus userId={user!.id} date={date} hasReflection={reflectionDates.has(date)} />
+                  </div>
                 </div>
                 <span className="text-gray-300 text-lg">›</span>
               </Link>

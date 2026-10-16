@@ -2,6 +2,7 @@
 import { useLayoutEffect, useState } from 'react'
 import { Plant } from '@phosphor-icons/react'
 import { readProgress } from '@/lib/reading-progress'
+import { useI18n } from '@/components/i18n/I18nProvider'
 
 interface Props {
   userId: string
@@ -19,6 +20,7 @@ interface Props {
  * 底軌和線才會被卡片的圓角裁切。
  */
 export default function TodayReadingProgress({ userId, date, readLabel, progressLabel }: Props) {
+  const { t } = useI18n()
   const [max, setMax] = useState(0)
   const [width, setWidth] = useState(0)
   // 讀到裝置上的進度之前不畫：整頁載入時伺服器讀不到 localStorage，先畫的話會閃一個錯的 0%
@@ -40,7 +42,7 @@ export default function TodayReadingProgress({ userId, date, readLabel, progress
     <>
       {/* 百分比放在這一行最右邊：放在底邊的話，讀到 100% 時會跟線尾的嫩芽撞在一起 */}
       <div className="flex items-center gap-1 text-sm text-black/60 font-medium">
-        <span>{readLabel}</span>
+        <span>{!loaded ? readLabel : t(max >= 100 ? 'notesList.readAgain' : max > 0 ? 'notesList.continueReading' : 'notesList.startReading')}</span>
         <span>›</span>
         {loaded && (
           <span aria-hidden="true" className="ml-auto text-xs font-semibold tabular-nums text-black/55">
