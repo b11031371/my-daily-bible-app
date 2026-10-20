@@ -179,7 +179,7 @@ export default async function NotesPage() {
           { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: t('notesList.statComments'), href: '/community' },
           { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: t('notesList.statBadges'), href: '/profile' },
         ].map(s => (
-          <Link key={s.href} href={s.href} className="bg-surface rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
+          <Link key={s.href} href={s.href} className="glass-card bg-surface rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
             <div className="flex justify-center mb-0.5 text-heading">{s.icon}</div>
             <div className="font-bold text-gray-900 text-base">{s.value}</div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
@@ -196,7 +196,7 @@ export default async function NotesPage() {
               <Link
                 key={date}
                 href={`/notes/${date}`}
-                className="flex items-center justify-between bg-surface rounded-2xl px-5 py-3.5 shadow-sm"
+                className="glass-card flex items-center justify-between bg-surface rounded-2xl px-5 py-3.5 shadow-sm"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">

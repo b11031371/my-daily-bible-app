@@ -25,7 +25,7 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
 
   if (checkedIn) {
     return (
-      <div className="bg-surface rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
+      <div className="glass-card bg-surface rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
         <SealCheck size={22} weight="fill" className="text-heading" />
         <span className="text-sm font-semibold text-heading">{t('checkin.quickDone')}</span>
       </div>

@@ -377,20 +377,23 @@ a.btn-gradient:active {
 .sky-scene[data-time="night"] .sky-stars { display: block; }
 .sky-stars span { position: absolute; border-radius: 50%; background: #FFFFFF; animation: sky-fade-in .9s ease-out both; }
 
-/* 卡片改半透明毛玻璃，讓背景從後面透出來；頂邊一道細亮線加上柔和的落影，看起來像一片
-   浮起來的玻璃。只挑「bg-surface + rounded-2xl + shadow-sm」這種內容卡片：彈出選單
-   （shadow-lg）、開關圓鈕（rounded-full）、輸入框都不會被選到，避免文字壓在半透明底上看不清楚。 */
-.sky-scene .bg-surface.rounded-2xl.shadow-sm {
+/* 首頁卡片改半透明玻璃：頂邊一道細亮線加上柔和的落影，看起來像一片浮起來的玻璃。
+   要套用的卡片自己加 .glass-card；彈出選單、開關、輸入框不要加，免得文字壓在半透明底上看不清楚。
+   背景模糊（.glass-blur）只給疊在風景上的卡片（目前是首頁的連續天數卡片）：backdrop-filter 是手機上
+   最吃效能的效果之一，捲動時可能每一幀都要重算；卡片背後只是單色底時，模糊了也看不出差別。 */
+.sky-scene .glass-card {
   background-color: color-mix(in srgb, var(--color-surface) 68%, transparent);
-  -webkit-backdrop-filter: blur(14px) saturate(1.3);
-  backdrop-filter: blur(14px) saturate(1.3);
   border: 1px solid color-mix(in srgb, var(--color-surface) 70%, transparent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .7),
     0 1px 2px rgba(44, 26, 14, .05),
     0 10px 24px -14px color-mix(in srgb, var(--color-primary-dark) 35%, transparent);
 }
-:root[data-mode="dark"] .sky-scene .bg-surface.rounded-2xl.shadow-sm {
+.sky-scene .glass-blur {
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+}
+:root[data-mode="dark"] .sky-scene .glass-card {
   border-color: rgba(255, 255, 255, .07);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .3), 0 10px 24px -14px rgba(0, 0, 0, .6);
 }
