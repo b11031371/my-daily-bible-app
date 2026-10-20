@@ -6,6 +6,7 @@ import { getLocale } from '@/lib/i18n/server'
 import { getLocaleMeta } from '@/lib/i18n'
 import { I18nProvider } from '@/components/i18n/I18nProvider'
 import SkipLink from '@/components/layout/SkipLink'
+import { skyStateAt } from '@/lib/sky'
 
 const wenkai = LXGW_WenKai_TC({
   weight: ['300', '400', '700'],
@@ -100,6 +101,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta name="theme-color" content="#FFCC66" />
         <script dangerouslySetInnerHTML={{ __html: `try{var d=document.documentElement;var s=localStorage.getItem('bible-font-size');if(s)d.style.fontSize=s;var th=localStorage.getItem('bible-theme');if(th)d.setAttribute('data-theme',th);var rv=null;if(th==='random'){rv=localStorage.getItem('bible-random');if(rv)d.style.cssText+=';'+rv;}var md=localStorage.getItem('bible-mode');if(md)d.setAttribute('data-mode',md);var TC={gold:'#FFCC66',forest:'#5BC79A',ocean:'#5CB3E6',indigo:'#8B7CE8',rose:'#F27EA8',teal:'#3FB8C4',slate:'#6E88A8'};var col=md==='dark'?'#15120D':(th==='random'&&rv?(((rv.match(/--color-primary\\s*:\\s*([^;]+)/)||[])[1])||'').trim()||'#FFCC66':(TC[th]||'#FFCC66'));var mt=document.querySelector('meta[name=\"theme-color\"]');if(!mt){mt=document.createElement('meta');mt.setAttribute('name','theme-color');document.head.appendChild(mt);}mt.setAttribute('content',col);}catch(e){}` }} />
+        {/* 首頁風景的天色時段：只有手機知道現在幾點，在畫面出現前先寫好，免得天色和標題顏色晚一拍才變 */}
+        <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.setAttribute('data-sky',(${skyStateAt.toString()})().time)}catch(e){}` }} />
       </head>
       <body className="h-full" suppressHydrationWarning>
         <I18nProvider initialLocale={locale}>
