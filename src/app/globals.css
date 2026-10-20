@@ -409,9 +409,13 @@ a.btn-gradient:active {
 .home-hill-base { left: 0; right: 0; top: calc(var(--scene-h) - 2px); height: 220px;
   background: linear-gradient(180deg, var(--hill-fade), var(--color-theme-bg)); }
 
-/* 太陽月亮：left 由元件給（%），高度沿弧線換算成 px。地平線（--alt: 0）落在遠山稜線附近，
-   剛升起和快落下時半露在山邊 */
-.home-orb { top: calc(var(--scene-h) * (0.5 - 0.42 * var(--alt, 0.5))); width: 0; height: 0; transition: left 1s ease, top 1s ease; }
+/* 太陽月亮：水平位置 --x（0–100）由元件給，高度沿弧線由 --alt 換算。地平線（--alt: 0）落在遠山稜線附近，
+   剛升起和快落下時半露在山邊。
+   位置用 transform 移動而不是 left / top：換位置的過渡動畫只需要 GPU 挪動已經畫好的圖層，不必每一幀重新排版。
+   .home-orb 本身是一條跟天空一樣大的「軌道」，太陽月亮釘在它的左上角；translate 的百分比是相對元素自己的大小，
+   軌道跟天空一樣大，translate(x%, y%) 就剛好等於天空寬高的百分比。 */
+.home-orb { left: 0; top: 0; width: 100%; height: var(--scene-h);
+  transform: translate(calc(var(--x, 50) * 1%), calc((0.5 - 0.42 * var(--alt, 0.5)) * 100%)); transition: transform 1s ease; }
 .home-orb-rise { position: absolute; animation: home-orb-rise 2s cubic-bezier(.2, .7, .2, 1) both; }
 /* 太陽的光暈用固定暖色，不跟主題：紫色、藍色主題配上紫藍色的太陽會很怪 */
 /* 太陽散射光：以太陽為中心的一大片柔光，太陽那一側的天空整片比較亮（顏色、強度見各時段的 --sun-scatter） */
@@ -431,7 +435,9 @@ a.btn-gradient:active {
 .home-moon-maria circle { fill: #B9AC8A; opacity: .28; }
 .home-moon-glow { position: absolute; width: 96px; height: 96px; border-radius: 50%; transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(255,248,226,.32) 0, rgba(255,248,226,.12) 35%, transparent 68%); }
-.home-horizon-glow { top: calc(var(--scene-h) * 0.5 - 40px); width: 220px; height: 80px; transform: translateX(-50%); border-radius: 50%; background: #FF9A6A; filter: blur(16px); transition: opacity 1s ease; }
+/* 地平線光暈也用同樣的軌道做法，跟著太陽左右移動（高度固定在稜線附近） */
+.home-glow-track { left: 0; top: 0; width: 100%; height: 0; transform: translateX(calc(var(--x, 50) * 1%)); transition: transform 1s ease; }
+.home-horizon-glow { position: absolute; top: calc(var(--scene-h) * 0.5 - 40px); width: 220px; height: 80px; transform: translateX(-50%); border-radius: 50%; background: #FF9A6A; filter: blur(16px); transition: opacity 1s ease; }
 /* 晨光偏淡金，橘紅留給晚霞 */
 :root[data-sky="morning"] .home-scene .home-horizon-glow { top: calc(var(--scene-h) * 0.5 - 60px); width: 300px; height: 110px; background: rgba(255, 217, 160, .35); filter: blur(22px); }
 :root[data-sky="dusk"] .home-scene .home-horizon-glow { background: rgba(255, 180, 110, .5); }
@@ -442,7 +448,7 @@ a.btn-gradient:active {
 @keyframes home-orb-rise { from { transform: translateY(calc(var(--scene-h) * 0.3)); } }
 @media (prefers-reduced-motion: reduce) {
   .home-orb-rise, .sky-stars span { animation: none; }
-  .home-orb, :root[data-sky] .sky-scene .sky-title { transition: none; }
+  .home-orb, .home-glow-track, :root[data-sky] .sky-scene .sky-title { transition: none; }
 }
 
 /* 主題色文字（標題、區塊小標、統計圖示）：跟隨主題（亮色=主題深色調；深色模式改用

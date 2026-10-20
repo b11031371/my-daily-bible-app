@@ -120,7 +120,8 @@ export default function HomeScenery({ className, children }: { className?: strin
         </div>
         {sky && (
           <>
-            <div className="home-orb" style={{ left: `${sky.x}%`, '--alt': sky.altitude } as CSSProperties}>
+            {/* 位置用 transform 移動（見 globals.css 的 .home-orb），--x 是水平位置 0–100 */}
+            <div className="home-orb" style={{ '--x': sky.x, '--alt': sky.altitude } as CSSProperties}>
               <div className="home-orb-rise">
                 {sky.body === 'sun' ? (
                   <>
@@ -132,7 +133,9 @@ export default function HomeScenery({ className, children }: { className?: strin
                 )}
               </div>
             </div>
-            <div className="home-horizon-glow" style={{ left: `${sky.x}%`, opacity: horizonGlow }} />
+            <div className="home-glow-track" style={{ '--x': sky.x } as CSSProperties}>
+              <div className="home-horizon-glow" style={{ opacity: horizonGlow }} />
+            </div>
           </>
         )}
         <svg className="home-hills" viewBox="0 0 300 200" preserveAspectRatio="none">
