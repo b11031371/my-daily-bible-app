@@ -309,41 +309,55 @@ a.btn-gradient:active {
 .sky-backdrop { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; animation: sky-fade-in .6s ease-out both; }
 .sky-backdrop > * { position: absolute; }
 
+/* 早晨、中午、傍晚照真實天空配色（自然天色）：
+   - 漸層拉長：中段在 50–55%，地平線色放到 100%，藏在山後。地平線色要是停在稜線高度（舊做法的 60%），
+     稜線上方會有一條亮帶，看起來像山的輪廓在發光；夜晚刻意保留這條微光，所以夜晚用預設的 30% / 60%。
+   - 亮的地方是太陽周圍：太陽後面一大片散射光（.home-sun-scatter）跟著太陽移動，取代橫向的亮帶。
+   - 遠山接近地平線的天色，像被空氣染上的顏色。白天的後山要比背後的天空深一階，不然會融進天空看不出來。
+   - 主題色只用 oklab 混 8%：比例高的話，金黃＋天藍這種互補色會混成灰色，天色也就不自然了。 */
 .sky-scene[data-time="morning"] {
-  --sky1: color-mix(in srgb, #FFC4A0 70%, var(--color-primary)); --sky2: color-mix(in srgb, #FFE6CF 70%, var(--color-primary-light)); --sky3: color-mix(in srgb, #FFF2E4 60%, var(--color-primary-light));
-  --hill1: color-mix(in srgb, #EBB89C 55%, var(--color-primary)); --hill2: color-mix(in srgb, #F7DCC8 55%, var(--color-primary-light));
+  --sky1: color-mix(in oklab, #8FC3EE 92%, var(--color-primary)); --sky2: color-mix(in oklab, #C6E0F4 92%, var(--color-primary)); --sky3: color-mix(in oklab, #F3E6D8 92%, var(--color-primary));
+  --hill1: color-mix(in oklab, #AFC6DF 92%, var(--color-primary)); --hill2: color-mix(in oklab, #96B1CF 92%, var(--color-primary));
   --sky-title: color-mix(in srgb, var(--color-primary-dark) 45%, #3B2214);
+  --stop-mid: 50%; --stop-end: 100%; --sun-scatter: #FFF1D6; --sun-scatter-op: .75;
 }
 .sky-scene[data-time="noon"] {
-  --sky1: color-mix(in srgb, var(--color-primary) 40%, #E6F3FF); --sky2: color-mix(in srgb, var(--color-primary) 18%, #F3F9FF); --sky3: color-mix(in srgb, var(--color-primary-light) 80%, #FFFFFF);
-  --hill1: color-mix(in srgb, var(--color-primary) 45%, #FFFFFF); --hill2: color-mix(in srgb, var(--color-primary) 22%, #FFFFFF);
+  --sky1: color-mix(in oklab, #4BA6EC 92%, var(--color-primary)); --sky2: color-mix(in oklab, #8DC8F4 92%, var(--color-primary)); --sky3: color-mix(in oklab, #D2EAF8 92%, var(--color-primary));
+  --hill1: color-mix(in oklab, #9DC0DF 92%, var(--color-primary)); --hill2: color-mix(in oklab, #84ABD0 92%, var(--color-primary));
   --sky-title: color-mix(in srgb, var(--color-primary-dark) 45%, #3B2214);
+  --stop-mid: 50%; --stop-end: 100%; --sun-scatter: #FFFFFF; --sun-scatter-op: .55;
 }
 .sky-scene[data-time="dusk"] {
-  --sky1: color-mix(in srgb, #7E62A8 60%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #F5AA6A 80%, var(--color-accent)); --sky3: color-mix(in srgb, #FCDCA8 75%, var(--color-primary-light));
-  --hill1: color-mix(in srgb, #8C6278 75%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #D9A584 80%, var(--color-accent));
+  --sky1: color-mix(in oklab, #5D7DB5 92%, var(--color-primary)); --sky2: color-mix(in oklab, #C9A2B2 92%, var(--color-primary)); --sky3: color-mix(in oklab, #F2C08C 92%, var(--color-primary));
+  --hill1: color-mix(in oklab, #8F7B92 92%, var(--color-primary)); --hill2: color-mix(in oklab, #6E5E78 92%, var(--color-primary));
   --sky-title: #FFFFFF;
+  --stop-mid: 55%; --stop-end: 100%; --sun-scatter: #FFC98A; --sun-scatter-op: .7;
 }
 .sky-scene[data-time="night"] {
   --sky1: color-mix(in srgb, #12142F 85%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #2B2858 82%, var(--color-primary-dark)); --sky3: color-mix(in srgb, #8E80AE 60%, var(--color-primary-light));
   --hill1: color-mix(in srgb, #23234A 90%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #3E3A6C 85%, var(--color-primary-dark));
   --sky-title: #FFFFFF;
 }
-/* 深色模式：保留各時段的色相，整體壓暗，往下淡入暖黑底 */
+/* 深色模式的早晨、中午、傍晚：做法同亮色的自然天色，整體壓暗。後山比稜線高度的天色深一階，
+   前山再深一階往下淡入暖黑底；散射光只有亮色的 1/3 左右，太強會在暗天空上糊成一團灰霧。
+   夜晚沒有設漸層位置，沿用預設的 30% / 60%，保留山線微光。 */
 :root[data-mode="dark"] .sky-scene[data-time="morning"] {
-  --sky1: color-mix(in srgb, #2E1E3C 75%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #6B3F33 65%, var(--color-primary)); --sky3: color-mix(in srgb, #2A1F17 85%, var(--color-primary));
-  --hill1: color-mix(in srgb, #3A2830 85%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #261D17 88%, var(--color-primary));
+  --sky1: color-mix(in oklab, #22314D 92%, var(--color-primary)); --sky2: color-mix(in oklab, #3B4560 92%, var(--color-primary)); --sky3: color-mix(in oklab, #5E4E4A 92%, var(--color-primary));
+  --hill1: color-mix(in oklab, #2E3850 92%, var(--color-primary)); --hill2: color-mix(in oklab, #222A3D 92%, var(--color-primary));
   --sky-title: #FFE9CF;
+  --stop-mid: 50%; --stop-end: 100%; --sun-scatter: #FFD9A0; --sun-scatter-op: .22;
 }
 :root[data-mode="dark"] .sky-scene[data-time="noon"] {
-  --sky1: color-mix(in srgb, #1C3650 75%, var(--color-primary)); --sky2: color-mix(in srgb, #182634 82%, var(--color-primary)); --sky3: color-mix(in srgb, #181712 88%, var(--color-primary));
-  --hill1: color-mix(in srgb, #20344A 80%, var(--color-primary)); --hill2: color-mix(in srgb, #1A211C 86%, var(--color-primary));
+  --sky1: color-mix(in oklab, #173456 92%, var(--color-primary)); --sky2: color-mix(in oklab, #24496E 92%, var(--color-primary)); --sky3: color-mix(in oklab, #355E80 92%, var(--color-primary));
+  --hill1: color-mix(in oklab, #213D5A 92%, var(--color-primary)); --hill2: color-mix(in oklab, #182D45 92%, var(--color-primary));
   --sky-title: var(--color-primary);
+  --stop-mid: 50%; --stop-end: 100%; --sun-scatter: #FFFFFF; --sun-scatter-op: .14;
 }
 :root[data-mode="dark"] .sky-scene[data-time="dusk"] {
-  --sky1: color-mix(in srgb, #24163A 82%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #6E3E26 80%, var(--color-accent)); --sky3: color-mix(in srgb, #2A1C12 88%, var(--color-accent));
-  --hill1: color-mix(in srgb, #382230 86%, var(--color-primary-dark)); --hill2: color-mix(in srgb, #281D16 88%, var(--color-accent));
-  --sky-title: #FFE8D0;
+  --sky1: color-mix(in oklab, #1C2444 92%, var(--color-primary)); --sky2: color-mix(in oklab, #4A3550 92%, var(--color-primary)); --sky3: color-mix(in oklab, #7A4E3A 92%, var(--color-primary));
+  --hill1: color-mix(in oklab, #3A2C42 92%, var(--color-primary)); --hill2: color-mix(in oklab, #281F30 92%, var(--color-primary));
+  --sky-title: #FFE9CF;
+  --stop-mid: 55%; --stop-end: 100%; --sun-scatter: #FFB070; --sun-scatter-op: .3;
 }
 :root[data-mode="dark"] .sky-scene[data-time="night"] {
   --sky1: color-mix(in srgb, #06071A 90%, var(--color-primary-dark)); --sky2: color-mix(in srgb, #11132E 88%, var(--color-primary-dark)); --sky3: color-mix(in srgb, #17151F 88%, var(--color-primary-dark));
@@ -382,14 +396,12 @@ a.btn-gradient:active {
 }
 
 .home-scene { --scene-h: 240px; }
-.home-sky { inset: 0 0 auto 0; height: var(--scene-h); background: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 30%, var(--sky3) 60%); }
+.home-sky { inset: 0 0 auto 0; height: var(--scene-h); background: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) var(--stop-mid, 30%), var(--sky3) var(--stop-end, 60%)); }
 .home-hills { left: 0; top: 0; width: 100%; height: var(--scene-h); }
 .home-hill-back { fill: var(--hill1); }
 /* 前山從稜線往下漸變（見 HomeScenery 的 SVG 漸層）：稜線是 --hill-front-top，往下變成 --hill-fade，
-   山腳再從 --hill-fade 淡出到底色，整段連續。夜晚和傍晚兩層山顏色接近，稜線直接用前山色往下淡就很自然；
-   白天後山深、前山很淺，前山稜線會變成一條明顯的線，所以白天讓稜線處接近後山的顏色，再往下淡成前山色。 */
+   山腳再從 --hill-fade 淡出到底色，整段連續。各時段、兩種模式的稜線都直接用前山色往下淡。 */
 .home-scene { --hill-front-top: var(--hill2); --hill-fade: color-mix(in srgb, var(--hill2) 70%, var(--color-theme-bg)); }
-.home-scene:is([data-time="morning"], [data-time="noon"]) { --hill-front-top: color-mix(in srgb, var(--hill1) 80%, var(--hill2)); --hill-fade: var(--hill2); }
 .home-hill-base { left: 0; right: 0; top: calc(var(--scene-h) - 2px); height: 220px;
   background: linear-gradient(180deg, var(--hill-fade), var(--color-theme-bg)); }
 
@@ -398,6 +410,9 @@ a.btn-gradient:active {
 .home-orb { top: calc(var(--scene-h) * (0.5 - 0.42 * var(--alt, 0.5))); width: 0; height: 0; transition: left 1s ease, top 1s ease; }
 .home-orb-rise { position: absolute; animation: home-orb-rise 2s cubic-bezier(.2, .7, .2, 1) both; }
 /* 太陽的光暈用固定暖色，不跟主題：紫色、藍色主題配上紫藍色的太陽會很怪 */
+/* 太陽散射光：以太陽為中心的一大片柔光，太陽那一側的天空整片比較亮（顏色、強度見各時段的 --sun-scatter） */
+.home-sun-scatter { position: absolute; width: 520px; height: 420px; transform: translate(-50%, -50%); opacity: var(--sun-scatter-op, 0);
+  background: radial-gradient(closest-side, var(--sun-scatter, #FFF) 0%, color-mix(in srgb, var(--sun-scatter, #FFF) 45%, transparent) 45%, transparent 100%); }
 .home-sun { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px;
   background: radial-gradient(circle, rgba(255,255,255,.95) 0 22%, rgba(255,214,140,.55) 40%, transparent 70%); }
 .home-scene[data-time="noon"] .home-sun { width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,.95) 0 25%, rgba(255,241,210,.3) 45%, transparent 70%); }
@@ -414,8 +429,10 @@ a.btn-gradient:active {
   background: radial-gradient(circle, rgba(255,248,226,.32) 0, rgba(255,248,226,.12) 35%, transparent 68%); }
 .home-horizon-glow { top: calc(var(--scene-h) * 0.5 - 40px); width: 220px; height: 80px; transform: translateX(-50%); border-radius: 50%; background: #FF9A6A; filter: blur(16px); transition: opacity 1s ease; }
 /* 晨光偏淡金，橘紅留給晚霞 */
-.home-scene[data-time="morning"] .home-horizon-glow { background: rgba(255, 222, 160, .75); }
-.home-scene[data-time="dusk"] .home-horizon-glow { background: #FFB46E; }
+.home-scene[data-time="morning"] .home-horizon-glow { top: calc(var(--scene-h) * 0.5 - 60px); width: 300px; height: 110px; background: rgba(255, 217, 160, .35); filter: blur(22px); }
+.home-scene[data-time="dusk"] .home-horizon-glow { background: rgba(255, 180, 110, .5); }
+/* 深色早晨的晨光偏暖一點，在暗天空上才看得出來 */
+:root[data-mode="dark"] .home-scene[data-time="morning"] .home-horizon-glow { background: rgba(255, 196, 110, .35); }
 
 @keyframes sky-fade-in { from { opacity: 0; } }
 @keyframes home-orb-rise { from { transform: translateY(calc(var(--scene-h) * 0.3)); } }

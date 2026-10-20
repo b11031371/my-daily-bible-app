@@ -114,7 +114,14 @@ export default function HomeScenery({ className, children }: { className?: strin
           </div>
           <div className="home-orb" style={{ left: `${sky.x}%`, '--alt': sky.altitude } as CSSProperties}>
             <div className="home-orb-rise">
-              {sky.body === 'sun' ? <div className="home-sun" /> : <Moon path={sky.moonPath} />}
+              {sky.body === 'sun' ? (
+                <>
+                  <div className="home-sun-scatter" />
+                  <div className="home-sun" />
+                </>
+              ) : (
+                <Moon path={sky.moonPath} />
+              )}
             </div>
           </div>
           <div className="home-horizon-glow" style={{ left: `${sky.x}%`, opacity: horizonGlow }} />
