@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { fetchAvailableDates, fetchPassageRange } from '@/lib/github/api'
-import { formatDate, todayString, getLastSevenDays } from '@/lib/utils'
+import { formatDate, todayString, getLastSevenDays, toDateString } from '@/lib/utils'
 import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { noteLangFor } from '@/lib/i18n'
@@ -17,6 +17,11 @@ import type { Profile } from '@/types/app'
 export default async function NotesPage() {
   const today = todayString()
   const weekDates = getLastSevenDays()
+  // 核准紀錄只查最近 14 天：首頁只用到今天和最近兩篇已核准的筆記，整張表會隨每天的核准一直變大。
+  // 跟其他查詢一起平行跑，不先等核准模式的設定（那樣會多一輪等待）；最多 15 筆，成本可以忽略。
+  // 日期加減走 Date.UTC，伺服器本身的時區才不會滲進來（同 getLastSevenDays）。
+  const [ty, tm, td] = today.split('-').map(Number)
+  const approvalSince = toDateString(new Date(Date.UTC(ty, tm - 1, td - 14)))
 
   // Resolve locale first so the passage range is fetched in the right language
   const { locale, t } = await getServerI18n()
@@ -51,7 +56,7 @@ export default async function NotesPage() {
     supabase.from('checkins').select('note_date, is_retro').eq('user_id', user!.id).in('note_date', weekDates),
     supabase.from('profiles').select('streak_current, role').eq('id', user!.id).single(),
     (supabase as any).from('app_settings').select('value').eq('key', 'approval_mode').single(),
-    (supabase as any).from('note_approvals').select('date'),
+    (supabase as any).from('note_approvals').select('date').gte('date', approvalSince).lte('date', today),
   ])
 
   const approvalMode = approvalSetting?.value === 'true'
