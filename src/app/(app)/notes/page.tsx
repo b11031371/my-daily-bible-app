@@ -17,7 +17,9 @@ import type { Profile } from '@/types/app'
 export default async function NotesPage() {
   const today = todayString()
   const weekDates = getLastSevenDays()
-  // 核准紀錄只查最近 14 天：首頁只用到今天和最近兩篇已核准的筆記，整張表會隨每天的核准一直變大。
+  // 近期筆記的篇數跟補簽天數一致（fn_checkin 允許補簽 3 天內），每一篇都還能補簽。
+  const RETRO_DAYS = 3
+  // 核准紀錄只查最近 14 天：首頁只用到今天和最近三篇已核准的筆記，整張表會隨每天的核准一直變大。
   // 跟其他查詢一起平行跑，不先等核准模式的設定（那樣會多一輪等待）；最多 15 筆，成本可以忽略。
   // 日期加減走 Date.UTC，伺服器本身的時區才不會滲進來（同 getLastSevenDays）。
   const [ty, tm, td] = today.split('-').map(Number)
@@ -86,8 +88,8 @@ export default async function NotesPage() {
   const showHeroCard = passageRange && (!approvalMode || isAdmin || todayApproved)
   const allPastDates = availableDates.filter(d => d !== today)
   const pastDates = (approvalMode && !isAdmin)
-    ? allPastDates.filter(d => approvedDates.has(d)).slice(0, 2)
-    : allPastDates.slice(0, 2)
+    ? allPastDates.filter(d => approvedDates.has(d)).slice(0, RETRO_DAYS)
+    : allPastDates.slice(0, RETRO_DAYS)
 
   // Read just the visible dates. Cached metadata avoids downloading each note
   // again; legacy dates without metadata fall back to the existing fetch cache.
