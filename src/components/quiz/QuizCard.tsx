@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { PencilSimple, Play, Trash } from '@phosphor-icons/react'
 import type { QuizWithCount } from '@/types/app'
+import Card from '@/components/ui/Card'
 
 export default function QuizCard({ quiz }: { quiz: QuizWithCount }) {
   const router = useRouter()
@@ -35,7 +36,7 @@ export default function QuizCard({ quiz }: { quiz: QuizWithCount }) {
       <>
         {/* 點卡片以外的任何地方 = 取消 */}
         <div className="fixed inset-0 z-40" onClick={() => setConfirming(false)} />
-        <div className="relative z-50 bg-surface rounded-2xl p-4 shadow-sm">
+        <Card padding="sm" className="relative z-50">
           <p className="text-sm text-gray-700 leading-6">{t('quiz.deleteConfirm')}</p>
           {/* 提示獨立成一行、按鈕另起一行靠右：中／英文長度差距大，擠在同一行
               會爆版。 */}
@@ -55,13 +56,13 @@ export default function QuizCard({ quiz }: { quiz: QuizWithCount }) {
               {t('quiz.deleteAction')}
             </button>
           </div>
-        </div>
+        </Card>
       </>
     )
   }
 
   return (
-    <div className="bg-surface rounded-2xl p-4 shadow-sm space-y-3">
+    <Card padding="sm" className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-semibold text-gray-900 truncate">{quiz.title}</p>
@@ -105,6 +106,6 @@ export default function QuizCard({ quiz }: { quiz: QuizWithCount }) {
           {t('quiz.host')}
         </Link>
       </div>
-    </div>
+    </Card>
   )
 }

@@ -84,6 +84,7 @@ export const tl: DeepPartial<Dictionary> = {
     stampRemaining: '{count} pa para mapuno',
     stampFirst: 'Mag-check-in ngayon para makuha ang unang stamp!',
     quickDone: 'Naka-check-in na ngayon',
+    pointsEarned: '+{points} puntos',
     quickButton: 'Mag-check-in ngayon (+10 puntos)',
   },
   settings: {

@@ -4,11 +4,16 @@ import { useRouter } from 'next/navigation'
 import { todayString, formatDate, formatMonth } from '@/lib/utils'
 import { POINTS_BY_DAYS_LATE } from '@/lib/points'
 import StampCard from '@/components/checkin/StampCard'
-import { Fire, Star, Diamond, Confetti, SealCheck } from '@phosphor-icons/react'
+import StampSlam from '@/components/checkin/StampSlam'
+import TreeOfLifeStamp from '@/components/checkin/TreeOfLifeStamp'
+import AnimatedNumber from '@/components/layout/AnimatedNumber'
+import { COUNT_SLOT, withSlot } from '@/components/recap/CountSlot'
+import { Fire, Star, Diamond, SealCheck, Plant } from '@phosphor-icons/react'
 import { useBadgeToast } from '@/components/layout/BadgeToast'
 import { BADGE_TOAST_GAP, useRecap } from '@/components/recap/RecapProvider'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { Locale, TFunc } from '@/lib/i18n'
+import Card from '@/components/ui/Card'
 
 interface Props {
   monthlyCheckinDays: number
@@ -25,8 +30,12 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
   const router = useRouter()
   const { showBadges } = useBadgeToast()
   const { checkRecap } = useRecap()
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<{ points: number; badges: string[] } | null>(null)
+  // 記正在簽哪一天：今日按鈕和補簽列各自顯示「簽到中」，不會按補簽時今日按鈕也跟著轉
+  const [loadingDate, setLoadingDate] = useState<string | null>(null)
+  const loading = loadingDate !== null
+  // 記這次簽的是哪一天：今天的結果顯示在今日卡片，補簽的結果留在那一列，
+  // 補簽後今日卡片才不會被蓋掉、還能接著簽今天
+  const [result, setResult] = useState<{ date: string; points: number; badges: string[] } | null>(null)
   const [checkinDays, setCheckinDays] = useState(monthlyCheckinDays)
   const [points, setPoints] = useState(monthlyPoints)
   const [checkedDates, setCheckedDates] = useState<Record<string, number>>(initialCheckins)
@@ -40,7 +49,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
   })
 
   async function doCheckin(date: string) {
-    setLoading(true)
+    setLoadingDate(date)
     setFailedDate(null)
     const res = await fetch('/api/checkin', {
       method: 'POST',
@@ -48,9 +57,9 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       body: JSON.stringify({ note_date: date }),
     })
     const data = await res.json()
-    setLoading(false)
+    setLoadingDate(null)
     if (res.ok) {
-      setResult({ points: data.points_earned, badges: data.badges_unlocked ?? [] })
+      setResult({ date, points: data.points_earned, badges: data.badges_unlocked ?? [] })
       setCheckinDays(d => d + 1)
       setPoints(p => p + data.points_earned)
       setCheckedDates(prev => ({ ...prev, [date]: data.points_earned }))
@@ -71,33 +80,36 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { key: 'days', label: t('checkin.statCheckinDays'), value: t('checkin.daysValue', { count: checkinDays }), icon: <Fire size={28} weight="fill" /> },
+          { key: 'days', label: t('checkin.statCheckinDays'), value: withSlot(t('checkin.daysValue', { count: COUNT_SLOT }), <AnimatedNumber value={checkinDays} />), icon: <Fire size={28} weight="fill" /> },
           { key: 'streak', label: t('checkin.statMaxStreak'), value: t('checkin.daysValue', { count: monthlyMaxStreak }), icon: <Star size={28} weight="fill" /> },
-          { key: 'points', label: t('checkin.statPoints'), value: `${points}`, icon: <Diamond size={28} weight="fill" /> },
+          { key: 'points', label: t('checkin.statPoints'), value: <AnimatedNumber value={points} duration={700} />, icon: <Diamond size={28} weight="fill" /> },
         ].map(s => (
-          <div key={s.key} className="bg-surface rounded-2xl p-4 text-center shadow-sm">
+          <Card key={s.key} padding="sm" className="text-center">
             <div className="flex justify-center mb-1 text-heading">{s.icon}</div>
             <div className="text-lg font-bold text-gray-900">{s.value}</div>
             <div className="text-xs text-gray-400">{s.label}</div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Today checkin */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <p className="text-sm font-medium text-gray-500 mb-3">{t('checkin.todayLabel', { date: formatDate(today, locale) })}</p>
-        {result ? (
-          <div className="text-center py-4">
-            <Confetti size={34} weight="fill" className="text-heading mx-auto mb-2" />
-            <p className="font-bold text-gray-900">{t('checkin.resultPoints', { points: result.points, days: checkinDays })}</p>
+        {result?.date === today ? (
+          <div className="done-in text-center py-3">
+            <StampSlam rotate={-5} className="w-16 h-16 text-heading" />
+            <p className="font-bold text-gray-900 mt-2">
+              <span className="num-in [animation-delay:.3s]">{t('checkin.resultPoints', { points: result.points, days: checkinDays })}</span>
+            </p>
             {result.badges.length > 0 && (
               <p className="text-sm text-accent mt-1">{t('checkin.unlockedBadges', { badges: result.badges.join(' ') })}</p>
             )}
           </div>
         ) : checkedDates[today] !== undefined ? (
-          <div className="flex items-center justify-center gap-1.5 py-4 text-gray-800 font-medium">
-            <SealCheck size={18} weight="fill" className="text-heading" />
-            {t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}
+          // 之前就簽過的：同一個印章、同樣的位置，只是不播動畫
+          <div className="text-center py-3">
+            <span aria-hidden="true" className="inline-block w-16 h-16 text-heading -rotate-[5deg]"><TreeOfLifeStamp /></span>
+            <p className="font-bold text-gray-900 mt-2">{t('checkin.alreadyCheckedIn', { points: checkedDates[today] })}</p>
           </div>
         ) : (
           <>
@@ -107,7 +119,9 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
                 disabled={loading}
                 className="w-full btn-gradient text-gray-900 rounded-[10px] py-4 text-base font-semibold hover:brightness-95 transition-[filter] disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
               >
-                {loading ? t('checkin.checkingIn') : <><SealCheck size={20} weight="fill" />{t('checkin.checkInNow')}</>}
+                {loadingDate === today
+                  ? <><span className="wiggle"><Plant size={20} weight="fill" /></span>{t('checkin.checkingIn')}</>
+                  : <><SealCheck size={20} weight="fill" />{t('checkin.checkInNow')}</>}
               </button>
             </div>
             {failedDate === today && (
@@ -115,13 +129,13 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             )}
           </>
         )}
-      </div>
+      </Card>
 
       {/* Stamp card */}
       <StampCard monthlyCount={monthlyCount} monthLabel={monthLabel} />
 
       {/* Retro checkins */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <p className="text-sm font-semibold text-heading mb-3">{t('checkin.retroTitle')}</p>
         <div className="space-y-2">
           {pastDays.map((date, i) => {
@@ -130,18 +144,19 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             return (
               <RetroRow key={date} date={date} daysLate={daysLate} points={pts}
                 isChecked={checkedDates[date] !== undefined} failed={failedDate === date}
+                justChecked={result?.date === date} checking={loadingDate === date}
                 onCheckin={() => doCheckin(date)} loading={loading} locale={locale} t={t} />
             )
           })}
         </div>
-      </div>
+      </Card>
     </div>
   )
 }
 
-function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, failed, locale, t }: {
-  date: string; daysLate: number; points: number; onCheckin: () => void; loading: boolean; isChecked: boolean
-  failed: boolean; locale: Locale; t: TFunc
+function RetroRow({ date, daysLate, points, onCheckin, loading, checking, isChecked, justChecked, failed, locale, t }: {
+  date: string; daysLate: number; points: number; onCheckin: () => void; loading: boolean; checking: boolean
+  isChecked: boolean; justChecked: boolean; failed: boolean; locale: Locale; t: TFunc
 }) {
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
@@ -151,14 +166,26 @@ function RetroRow({ date, daysLate, points, onCheckin, loading, isChecked, faile
           ? <p role="alert" className="text-xs text-danger">{t('checkin.checkinFail')}</p>
           : <p className="text-xs text-gray-400">{t('checkin.daysAgo', { days: daysLate, points })}</p>}
       </div>
-      {isChecked ? (
-        <span className="text-xs text-gray-600 font-medium">{t('checkin.checked')}</span>
+      {justChecked ? (
+        // 剛補簽：小印章蓋在「已簽」旁邊，+N 往上飄。補簽不算進本月集點，所以集點卡不動
+        <span className="done-in relative inline-flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+          <StampSlam rotate={4} burst={false} className="w-6 h-6 text-heading" />
+          {t('checkin.checked')}
+          <span aria-hidden="true" className="float-up right-0 -top-4 text-sm font-extrabold text-heading">+{points}</span>
+        </span>
+      ) : isChecked ? (
+        // 之前補簽過的：同一個印章，只是不播動畫
+        <span className="inline-flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+          <span aria-hidden="true" className="w-6 h-6 text-heading rotate-[4deg]"><TreeOfLifeStamp /></span>
+          {t('checkin.checked')}
+        </span>
       ) : (
         <button
           onClick={onCheckin}
           disabled={loading}
-          className="text-xs bg-primary-light text-gray-700 font-medium px-3 py-1.5 rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors disabled:opacity-40"
+          className="text-xs bg-primary-light text-gray-700 font-medium px-3 py-1.5 rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors disabled:opacity-40 inline-flex items-center gap-1"
         >
+          {checking && <span className="wiggle"><Plant size={12} weight="fill" /></span>}
           {t('checkin.retroButton')}
         </button>
       )}

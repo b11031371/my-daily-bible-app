@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { QUIZ_CONFIG } from '@/lib/quiz'
+import Button from '@/components/ui/Button'
 
 export default function PlayPinEntry() {
   const router = useRouter()
@@ -29,13 +30,13 @@ export default function PlayPinEntry() {
             aria-label={t('quiz.enterPin')}
             className="w-full border border-gray-200 rounded-2xl px-4 py-5 text-2xl tracking-[0.3em] text-center font-bold bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-primary placeholder:text-base placeholder:tracking-normal placeholder:font-normal"
           />
-          <button
+          <Button
             type="submit"
             disabled={!ready}
-            className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-40"
+            className="w-full"
           >
             {t('quiz.joinGame')}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

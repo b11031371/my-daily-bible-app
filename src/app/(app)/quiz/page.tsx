@@ -9,6 +9,7 @@ import JoinPinForm from '@/components/quiz/JoinPinForm'
 import QuizCard from '@/components/quiz/QuizCard'
 import { Plus } from '@phosphor-icons/react/dist/ssr'
 import type { QuizWithCount } from '@/types/app'
+import Card from '@/components/ui/Card'
 
 export default async function QuizListPage() {
   const [user, supabase, { t }] = await Promise.all([getUser(), createClient(), getServerI18n()])
@@ -68,7 +69,7 @@ export default async function QuizListPage() {
         <h2 className="text-sm font-semibold text-gray-700">{t('quiz.myQuizzes')}</h2>
 
         {list.length === 0 ? (
-          <div className="bg-surface rounded-2xl p-6 shadow-sm text-center">
+          <Card padding="lg" className="text-center">
             <p className="text-sm text-gray-500">{t('quiz.noQuizzes')}</p>
             <p className="text-xs text-gray-400 mt-1.5">{t('quiz.noQuizzesHint')}</p>
             <Link
@@ -77,7 +78,7 @@ export default async function QuizListPage() {
             >
               {t('quiz.createQuiz')}
             </Link>
-          </div>
+          </Card>
         ) : (
           list.map(quiz => <QuizCard key={quiz.id} quiz={quiz} />)
         )}

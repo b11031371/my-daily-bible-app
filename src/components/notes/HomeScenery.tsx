@@ -79,8 +79,9 @@ function Moon({ path }: { path: string }) {
  * 天空和山的顏色由 <html data-sky> 決定（見 globals.css），layout 的 head script 在畫面出現前
  * 就依手機時間寫好，所以伺服器直接把天空和山畫出來，第一幀的天色就是對的。
  * 太陽、月亮的位置和月相要精確的時間，掛載後才畫出來，順便播進場（從山後升起）。
+ * 載入中的骨架（notes/loading.tsx）傳 celestial={false}：只畫天空和山，太陽月亮留給真正的首頁升起。
  */
-export default function HomeScenery({ className, children }: { className?: string; children: ReactNode }) {
+export default function HomeScenery({ className, children, celestial = true }: { className?: string; children: ReactNode; celestial?: boolean }) {
   const [sky, setSky] = useState<Sky | null>(null)
   const hillFadeId = `hill${useId().replace(/[^a-zA-Z0-9]/g, '')}`
 
@@ -118,7 +119,7 @@ export default function HomeScenery({ className, children }: { className?: strin
             <span key={i} style={{ left: s.left, top: s.top, width: s.size, height: s.size, animationDelay: s.delay }} />
           ))}
         </div>
-        {sky && (
+        {sky && celestial && (
           <>
             {/* 位置用 transform 移動（見 globals.css 的 .home-orb），--x 是水平位置 0–100 */}
             <div className="home-orb" style={{ '--x': sky.x, '--alt': sky.altitude } as CSSProperties}>

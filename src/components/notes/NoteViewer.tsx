@@ -7,6 +7,7 @@ import ReflectionForm from '@/components/community/ReflectionForm'
 import ApprovalBanner from './ApprovalBanner'
 import { NOTE_END_ID } from './ReadingProgressHeader'
 import { FilePdf } from '@phosphor-icons/react'
+import Card from '@/components/ui/Card'
 
 interface Props {
   date: string
@@ -64,7 +65,7 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
       </div>
 
       {/* Note content */}
-      <div className="bg-surface rounded-2xl shadow-sm overflow-hidden mb-4">
+      <Card padding="none" className="overflow-hidden mb-4">
         {hasMarkdown && content ? (
           <div className="p-5">
             <MarkdownRenderer content={content} />
@@ -85,15 +86,15 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
             />
           </div>
         )}
-      </div>
+      </Card>
       {/* 閱讀進度的終點（見 ReadingProgressHeader） */}
       <div id={NOTE_END_ID} aria-hidden="true" />
 
       {/* Reflection form */}
       {/* 標題在 ReflectionForm 裡面：AI 提示的開關要跟標題放同一列 */}
-      <div id="reflection" className="bg-surface rounded-2xl shadow-sm p-5">
+      <Card id="reflection">
         <ReflectionForm date={date} bibleRange={bibleRange ?? null} lang={lang} />
-      </div>
+      </Card>
     </div>
   )
 }

@@ -12,7 +12,9 @@ import HomeScenery from '@/components/notes/HomeScenery'
 import { Users, ChatCircle, Medal } from '@phosphor-icons/react/dist/ssr'
 import { localizeBibleRange } from '@/lib/bible-books'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
+import AnimatedNumber from '@/components/layout/AnimatedNumber'
 import type { Profile } from '@/types/app'
+import { cardClass } from '@/components/ui/Card'
 
 export default async function NotesPage() {
   const today = todayString()
@@ -186,9 +188,9 @@ export default async function NotesPage() {
           { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: t('notesList.statComments'), href: '/community' },
           { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: t('notesList.statBadges'), href: '/profile' },
         ].map(s => (
-          <Link key={s.href} href={s.href} className="glass-card bg-surface rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
+          <Link key={s.href} href={s.href} className={cardClass({ padding: 'none', className: 'glass-card p-3 text-center active:opacity-80 transition-opacity' })}>
             <div className="flex justify-center mb-0.5 text-heading">{s.icon}</div>
-            <div className="font-bold text-gray-900 text-base">{s.value}</div>
+            <div className="font-bold text-gray-900 text-base"><AnimatedNumber value={s.value} /></div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
           </Link>
         ))}
@@ -203,7 +205,7 @@ export default async function NotesPage() {
               <Link
                 key={date}
                 href={`/notes/${date}`}
-                className="glass-card flex items-center justify-between bg-surface rounded-2xl px-5 py-3.5 shadow-sm"
+                className={cardClass({ padding: 'none', className: 'glass-card flex items-center justify-between px-5 py-3.5' })}
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">

@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import TitleDivider from '@/components/layout/TitleDivider'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 export default function OpenRoomPrompt({
   quizId, title, questionCount,
@@ -30,20 +32,20 @@ export default function OpenRoomPrompt({
       </div>
       <TitleDivider />
 
-      <div className="bg-surface rounded-2xl p-6 shadow-sm text-center space-y-2">
+      <Card padding="lg" className="text-center space-y-2">
         <p className="font-semibold text-gray-900">{title}</p>
         <p className="text-xs text-gray-400">{t('quiz.questionCount', { count: questionCount })}</p>
 
         {error && <p className="text-sm text-danger pt-2">{error}</p>}
 
-        <button
+        <Button
           onClick={openRoom}
           disabled={loading || questionCount === 0}
-          className="w-full mt-4 btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+          className="w-full mt-4"
         >
           {loading ? t('quiz.joining') : t('quiz.host')}
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   )
 }

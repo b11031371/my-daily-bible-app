@@ -9,6 +9,7 @@ import BibleAvatar from '@/components/avatar/BibleAvatar'
 import GroupActions from '@/components/tree/GroupActions'
 import GroupJoinForm from '@/components/tree/GroupJoinForm'
 import type { GroupMemberWithProfile } from '@/types/app'
+import Card from '@/components/ui/Card'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -158,7 +159,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
 
       {/* Fruits legend */}
       {fruitCount > 0 && (
-        <div className="bg-surface rounded-2xl p-4 shadow-sm">
+        <Card padding="sm">
           <p className="text-xs font-semibold text-gray-500 mb-3">{t('group.grownFruits')}</p>
           <div className="flex flex-wrap gap-2">
             {group.fruit_order.slice(0, fruitCount).map((fruit, i) => (
@@ -172,11 +173,11 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
               {t('group.nextFruit', { points: nextFruitPoints - treePoints, fruit: fruitName(group.fruit_order[fruitCount]) })}
             </p>
           )}
-        </div>
+        </Card>
       )}
 
       {/* Members */}
-      <div className="bg-surface rounded-2xl p-4 shadow-sm">
+      <Card padding="sm">
         <p className="text-xs font-semibold text-gray-500 mb-3">
           {t('group.membersCount', { count: activeMembers.length, max: TREE_CONFIG.maxMembers })}
         </p>
@@ -192,7 +193,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Invite + Leave actions */}
       <GroupActions

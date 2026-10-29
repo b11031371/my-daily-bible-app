@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Shuffle } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Card from '@/components/ui/Card'
 
 const STORAGE_KEY = 'bible-theme'
 const MODE_KEY = 'bible-mode'
@@ -112,7 +113,7 @@ export default function ThemeSwitcher() {
     }`
 
   return (
-    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
+    <Card padding="none" className="overflow-hidden">
       <div className="section-band px-4 py-3">
         <p className="text-base font-bold text-gray-900">{t('settings.theme')}</p>
       </div>
@@ -166,6 +167,6 @@ export default function ThemeSwitcher() {
           />
         </button>
       </div>
-    </div>
+    </Card>
   )
 }

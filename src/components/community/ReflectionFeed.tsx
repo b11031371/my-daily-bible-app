@@ -9,6 +9,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import type { TFunc } from '@/lib/i18n'
 import type { ReflectionWithProfile, ReflectionComment } from '@/types/app'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
+import Card from '@/components/ui/Card'
 
 function relativeTime(iso: string, t: TFunc): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
@@ -268,7 +269,7 @@ function ReflectionCard({
   }
 
   return (
-    <div className="bg-surface rounded-2xl p-4 shadow-sm">
+    <Card padding="sm">
       {/* Header */}
       <div className="flex items-center gap-2 mb-1">
         <BibleAvatar seed={seed} className="w-7 h-7 shrink-0" />
@@ -433,7 +434,7 @@ function ReflectionCard({
           )}
         </>
       )}
-    </div>
+    </Card>
   )
 }
 

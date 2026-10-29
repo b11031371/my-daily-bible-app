@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Button from '@/components/ui/Button'
 
 export default function JoinGroupModal() {
   const router = useRouter()
@@ -63,13 +64,14 @@ export default function JoinGroupModal() {
               >
                 {t('common.cancel')}
               </button>
-              <button
+              <Button
                 onClick={handleJoin}
                 disabled={loading || code.length < 6}
-                className="flex-1 text-sm font-semibold btn-gradient text-gray-900 rounded-xl py-3 hover:brightness-95 transition-[filter] disabled:opacity-50"
+                size="md"
+                className="flex-1 font-semibold"
               >
                 {loading ? t('group.joining') : t('group.join')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

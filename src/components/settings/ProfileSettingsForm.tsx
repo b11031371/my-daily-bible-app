@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { Check } from '@phosphor-icons/react'
+import { cardClass } from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 const AVATAR_SEEDS = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu']
 
@@ -82,7 +84,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
   return (
     <div className="space-y-6">
       {/* 暱稱 */}
-      <section className="bg-surface rounded-2xl p-5 shadow-sm space-y-3">
+      <section className={cardClass({ className: 'space-y-3' })}>
         <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.nickname')}</h2>
         </div>
@@ -97,18 +99,18 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
         />
         <div className="flex items-center justify-between">
           {nameMsg ? <StatusMsg msg={nameMsg} /> : <span />}
-          <button
+          <Button
             onClick={saveName}
             disabled={loading === 'name' || !name.trim() || name.trim() === initialName}
-            className="btn-gradient text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
+            size="sm"
           >
             {loading === 'name' ? t('settings.saving') : t('common.save')}
-          </button>
+          </Button>
         </div>
       </section>
 
       {/* 頭像 */}
-      <section className="bg-surface rounded-2xl p-5 shadow-sm space-y-3">
+      <section className={cardClass({ className: 'space-y-3' })}>
         <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.avatar')}</h2>
         </div>
@@ -130,7 +132,7 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
       </section>
 
       {/* 密碼 */}
-      <section className="bg-surface rounded-2xl p-5 shadow-sm space-y-3">
+      <section className={cardClass({ className: 'space-y-3' })}>
         <div className="-mx-5 -mt-5 section-band px-5 py-3 rounded-t-2xl">
           <h2 className="text-base font-bold text-gray-900">{t('settings.changePassword')}</h2>
         </div>
@@ -154,13 +156,13 @@ export default function ProfileSettingsForm({ userId, initialName, initialSeed }
         />
         <div className="flex items-center justify-between">
           {pwMsg ? <StatusMsg msg={pwMsg} /> : <span />}
-          <button
+          <Button
             onClick={savePassword}
             disabled={loading === 'pw' || !newPassword}
-            className="btn-gradient text-gray-900 text-sm px-4 py-2 rounded-xl font-medium hover:brightness-95 transition-[filter] disabled:opacity-40"
+            size="sm"
           >
             {loading === 'pw' ? t('settings.updating') : t('settings.updatePassword')}
-          </button>
+          </Button>
         </div>
       </section>
     </div>

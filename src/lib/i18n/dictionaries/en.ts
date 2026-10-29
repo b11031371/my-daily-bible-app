@@ -103,6 +103,7 @@ export const en = {
     stampRemaining: '{count} more to fill the card',
     stampFirst: 'Check in today to earn your first stamp!',
     quickDone: 'Checked in today',
+    pointsEarned: '+{points} pts',
     quickButton: 'Check in today (+10 pts)',
     checkinFail: 'Check-in failed, please try again',
   },

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Card from '@/components/ui/Card'
 
 const OPTIONS = [
   { size: '14px', descKey: 'settings.fontSmall',    textClass: 'text-xs'  },
@@ -31,7 +32,7 @@ export default function FontSizeSwitcher() {
   }
 
   return (
-    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
+    <Card padding="none" className="overflow-hidden">
       <div className="section-band px-4 py-3">
         <p className="text-base font-bold text-gray-900">{t('settings.fontSize')}</p>
       </div>
@@ -54,6 +55,6 @@ export default function FontSizeSwitcher() {
           )
         })}
       </div>
-    </div>
+    </Card>
   )
 }

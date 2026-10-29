@@ -7,6 +7,8 @@ import TitleDivider from '@/components/layout/TitleDivider'
 import { QUIZ_CONFIG } from '@/lib/quiz'
 import { formatDate } from '@/lib/utils'
 import { PencilSimple, Sparkle } from '@phosphor-icons/react'
+import Card, { cardClass } from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 type Mode = 'manual' | 'ai'
 const DIFFICULTIES = ['easy', 'normal', 'hard'] as const
@@ -79,7 +81,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
         <div className="space-y-3">
           <button
             onClick={() => setMode('manual')}
-            className="w-full bg-surface rounded-2xl p-5 shadow-sm text-left flex items-start gap-4 hover:shadow-md active:scale-[0.99] transition-shadow"
+            className={cardClass({ className: 'w-full text-left flex items-start gap-4 hover:shadow-md active:scale-[0.99] transition-shadow' })}
           >
             <span className="shrink-0 w-11 h-11 rounded-xl bg-primary-light text-primary-dark flex items-center justify-center">
               <PencilSimple size={22} weight="bold" />
@@ -93,7 +95,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
           <button
             onClick={() => setMode('ai')}
             disabled={!aiAvailable}
-            className="w-full bg-surface rounded-2xl p-5 shadow-sm text-left flex items-start gap-4 hover:shadow-md active:scale-[0.99] transition-shadow disabled:opacity-50 disabled:hover:shadow-sm"
+            className={cardClass({ className: 'w-full text-left flex items-start gap-4 hover:shadow-md active:scale-[0.99] transition-shadow disabled:opacity-50 disabled:hover:shadow-sm' })}
           >
             <span className="shrink-0 w-11 h-11 rounded-xl bg-accent-light text-accent flex items-center justify-center">
               <Sparkle size={22} weight="fill" />
@@ -109,7 +111,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
       )}
 
       {mode !== null && (
-        <div className="bg-surface rounded-2xl p-5 shadow-sm space-y-4">
+        <Card className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-1.5">{t('quiz.quizTitle')}</label>
             <input
@@ -189,15 +191,15 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
-          <button
+          <Button
             onClick={mode === 'ai' ? generateWithAi : createManual}
             disabled={loading || (mode === 'ai' && !canGenerate)}
-            className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+            className="w-full"
           >
             {loading
               ? (mode === 'ai' ? t('quiz.generating') : t('quiz.saving'))
               : (mode === 'ai' ? t('quiz.generate') : t('quiz.createQuiz'))}
-          </button>
+          </Button>
 
           <button
             onClick={() => { setMode(null); setError(null) }}
@@ -205,7 +207,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
           >
             {t('quiz.backToQuiz')}
           </button>
-        </div>
+        </Card>
       )}
     </div>
   )

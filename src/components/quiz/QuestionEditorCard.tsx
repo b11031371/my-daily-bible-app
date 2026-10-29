@@ -4,6 +4,7 @@ import { ANSWER_STYLES, QUIZ_CONFIG } from '@/lib/quiz'
 import AnswerShape from '@/components/quiz/AnswerShape'
 import { ArrowUp, ArrowDown, Trash, Check } from '@phosphor-icons/react'
 import type { QuizQuestionDraft } from '@/types/app'
+import Card from '@/components/ui/Card'
 
 interface Props {
   index: number
@@ -30,7 +31,7 @@ export default function QuestionEditorCard({
   }
 
   return (
-    <div className="bg-surface rounded-2xl p-4 shadow-sm space-y-3">
+    <Card padding="sm" className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-gray-700">{t('quiz.questionN', { n: index + 1 })}</span>
         <div className="flex items-center gap-1 text-gray-300">
@@ -131,6 +132,6 @@ export default function QuestionEditorCard({
           ))}
         </div>
       </div>
-    </div>
+    </Card>
   )
 }
