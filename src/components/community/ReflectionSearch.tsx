@@ -4,6 +4,8 @@ import { MagnifyingGlass, X, DownloadSimple, ListBullets, Sparkle, Copy, Check, 
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { formatMonth } from '@/lib/utils'
 import type { ReflectionFilters } from '@/types/app'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 const CUSTOM_FILTER_CHIPS_KEY = 'reflection_custom_filter_chips'
 const CUSTOM_SUMMARY_CHIPS_KEY = 'reflection_custom_summary_chips'
@@ -277,7 +279,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
 
       {/* Collapsible search panel */}
       {isOpen && (
-        <div className="mb-4 bg-surface rounded-2xl p-4 shadow-sm border border-gray-100">
+        <Card padding="sm" className="mb-4 border border-gray-100">
           {/* Panel header */}
           <div className="flex items-center justify-between mb-3">
             <span className="flex items-center gap-1 text-xs font-semibold text-gray-500">
@@ -461,13 +463,14 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
                   placeholder={t('community.searchPlaceholder')}
                   className="flex-1 min-w-0 bg-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 />
-                <button
+                <Button
                   onClick={handleSubmit}
                   disabled={isLoading || !query.trim()}
-                  className="btn-gradient text-gray-900 text-sm px-4 py-2 rounded-xl font-medium disabled:opacity-40 shrink-0"
+                  size="sm"
+                  className="shrink-0"
                 >
                   {t('community.search')}
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -589,7 +592,7 @@ export default function ReflectionSearch({ todayBibleRange, onFilter }: Props) {
               </div>
             </div>
           )}
-        </div>
+        </Card>
       )}
     </div>
   )

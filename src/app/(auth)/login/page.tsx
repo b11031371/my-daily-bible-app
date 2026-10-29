@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { cardClass } from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -40,7 +42,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-heading">Sproutiv</h1>
           <p className="text-sm text-gray-500 mt-1">{t('auth.login.subtitle')}</p>
         </div>
-        <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
+        <form onSubmit={handleSubmit} className={cardClass({ padding: 'lg', className: 'space-y-4' })}>
           {error && (
             <div role="alert" className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
           )}
@@ -85,13 +87,14 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="w-full btn-gradient text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
+            size="md"
+            className="w-full"
           >
             {loading ? t('auth.login.submitting') : t('auth.login.submit')}
-          </button>
+          </Button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
           {t('auth.login.noAccount')}{' '}

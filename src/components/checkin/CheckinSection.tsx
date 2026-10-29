@@ -13,6 +13,7 @@ import { useBadgeToast } from '@/components/layout/BadgeToast'
 import { BADGE_TOAST_GAP, useRecap } from '@/components/recap/RecapProvider'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { Locale, TFunc } from '@/lib/i18n'
+import Card from '@/components/ui/Card'
 
 interface Props {
   monthlyCheckinDays: number
@@ -83,16 +84,16 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
           { key: 'streak', label: t('checkin.statMaxStreak'), value: t('checkin.daysValue', { count: monthlyMaxStreak }), icon: <Star size={28} weight="fill" /> },
           { key: 'points', label: t('checkin.statPoints'), value: <AnimatedNumber value={points} duration={700} />, icon: <Diamond size={28} weight="fill" /> },
         ].map(s => (
-          <div key={s.key} className="bg-surface rounded-2xl p-4 text-center shadow-sm">
+          <Card key={s.key} padding="sm" className="text-center">
             <div className="flex justify-center mb-1 text-heading">{s.icon}</div>
             <div className="text-lg font-bold text-gray-900">{s.value}</div>
             <div className="text-xs text-gray-400">{s.label}</div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Today checkin */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <p className="text-sm font-medium text-gray-500 mb-3">{t('checkin.todayLabel', { date: formatDate(today, locale) })}</p>
         {result?.date === today ? (
           <div className="done-in text-center py-3">
@@ -128,13 +129,13 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             )}
           </>
         )}
-      </div>
+      </Card>
 
       {/* Stamp card */}
       <StampCard monthlyCount={monthlyCount} monthLabel={monthLabel} />
 
       {/* Retro checkins */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <p className="text-sm font-semibold text-heading mb-3">{t('checkin.retroTitle')}</p>
         <div className="space-y-2">
           {pastDays.map((date, i) => {
@@ -148,7 +149,7 @@ export default function CheckinSection({ monthlyCheckinDays, monthlyMaxStreak, m
             )
           })}
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

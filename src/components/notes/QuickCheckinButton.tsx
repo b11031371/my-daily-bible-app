@@ -8,6 +8,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import { Plant, SealCheck } from '@phosphor-icons/react'
 import StampSlam from '@/components/checkin/StampSlam'
 import TreeOfLifeStamp from '@/components/checkin/TreeOfLifeStamp'
+import Card from '@/components/ui/Card'
 
 const SS_KEY = `checkin:${todayString()}`
 
@@ -30,22 +31,22 @@ export default function QuickCheckinButton({ initialCheckedIn }: { initialChecke
   if (checkedIn && earned !== null) {
     // 剛按下去成功：印章蓋在原本按鈕的位置，+N 往上飄
     return (
-      <div className="stamp-thud done-in glass-card relative bg-surface rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
+      <Card padding="none" className="stamp-thud done-in glass-card relative px-5 py-4 flex items-center gap-3">
         <StampSlam rotate={-6} className="w-7 h-7 text-heading" />
         <span className="text-sm font-semibold text-heading">{t('checkin.quickDone')}</span>
         <span className="ml-auto text-sm font-semibold text-heading opacity-80">{t('checkin.pointsEarned', { points: earned })}</span>
         <span aria-hidden="true" className="float-up right-5 -top-1 text-lg font-extrabold text-heading">+{earned}</span>
-      </div>
+      </Card>
     )
   }
 
   if (checkedIn) {
     return (
-      <div className="glass-card bg-surface rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
+      <Card padding="none" className="glass-card px-5 py-4 flex items-center gap-3">
         {/* 跟剛簽到時蓋下去的印章一樣，只是不播動畫 */}
         <span aria-hidden="true" className="w-7 h-7 shrink-0 text-heading -rotate-6"><TreeOfLifeStamp /></span>
         <span className="text-sm font-semibold text-heading">{t('checkin.quickDone')}</span>
-      </div>
+      </Card>
     )
   }
 

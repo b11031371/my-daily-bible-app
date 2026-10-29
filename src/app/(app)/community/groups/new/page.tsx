@@ -4,6 +4,8 @@ import TitleDivider from '@/components/layout/TitleDivider'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 export default function NewGroupPage() {
   const router = useRouter()
@@ -35,7 +37,7 @@ export default function NewGroupPage() {
       </div>
       <TitleDivider />
 
-      <div className="bg-surface rounded-2xl p-5 shadow-sm space-y-4">
+      <Card className="space-y-4">
         <div>
           <label className="text-sm font-medium text-gray-700 block mb-1.5">{t('group.nameLabel')}</label>
           <input
@@ -50,16 +52,16 @@ export default function NewGroupPage() {
 
         {error && <p className="text-sm text-danger">{error}</p>}
 
-        <button
+        <Button
           onClick={handleCreate}
           disabled={loading}
-          className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+          className="w-full"
         >
           {loading ? t('group.creating') : t('group.create')}
-        </button>
+        </Button>
 
         <p className="text-xs text-gray-400 text-center">{t('group.createHint')}</p>
-      </div>
+      </Card>
     </div>
   )
 }

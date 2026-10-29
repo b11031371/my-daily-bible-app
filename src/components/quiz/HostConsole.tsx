@@ -11,6 +11,8 @@ import QuizTimer from '@/components/quiz/QuizTimer'
 import Scoreboard from '@/components/quiz/Scoreboard'
 import { ANSWER_STYLES } from '@/lib/quiz'
 import AnswerShape from '@/components/quiz/AnswerShape'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 type Action = 'start' | 'reveal' | 'next' | 'end'
 
@@ -112,7 +114,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
       {/* ── 大廳：PIN 大字 + 陸續加入的人 ─────────────────────────────────── */}
       {room.status === 'lobby' && (
         <>
-          <div className="bg-surface rounded-2xl p-6 shadow-sm text-center">
+          <Card padding="lg" className="text-center">
             <p className="text-xs text-gray-400">
               {t('quiz.pinLabel', { url: origin.replace(/^https?:\/\//, '') + '/play' })}
             </p>
@@ -144,9 +146,9 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
             >
               {copied ? t('quiz.copied') : t('quiz.copyLink')}
             </button>
-          </div>
+          </Card>
 
-          <div className="bg-surface rounded-2xl p-5 shadow-sm">
+          <Card>
             <p className="text-sm font-semibold text-gray-700 mb-3">
               {players.length ? t('quiz.playersJoined', { count: players.length }) : t('quiz.waitingPlayers')}
             </p>
@@ -158,22 +160,22 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
 
-          <button
+          <Button
             onClick={() => advance('start')}
             disabled={busy || players.length === 0}
-            className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+            className="w-full"
           >
             {t('quiz.startGame')}
-          </button>
+          </Button>
         </>
       )}
 
       {/* ── 題目進行中／揭曉 ─────────────────────────────────────────────── */}
       {question && (room.status === 'question' || room.status === 'reveal') && (
         <>
-          <div className="bg-surface rounded-2xl p-5 shadow-sm">
+          <Card>
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-xs text-gray-400">
@@ -192,7 +194,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
             <p className="text-xs text-gray-400 mt-3">
               {t('quiz.answeredCount', { answered: question.answered_count, total: question.total_players })}
             </p>
-          </div>
+          </Card>
 
           {/* 主持人畫面常常是投影出來的，所以答題階段這裡跟玩家看到的一樣不含正解 */}
           <AnswerGrid
@@ -206,7 +208,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
           {room.status === 'reveal' && (
             <>
               {question.distribution && (
-                <div className="bg-surface rounded-2xl p-5 shadow-sm space-y-2.5">
+                <Card className="space-y-2.5">
                   {question.distribution.map((n, i) => {
                     const pct = question.total_players ? (n / question.total_players) * 100 : 0
                     const style = ANSWER_STYLES[i] ?? ANSWER_STYLES[0]
@@ -222,7 +224,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
                       </div>
                     )
                   })}
-                </div>
+                </Card>
               )}
 
               {question.explanation && (
@@ -236,17 +238,17 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
             </>
           )}
 
-          <button
+          <Button
             onClick={() => advance(room.status === 'question' ? 'reveal' : 'next')}
             disabled={busy}
-            className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+            className="w-full"
           >
             {room.status === 'question'
               ? t('quiz.revealAnswer')
               : question.index + 1 >= room.total_questions
                 ? t('quiz.seeResults')
                 : t('quiz.nextQuestion')}
-          </button>
+          </Button>
         </>
       )}
 

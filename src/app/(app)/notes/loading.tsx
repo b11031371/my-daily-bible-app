@@ -2,6 +2,7 @@
 import { Plant } from '@phosphor-icons/react'
 import HomeScenery from '@/components/notes/HomeScenery'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Card from '@/components/ui/Card'
 
 // 骨架照首頁的版面排（見 notes/page.tsx）：同一片天空與遠山、標題在同一個位置，
 // 換成真畫面時內容不會跳，只多了太陽／月亮從山後升起。
@@ -29,7 +30,7 @@ export default function NotesLoading() {
       </div>
 
       {/* Streak + week */}
-      <div className="glass-card glass-blur rounded-2xl bg-surface p-4 shadow-sm">
+      <Card padding="sm" className="glass-card glass-blur">
         <div className="mb-3 flex items-center justify-between animate-pulse">
           <div className={`h-6 w-24 ${bar}`} />
           <div className={`h-3 w-12 ${bar}`} />
@@ -44,7 +45,7 @@ export default function NotesLoading() {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Quick checkin */}
       <div className="h-14 rounded-2xl btn-gradient opacity-40 animate-pulse" />
@@ -52,11 +53,11 @@ export default function NotesLoading() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="glass-card bg-surface rounded-2xl p-3 shadow-sm animate-pulse">
+          <Card key={i} padding="none" className="glass-card p-3 animate-pulse">
             <div className={`h-[22px] w-[22px] rounded-full mx-auto mb-1 ${bar}`} />
             <div className={`h-5 w-7 mx-auto mb-1 ${bar}`} />
             <div className={`h-2.5 w-12 mx-auto ${bar}`} />
-          </div>
+          </Card>
         ))}
       </div>
 
@@ -65,10 +66,10 @@ export default function NotesLoading() {
         <div className={`h-3 w-14 mb-2 mx-1 ${bar}`} />
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="glass-card bg-surface rounded-2xl px-5 py-3.5 shadow-sm animate-pulse">
+            <Card key={i} padding="none" className="glass-card px-5 py-3.5 animate-pulse">
               <div className={`h-4 w-24 ${bar}`} />
               <div className={`h-3 w-32 mt-2 ${bar}`} />
-            </div>
+            </Card>
           ))}
         </div>
       </div>

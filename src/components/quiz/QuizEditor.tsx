@@ -8,6 +8,8 @@ import QuestionEditorCard from '@/components/quiz/QuestionEditorCard'
 import { QUIZ_CONFIG, emptyQuestion } from '@/lib/quiz'
 import { Plus } from '@phosphor-icons/react'
 import type { QuizQuestionDraft } from '@/types/app'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 interface Props {
   quizId: string
@@ -101,7 +103,7 @@ export default function QuizEditor({
         </p>
       )}
 
-      <div className="bg-surface rounded-2xl p-5 shadow-sm space-y-4">
+      <Card className="space-y-4">
         <div>
           <label className="text-sm font-medium text-gray-700 block mb-1.5">{t('quiz.quizTitle')}</label>
           <input
@@ -126,7 +128,7 @@ export default function QuizEditor({
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
           />
         </div>
-      </div>
+      </Card>
 
       <div className="mt-4 space-y-4">
         {questions.map((q, i) => (
@@ -163,13 +165,13 @@ export default function QuizEditor({
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
       >
         {dirty && !locked && <p className="text-xs text-gray-400 mb-1.5 text-center">{t('quiz.unsaved')}</p>}
-        <button
+        <Button
           onClick={save}
           disabled={saving || locked}
-          className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-50"
+          className="w-full"
         >
           {saving ? t('quiz.saving') : t('quiz.save')}
-        </button>
+        </Button>
       </div>
     </div>
   )

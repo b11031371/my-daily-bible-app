@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { PencilSimple, Check } from '@phosphor-icons/react'
+import Card from '@/components/ui/Card'
 
 interface Props {
   groupId: string
@@ -75,7 +76,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
     <div className="space-y-3">
       {/* Rename */}
       {isMember && (
-        <div className="bg-surface rounded-2xl p-4 shadow-sm">
+        <Card padding="sm">
           <p className="text-xs font-semibold text-gray-500 mb-2">{t('group.groupName')}</p>
           {editingName ? (
             <>
@@ -101,12 +102,12 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               <PencilSimple size={13} className="text-gray-300" />
             </button>
           )}
-        </div>
+        </Card>
       )}
 
       {/* Invite */}
       {isMember && canInvite && (
-        <div className="bg-surface rounded-2xl p-4 shadow-sm">
+        <Card padding="sm">
           <p className="text-xs font-semibold text-gray-500 mb-3">{t('group.inviteTitle')}</p>
           <div className="flex items-center gap-2 mb-3">
             <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 font-mono font-bold text-xl tracking-widest text-gray-900 text-center">
@@ -125,13 +126,13 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
           >
             {t('group.copyShareText')}
           </button>
-        </div>
+        </Card>
       )}
 
       {/* Leave */}
       {isMember && (
         showLeaveConfirm ? (
-          <div className="bg-surface rounded-2xl p-4 shadow-sm">
+          <Card padding="sm">
             <p className="text-sm text-gray-700 mb-3 text-center">
               {isLastMember
                 ? t('group.leaveLastMember')
@@ -153,7 +154,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
               </button>
             </div>
             {leaveError && <p className="text-xs text-danger mt-2 text-center">{leaveError}</p>}
-          </div>
+          </Card>
         ) : (
           <button
             onClick={() => setShowLeaveConfirm(true)}

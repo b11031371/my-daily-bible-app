@@ -5,6 +5,7 @@ import GroupTreeCard from './GroupTreeCard'
 import { MagnifyingGlass, Plus, Plant } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import type { GroupWithMembers } from '@/types/app'
+import Card from '@/components/ui/Card'
 
 interface Props {
   myGroups: GroupWithMembers[]
@@ -52,13 +53,13 @@ export default function GroupsPanel({ myGroups, otherGroups, canCreateOrJoin }: 
 
       {/* Unified scrollable group list */}
       {myGroups.length === 0 && otherGroups.length === 0 ? (
-        <div className="bg-surface rounded-2xl p-6 shadow-sm text-center space-y-3">
+        <Card padding="lg" className="text-center space-y-3">
           <p className="text-gray-500 text-sm">{t('group.noGroupsYet')}</p>
           <p className="text-xs text-gray-400">
             {t('group.noGroupsHint')}
             <Plant size={13} weight="fill" className="text-heading inline-block ml-1 align-text-bottom" />
           </p>
-        </div>
+        </Card>
       ) : (
         <div className="space-y-2">
           {filteredMine.length > 0 && (

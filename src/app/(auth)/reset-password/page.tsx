@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { cardClass } from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 function calcStrength(pw: string): 0 | 1 | 2 | 3 {
   if (pw.length < 6) return 0
@@ -57,7 +59,7 @@ export default function ResetPasswordPage() {
           <h1 className="text-2xl font-bold text-heading">{t('auth.reset.title')}</h1>
           <p className="text-sm text-gray-500 mt-1">{t('auth.reset.subtitle')}</p>
         </div>
-        <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
+        <form onSubmit={handleSubmit} className={cardClass({ padding: 'lg', className: 'space-y-4' })}>
           {error && (
             <div role="alert" className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
           )}
@@ -129,13 +131,14 @@ export default function ResetPasswordPage() {
               <p role="alert" className="mt-1 text-xs text-danger">{t('auth.reset.mismatch')}</p>
             )}
           </div>
-          <button
+          <Button
             type="submit"
             disabled={loading || confirmMismatch}
-            className="w-full btn-gradient text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
+            size="md"
+            className="w-full"
           >
             {loading ? t('auth.reset.submitting') : t('auth.reset.submit')}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

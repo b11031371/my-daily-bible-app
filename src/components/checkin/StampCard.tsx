@@ -3,6 +3,7 @@ import { useI18n } from '@/components/i18n/I18nProvider'
 import { Confetti } from '@phosphor-icons/react'
 import TreeOfLifeStamp from './TreeOfLifeStamp'
 import StampSlam from './StampSlam'
+import Card from '@/components/ui/Card'
 
 const ROTATIONS = [-2, 3, -1, 2, -3, 1, -2, 3, -1, 2]
 
@@ -35,7 +36,7 @@ export default function StampCard({ monthlyCount, monthLabel }: Props) {
 
   return (
     // key 跟著 fresh 換：同一張卡片連續簽到（例如補簽）時，咚一下的動畫能再播一次
-    <div key={fresh?.to ?? 'idle'} className={`bg-surface rounded-2xl p-5 shadow-sm ${fresh ? 'stamp-thud' : ''}`}>
+    <Card key={fresh?.to ?? 'idle'} className={fresh ? 'stamp-thud' : undefined}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-heading">{t('checkin.stampTitle')}</h3>
         <span className="text-xs text-gray-400">{monthLabel}</span>
@@ -84,6 +85,6 @@ export default function StampCard({ monthlyCount, monthLabel }: Props) {
       {shown === 0 && (
         <p className="text-center text-xs text-gray-400 mt-3">{t('checkin.stampFirst')}</p>
       )}
-    </div>
+    </Card>
   )
 }

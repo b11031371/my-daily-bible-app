@@ -5,6 +5,7 @@ import type { LeaderboardEntryWithProfile } from '@/types/app'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { Medal } from '@phosphor-icons/react'
+import Card from '@/components/ui/Card'
 
 interface Props {
   entries: LeaderboardEntryWithProfile[]
@@ -22,11 +23,11 @@ export default function LeaderboardTable({ entries }: Props) {
   })
 
   if (entries.length === 0) {
-    return <div className="bg-surface rounded-2xl p-6 text-center text-sm text-gray-400 shadow-sm">{t('leaderboard.empty')}</div>
+    return <Card padding="lg" className="text-center text-sm text-gray-400">{t('leaderboard.empty')}</Card>
   }
 
   return (
-    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
+    <Card padding="none" className="overflow-hidden">
       {entries.map((entry, i) => {
         const isMe = entry.user_id === me
         const medalColor = i < 3 ? MEDAL_COLOR[i] : null
@@ -51,6 +52,6 @@ export default function LeaderboardTable({ entries }: Props) {
           </div>
         )
       })}
-    </div>
+    </Card>
   )
 }

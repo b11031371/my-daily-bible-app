@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { PaperPlaneTilt } from '@phosphor-icons/react'
+import Card, { cardClass } from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
 
 export default function ForgotPasswordPage() {
   const { t } = useI18n()
@@ -39,13 +41,13 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-gray-500 mt-1">{t('auth.forgot.subtitle')}</p>
         </div>
         {sent ? (
-          <div className="bg-surface rounded-2xl shadow-sm p-6 text-center space-y-3">
+          <Card padding="lg" className="text-center space-y-3">
             <PaperPlaneTilt size={40} weight="fill" className="text-heading mx-auto" />
             <p className="font-semibold text-gray-900">{t('auth.forgot.sentTitle')}</p>
             <p className="text-sm text-gray-500">{t('auth.forgot.sentBody', { email })}</p>
-          </div>
+          </Card>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm p-6 space-y-4">
+          <form onSubmit={handleSubmit} className={cardClass({ padding: 'lg', className: 'space-y-4' })}>
             {error && (
               <div role="alert" className="text-sm text-danger bg-danger-soft rounded-lg px-3 py-2">{error}</div>
             )}
@@ -62,13 +64,14 @@ export default function ForgotPasswordPage() {
                 required
               />
             </div>
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full btn-gradient text-gray-900 rounded-xl py-3 text-sm font-medium hover:brightness-95 transition-[filter] disabled:opacity-50"
+              size="md"
+              className="w-full"
             >
               {loading ? t('auth.forgot.submitting') : t('auth.forgot.submit')}
-            </button>
+            </Button>
           </form>
         )}
         <p className="text-center text-sm text-gray-500 mt-4">

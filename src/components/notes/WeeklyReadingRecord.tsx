@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Fire, Plant } from '@phosphor-icons/react'
 import { useI18n } from '@/components/i18n/I18nProvider'
 import { formatDate } from '@/lib/utils'
+import { cardClass } from '@/components/ui/Card'
 
 interface Day {
   date: string
@@ -36,7 +37,7 @@ export default function WeeklyReadingRecord({ days, streak, children }: Props) {
     : day.checked ? 'notesList.checkedIn' : 'notesList.notCheckedIn')
 
   return (
-    <section className="glass-card glass-blur rounded-2xl bg-surface p-4 shadow-sm" aria-label={t('notesList.lastSevenDays')}>
+    <section className={cardClass({ padding: 'sm', className: 'glass-card glass-blur' })} aria-label={t('notesList.lastSevenDays')}>
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Fire size={20} weight="fill" className={`shrink-0 text-heading ${streakBumped ? 'flame-flick' : ''}`} aria-hidden="true" />

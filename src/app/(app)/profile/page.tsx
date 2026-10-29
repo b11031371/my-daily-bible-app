@@ -13,6 +13,7 @@ import PushSubscribeButton from '@/components/PushSubscribeButton'
 import RecapMonthMenu from '@/components/recap/RecapMonthMenu'
 import RecapDevTestButton from '@/components/recap/RecapDevTestButton'
 import { getRecapAccess } from '@/lib/recap-access'
+import Card from '@/components/ui/Card'
 
 type PointEntry = { date: string; label: string; points: number; tag?: string }
 
@@ -112,13 +113,13 @@ export default async function ProfilePage({
       <TitleDivider />
 
       {/* Profile card */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm flex items-center gap-4">
+      <Card className="flex items-center gap-4">
         <BibleAvatar seed={profile?.avatar_seed ?? 'alpha'} className="w-14 h-14" />
         <div>
           <p className="font-semibold text-gray-900">{profile?.display_name}</p>
           <p className="text-xs text-gray-400">{t('profile.joinedOn', { date: formatDate((profile?.created_at ?? today).split('T')[0], locale) })}</p>
         </div>
-      </div>
+      </Card>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
@@ -128,30 +129,30 @@ export default async function ProfilePage({
           { key: 'streakMax', label: t('profile.streakMax'), value: t('checkin.daysValue', { count: profile?.streak_max ?? 0 }), icon: <Star size={26} weight="fill" /> },
           { key: 'checkins', label: t('profile.totalCheckins'), value: t('profile.timesValue', { count: totalCheckinCount ?? 0 }), icon: <SealCheck size={26} weight="fill" /> },
         ].map(s => (
-          <div key={s.key} className="bg-surface rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <Card key={s.key} padding="sm" className="flex items-center gap-3">
             <span className="text-heading">{s.icon}</span>
             <div>
               <p className="text-lg font-bold text-gray-900">{s.value}</p>
               <p className="text-xs text-gray-400">{s.label}</p>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Notification settings */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <h2 className="text-sm font-semibold text-heading mb-4">{t('profile.notifications')}</h2>
         <PushSubscribeButton initialHour={(profile as any)?.notification_hour ?? 8} />
-      </div>
+      </Card>
 
       {/* Badges */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <h2 className="text-sm font-semibold text-heading mb-4">{t('profile.badges')}</h2>
         <BadgeGrid badges={badgesWithStatus} />
-      </div>
+      </Card>
 
       {/* Point history */}
-      <div className="bg-surface rounded-2xl p-5 shadow-sm">
+      <Card>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-heading">{t('profile.pointHistory', { month: monthLabel })}</h2>
           <span className="text-xs text-gray-400">{t('profile.totalEarned', { points: monthlyTotal })}</span>
@@ -171,7 +172,7 @@ export default async function ProfilePage({
           ))}
           {pointEntries.length === 0 && <p className="text-sm text-gray-400 text-center py-4">{t('profile.noHistory')}</p>}
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

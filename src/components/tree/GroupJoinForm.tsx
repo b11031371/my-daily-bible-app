@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Button from '@/components/ui/Button'
 
 interface Props {
   canJoin: boolean
@@ -59,13 +60,13 @@ export default function GroupJoinForm({ canJoin }: Props) {
           maxLength={8}
           className="flex-1 bg-surface border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus-visible:border-primary tracking-widest font-mono"
         />
-        <button
+        <Button
           type="submit"
           disabled={loading || !code.trim()}
-          className="px-4 py-2 rounded-xl btn-gradient text-gray-900 text-sm font-medium disabled:opacity-50 transition-opacity"
+          size="sm"
         >
           {loading ? '…' : t('group.join')}
-        </button>
+        </Button>
       </form>
       {error && <p className="text-xs text-danger">{error}</p>}
     </div>

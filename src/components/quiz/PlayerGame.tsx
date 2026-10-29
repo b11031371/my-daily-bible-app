@@ -9,6 +9,7 @@ import BibleAvatar from '@/components/avatar/BibleAvatar'
 import AnswerGrid from '@/components/quiz/AnswerGrid'
 import QuizTimer from '@/components/quiz/QuizTimer'
 import Scoreboard from '@/components/quiz/Scoreboard'
+import Button from '@/components/ui/Button'
 
 // 身分存在 sessionStorage：關掉分頁就消失，同一支手機換人玩不會沿用上一個人的身分。
 const storageKey = (pin: string) => `quiz-player:${pin}`
@@ -112,13 +113,13 @@ function JoinForm({ pin, onJoined }: { pin: string; onJoined: (id: PlayerIdentit
 
         {error && <p className="text-sm text-danger">{error}</p>}
 
-        <button
+        <Button
           onClick={join}
           disabled={loading || loggedIn === null || !canJoin}
-          className="w-full btn-gradient text-gray-900 font-semibold rounded-xl py-3.5 hover:brightness-95 transition-[filter] disabled:opacity-40"
+          className="w-full"
         >
           {loading ? t('quiz.joining') : t('quiz.joinGame')}
-        </button>
+        </Button>
 
         <Link href="/play" className="block text-center text-sm text-gray-400 hover:text-gray-600 active:opacity-50">
           {t('quiz.backToQuiz')}

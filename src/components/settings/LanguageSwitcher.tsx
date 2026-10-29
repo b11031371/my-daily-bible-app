@@ -2,12 +2,13 @@
 import { Check } from '@phosphor-icons/react'
 import { LOCALES } from '@/lib/i18n'
 import { useI18n } from '@/components/i18n/I18nProvider'
+import Card from '@/components/ui/Card'
 
 export default function LanguageSwitcher() {
   const { locale, setLocale, t } = useI18n()
 
   return (
-    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden">
+    <Card padding="none" className="overflow-hidden">
       <div className="section-band px-4 py-3">
         <p className="text-base font-bold text-gray-900">{t('settings.language')}</p>
       </div>
@@ -28,6 +29,6 @@ export default function LanguageSwitcher() {
           )
         })}
       </div>
-    </div>
+    </Card>
   )
 }

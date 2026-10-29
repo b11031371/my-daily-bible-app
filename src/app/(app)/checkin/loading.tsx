@@ -1,3 +1,4 @@
+import Card from '@/components/ui/Card'
 export default function CheckinLoading() {
   return (
     <div className="max-w-lg mx-auto px-4 pt-6">
@@ -5,18 +6,18 @@ export default function CheckinLoading() {
       <div className="space-y-4">
         <div className="grid grid-cols-3 gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-surface rounded-2xl p-4 text-center shadow-sm">
+            <Card key={i} padding="sm" className="text-center">
               <div className="h-8 w-8 bg-gray-100 rounded-full animate-pulse mx-auto mb-1" />
               <div className="h-6 w-12 bg-gray-100 rounded animate-pulse mx-auto mb-1" />
               <div className="h-3 w-14 bg-gray-100 rounded animate-pulse mx-auto" />
-            </div>
+            </Card>
           ))}
         </div>
-        <div className="bg-surface rounded-2xl p-5 shadow-sm">
+        <Card>
           <div className="h-4 w-32 bg-gray-100 rounded animate-pulse mb-3" />
           <div className="h-14 w-full bg-gray-100 rounded-xl animate-pulse" />
-        </div>
-        <div className="bg-surface rounded-2xl p-5 shadow-sm">
+        </Card>
+        <Card>
           <div className="h-4 w-28 bg-gray-100 rounded animate-pulse mb-3" />
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -29,7 +30,7 @@ export default function CheckinLoading() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )
