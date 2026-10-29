@@ -301,6 +301,61 @@ a.btn-gradient:active {
   .home-reading-link:active, .home-checkin-button:active { transform: none; }
 }
 
+/* ── 簽到動畫（見 components/checkin/StampSlam） ──────────────────────────────
+   簽到成功時印章蓋下去：從大、歪、透明砸下來，略壓扁再彈回，停在 --r 的歪斜角度。
+   墨水圈、碎片、+N 都等印章落地（約 .26s）才出現。 */
+@keyframes stamp-slam {
+  0%   { transform: scale(2.4) rotate(-16deg); opacity: 0; }
+  55%  { transform: scale(.9) rotate(var(--r, 0deg)); opacity: 1; }
+  72%  { transform: scale(1.07) rotate(var(--r, 0deg)); }
+  100% { transform: scale(1) rotate(var(--r, 0deg)); opacity: 1; }
+}
+.stamp-slam { animation: stamp-slam .5s cubic-bezier(.3, .7, .3, 1) both; }
+
+@keyframes ink-ring { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.9); opacity: 0; } }
+.ink-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--color-primary);
+  pointer-events: none; animation: ink-ring .6s ease-out .26s both; }
+
+/* 碎片：每片沿 --a 的角度飛出 --d 的距離 */
+@keyframes stamp-burst {
+  0%   { transform: rotate(var(--a)) translateX(0) scale(1); opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(var(--d)) scale(.3); opacity: 0; }
+}
+.stamp-burst { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.stamp-burst > i { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 2px;
+  animation: stamp-burst .7s cubic-bezier(.2, .7, .3, 1) .28s both; }
+
+/* 被蓋章的卡片「咚」一下 */
+@keyframes stamp-thud { 0%, 100% { transform: none; } 40% { transform: translateY(2px) scale(.995); } }
+.stamp-thud { animation: stamp-thud .22s ease-out .26s; }
+
+@keyframes float-up {
+  0%   { transform: translateY(6px) scale(.7); opacity: 0; }
+  20%  { transform: translateY(0) scale(1.1); opacity: 1; }
+  100% { transform: translateY(-34px) scale(1); opacity: 0; }
+}
+.float-up { position: absolute; pointer-events: none; animation: float-up 1.2s ease-out .3s both; }
+
+/* 首頁一週紀錄：今天那棵芽長出來；連續天數的火焰跳一下、數字翻上來 */
+@keyframes plant-pop { 0% { transform: scale(1); } 35% { transform: scale(.6); } 70% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.plant-pop { animation: plant-pop .55s cubic-bezier(.3, .7, .3, 1.4) both; }
+@keyframes flame-flick { 0%, 100% { transform: scale(1) rotate(0); } 30% { transform: scale(1.45) rotate(-8deg); } 60% { transform: scale(.95) rotate(5deg); } }
+.flame-flick { animation: flame-flick .6s ease-out both; transform-origin: 50% 90%; }
+@keyframes num-in { from { transform: translateY(60%); opacity: 0; } }
+.num-in { display: inline-block; animation: num-in .35s ease-out both; }
+
+@keyframes done-in { from { opacity: 0; transform: scale(.97); } }
+.done-in { animation: done-in .25s ease-out both; }
+
+/* 簽到中：芽左右搖 */
+@keyframes wiggle { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+.wiggle { display: inline-block; animation: wiggle .5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp-slam, .stamp-thud, .plant-pop, .flame-flick, .num-in, .done-in, .wiggle { animation: none; }
+  .ink-ring, .stamp-burst, .float-up { display: none; }
+}
+
 /* ── 首頁風景（見 components/notes/HomeScenery） ──────────────────────────────
    由上而下：天空 → 太陽／月亮 → 兩層遠山 → 山腳淡出到底色，卡片改成半透明。
    天色分四個時段，記在 <html data-sky>：layout 的 head script 在畫面出現前依手機時間先寫好，

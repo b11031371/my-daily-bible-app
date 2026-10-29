@@ -12,6 +12,7 @@ import HomeScenery from '@/components/notes/HomeScenery'
 import { Users, ChatCircle, Medal } from '@phosphor-icons/react/dist/ssr'
 import { localizeBibleRange } from '@/lib/bible-books'
 import BibleAvatar from '@/components/avatar/BibleAvatar'
+import AnimatedNumber from '@/components/layout/AnimatedNumber'
 import type { Profile } from '@/types/app'
 
 export default async function NotesPage() {
@@ -188,7 +189,7 @@ export default async function NotesPage() {
         ].map(s => (
           <Link key={s.href} href={s.href} className="glass-card bg-surface rounded-2xl p-3 shadow-sm text-center active:opacity-80 transition-opacity">
             <div className="flex justify-center mb-0.5 text-heading">{s.icon}</div>
-            <div className="font-bold text-gray-900 text-base">{s.value}</div>
+            <div className="font-bold text-gray-900 text-base"><AnimatedNumber value={s.value} /></div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
           </Link>
         ))}

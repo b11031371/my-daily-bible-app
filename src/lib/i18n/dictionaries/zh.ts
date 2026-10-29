@@ -104,6 +104,7 @@ export const zh: Dictionary = {
     stampRemaining: '還差 {count} 點集滿',
     stampFirst: '今天簽到就能蓋第一個印章！',
     quickDone: '今日已簽到',
+    pointsEarned: '+{points} 分',
     quickButton: '今日簽到 (+10 分)',
     checkinFail: '簽到失敗，請再試一次',
   },
