@@ -37,7 +37,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) { setLoading(false); setError(data.error ?? t('quiz.saveFail')); return }
-    router.push(`/quiz/${data.id}/edit`)
+    router.push(`/quiz/${data.id}/edit`, { transitionTypes: ['nav-forward'] })
   }
 
   async function generateWithAi() {
@@ -64,7 +64,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
       )
       return
     }
-    router.push(`/quiz/${data.id}/edit`)
+    router.push(`/quiz/${data.id}/edit`, { transitionTypes: ['nav-forward'] })
   }
 
   const canGenerate = bibleRange.trim().length > 0 || noteDate.length > 0
@@ -72,7 +72,7 @@ export default function NewQuizForm({ aiAvailable, noteDates }: { aiAvailable: b
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-8">
       <div className="flex items-center gap-3">
-        <Link href="/quiz" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
+        <Link href="/quiz" transitionTypes={['nav-back']} className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('quiz.newTitle')}</h1>
       </div>
       <TitleDivider />

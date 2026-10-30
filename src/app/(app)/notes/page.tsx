@@ -120,7 +120,7 @@ export default async function NotesPage() {
 
       {/* Hero card */}
       {showHeroCard ? (
-        <Link href={`/notes/${today}`} className="home-reading-link block active:opacity-90 transition-opacity">
+        <Link href={`/notes/${today}`} transitionTypes={['nav-forward']} className="home-reading-link block active:opacity-90 transition-opacity">
           <div className="home-reading-card animated-border rounded-3xl">
             {/* relative overflow-hidden：閱讀進度的細線貼在這張卡片的底邊，被圓角裁切 */}
             <div className="btn-gradient relative overflow-hidden rounded-[22px] p-6 text-gray-900">
@@ -188,7 +188,7 @@ export default async function NotesPage() {
           { icon: <ChatCircle size={22} weight="fill" />, value: reflectionCount ?? 0, label: t('notesList.statComments'), href: '/community' },
           { icon: <Medal size={22} weight="fill" />, value: unearnedBadges, label: t('notesList.statBadges'), href: '/profile' },
         ].map(s => (
-          <Link key={s.href} href={s.href} className={cardClass({ padding: 'none', className: 'glass-card p-3 text-center active:opacity-80 transition-opacity' })}>
+          <Link key={s.href} href={s.href} transitionTypes={['tab']} className={cardClass({ padding: 'none', className: 'glass-card p-3 text-center active:opacity-80 transition-opacity' })}>
             <div className="flex justify-center mb-0.5 text-heading">{s.icon}</div>
             <div className="font-bold text-gray-900 text-base"><AnimatedNumber value={s.value} /></div>
             <div className="text-[10px] text-gray-400 leading-tight">{s.label}</div>
@@ -205,6 +205,7 @@ export default async function NotesPage() {
               <Link
                 key={date}
                 href={`/notes/${date}`}
+                transitionTypes={['nav-forward']}
                 className={cardClass({ padding: 'none', className: 'glass-card flex items-center justify-between px-5 py-3.5' })}
               >
                 <div className="min-w-0">

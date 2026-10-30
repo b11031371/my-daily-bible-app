@@ -93,6 +93,7 @@ export default function QuizCard({ quiz }: { quiz: QuizWithCount }) {
       <div className="flex gap-2">
         <Link
           href={`/quiz/${quiz.id}/edit`}
+          transitionTypes={['nav-forward']}
           className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
         >
           <PencilSimple size={16} />
@@ -100,6 +101,7 @@ export default function QuizCard({ quiz }: { quiz: QuizWithCount }) {
         </Link>
         <Link
           href={`/quiz/${quiz.id}/host`}
+          transitionTypes={['nav-forward']}
           className="flex-1 flex items-center justify-center gap-1.5 btn-gradient text-gray-900 rounded-xl py-2.5 text-sm font-semibold hover:brightness-95 transition-[filter]"
         >
           <Play size={16} weight="fill" />

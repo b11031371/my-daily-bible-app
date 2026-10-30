@@ -87,6 +87,7 @@ export default function RecapModal({ recap, onClose }: { recap: MonthRecap; onCl
               圈出那顆圖示，不然這句話等於白說。 */}
           <Link
             href="/profile?recapTip=1"
+            transitionTypes={['tab']}
             onClick={onClose}
             className="block text-center text-xs text-white/60 hover:text-white/90 mt-3"
           >

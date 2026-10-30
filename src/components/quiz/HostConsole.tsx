@@ -74,7 +74,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
           <div className="fixed inset-0 z-40" onClick={() => setConfirmingEnd(false)} />
         )}
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/quiz" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg shrink-0">‹</Link>
+          <Link href="/quiz" transitionTypes={['nav-back']} className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg shrink-0">‹</Link>
           {/* 標題本來就 truncate，確認條展開時再讓一點寬度出來 */}
           <h1 className="page-title font-bold text-heading truncate">{state.quiz.title}</h1>
         </div>
@@ -259,6 +259,7 @@ export default function HostConsole({ pin, quizId }: { pin: string; quizId: stri
           <Scoreboard players={players} />
           <Link
             href={`/quiz/${quizId}/edit`}
+            transitionTypes={['nav-forward']}
             className="block text-center border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
           >
             {t('quiz.edit')}

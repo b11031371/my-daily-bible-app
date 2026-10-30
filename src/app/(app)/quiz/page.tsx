@@ -55,6 +55,7 @@ export default async function QuizListPage() {
         </div>
         <Link
           href="/quiz/new"
+          transitionTypes={['nav-forward']}
           aria-label={t('quiz.createQuiz')}
           className="shrink-0 w-10 h-10 rounded-full btn-gradient text-gray-900 flex items-center justify-center hover:brightness-95 transition-[filter]"
         >
@@ -74,6 +75,7 @@ export default async function QuizListPage() {
             <p className="text-xs text-gray-400 mt-1.5">{t('quiz.noQuizzesHint')}</p>
             <Link
               href="/quiz/new"
+              transitionTypes={['nav-forward']}
               className="inline-block mt-4 btn-gradient text-gray-900 font-semibold rounded-xl px-5 py-2.5 text-sm hover:brightness-95 transition-[filter]"
             >
               {t('quiz.createQuiz')}

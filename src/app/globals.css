@@ -356,6 +356,44 @@ a.btn-gradient:active {
   .ink-ring, .stamp-burst, .float-up { display: none; }
 }
 
+/* ── 換頁過場（見 components/layout/PageTransition） ─────────────────────────
+   整頁（root）不做預設的交叉淡入：舊畫面直接藏起來、新畫面即時顯示，底部導覽才不會在
+   過場中凍住；只有頁面內容那一塊依類型動。時間曲線跟簽到動畫一樣。
+   */
+:root { --page-transition: 400ms cubic-bezier(.3, .7, .3, 1); }
+::view-transition-old(root) { display: none; }
+::view-transition-new(root) { animation: none; }
+
+/* 切分頁：舊頁淡出，新頁淡入並往上浮 10px */
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-rise-in { from { opacity: 0; transform: translateY(10px); } }
+::view-transition-old(.tab-out) { animation: var(--page-transition) both vt-fade-out; }
+::view-transition-new(.tab-in) { animation: var(--page-transition) both vt-rise-in; }
+
+/* 進內頁：新頁整頁從右邊推進來，舊頁往左退一點、稍微變暗；返回時反過來，內頁要疊在上面 */
+@keyframes vt-push-in { from { transform: translateX(100%); } }
+@keyframes vt-push-under { to { transform: translateX(-25%); filter: brightness(.92); } }
+@keyframes vt-pop-under { from { transform: translateX(-25%); filter: brightness(.92); } }
+@keyframes vt-pop-out { to { transform: translateX(100%); } }
+::view-transition-new(.push-in) { animation: var(--page-transition) both vt-push-in; filter: drop-shadow(-8px 0 24px rgba(0, 0, 0, .12)); }
+::view-transition-old(.push-out) { animation: var(--page-transition) both vt-push-under; }
+::view-transition-new(.pop-in) { animation: var(--page-transition) both vt-pop-under; }
+::view-transition-old(.pop-out) { animation: var(--page-transition) both vt-pop-out; filter: drop-shadow(-8px 0 24px rgba(0, 0, 0, .12)); }
+::view-transition-group(.push-in), ::view-transition-group(.pop-out) { z-index: 1; }
+
+/* 底部導覽自成一層、疊在頁面快照上面，不跟著動：不然長頁面的快照會整片蓋住導覽列，
+   看起來像閃一下，指示條滑動也被擋住。new 是即時畫面，指示條的 transition 照樣看得到。 */
+::view-transition-group(bottom-nav) { z-index: 2; animation: none; }
+::view-transition-old(bottom-nav) { display: none; }
+::view-transition-new(bottom-nav) { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
 /* ── 首頁風景（見 components/notes/HomeScenery） ──────────────────────────────
    由上而下：天空 → 太陽／月亮 → 兩層遠山 → 山腳淡出到底色，卡片改成半透明。
    天色分四個時段，記在 <html data-sky>：layout 的 head script 在畫面出現前依手機時間先寫好，

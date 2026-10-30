@@ -3,6 +3,7 @@ import { getUser } from '@/lib/supabase/server'
 import BottomNav from '@/components/layout/BottomNav'
 import { BadgeToastProvider } from '@/components/layout/BadgeToast'
 import { RecapProvider } from '@/components/recap/RecapProvider'
+import PageTransition from '@/components/layout/PageTransition'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser()
@@ -16,7 +17,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             空白可以捲。dvh 貼合當下可見高度，該捲才捲。 */}
         <div className="min-h-dvh flex flex-col">
           <main id="main-content" tabIndex={-1} className="flex-1 pb-20">
-            {children}
+            <PageTransition>{children}</PageTransition>
           </main>
           <BottomNav />
         </div>

@@ -68,7 +68,7 @@ export default function GroupActions({ groupId, groupName, inviteCode, isMember,
       setLeaveError(t('group.leaveFail'))
       return
     }
-    router.push('/community')
+    router.push('/community', { transitionTypes: ['nav-back'] })
     router.refresh()
   }
 

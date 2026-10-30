@@ -31,7 +31,7 @@ export default function QuizEntryButton({ enabled }: { enabled: boolean }) {
 
   if (enabled) {
     return (
-      <Link href="/quiz" aria-label={t('quiz.title')} title={t('quiz.title')} className={CLASSES}>
+      <Link href="/quiz" transitionTypes={['nav-forward']} aria-label={t('quiz.title')} title={t('quiz.title')} className={CLASSES}>
         <GameController size={26} weight="fill" />
       </Link>
     )

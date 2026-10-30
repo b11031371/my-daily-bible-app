@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
+    // 換頁過場（見 components/layout/PageTransition）：讓 <Link transitionTypes> 和 React 的 <ViewTransition> 生效
+    viewTransition: true,
     staleTimes: {
       dynamic: 300,
       static: 600,

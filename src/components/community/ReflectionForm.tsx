@@ -84,7 +84,7 @@ export default function ReflectionForm({ date, bibleRange, lang }: { date: strin
           try { localStorage.removeItem(`reflection-draft:${draftOwnerId}:${date}`) } catch {}
         }
         router.refresh()
-        router.push(`/community?scrollTo=${date}`)
+        router.push(`/community?scrollTo=${date}`, { transitionTypes: ['tab'] })
       } else {
         setError(t('community.submitFail'))
       }

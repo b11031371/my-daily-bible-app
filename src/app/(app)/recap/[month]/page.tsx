@@ -36,6 +36,7 @@ export default async function RecapPage({ params }: { params: Promise<{ month: s
             或直接貼網址進來，back 的去向不確定，出口反而變得不可預期。 */}
         <Link
           href="/profile"
+          transitionTypes={['nav-back']}
           aria-label={t('recap.close')}
           className="shrink-0 w-9 h-9 -mr-1 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50"
         >
