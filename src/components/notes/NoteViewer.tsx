@@ -58,9 +58,11 @@ export default function NoteViewer({ date, zhContent, enContent, zhPdfUrl, enPdf
           target="_blank"
           rel="noreferrer"
           aria-label={`${t('noteView.pdfTitle', { date })} PDF`}
-          className="ml-auto flex items-center gap-1 text-sm text-gray-700 font-medium px-3 py-1.5 border border-primary rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors"
+          title="PDF"
+          // 外觀跟語言按鈕一樣高（34px）；before 往外撐 5px，手指可以點的範圍有 44px
+          className="relative ml-auto flex h-[34px] w-[34px] items-center justify-center text-gray-700 border border-primary rounded-full hover:bg-primary hover:text-gray-900 active:opacity-50 transition-colors before:absolute before:-inset-[5px] before:content-['']"
         >
-          ↓ PDF
+          <FilePdf aria-hidden="true" size={20} />
         </a>
       </div>
 
