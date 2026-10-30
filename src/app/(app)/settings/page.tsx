@@ -21,7 +21,7 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-8 space-y-5">
       <div className="flex items-center gap-3">
-        <Link href="/profile" aria-label={t('common.back')} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
+        <Link href="/profile" transitionTypes={['nav-back']} aria-label={t('common.back')} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="page-title font-bold text-heading">{t('settings.title')}</h1>
       </div>
       <TitleDivider />

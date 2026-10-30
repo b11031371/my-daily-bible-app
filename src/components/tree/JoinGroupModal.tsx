@@ -26,7 +26,7 @@ export default function JoinGroupModal() {
     if (!res.ok) { setError(data.error); return }
     setOpen(false)
     router.refresh()
-    router.push(`/community/groups/${data.id}`)
+    router.push(`/community/groups/${data.id}`, { transitionTypes: ['nav-forward'] })
   }
 
   return (

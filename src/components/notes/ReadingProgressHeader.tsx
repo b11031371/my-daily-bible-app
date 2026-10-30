@@ -131,6 +131,7 @@ export default function ReadingProgressHeader({ userId, date, title, backHref, b
       />
       <Link
         href={backHref}
+        transitionTypes={['nav-back']}
         aria-label={backLabel}
         className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-lg text-gray-400 hover:text-gray-600 active:opacity-50"
       >

@@ -114,6 +114,7 @@ export default function RecapMonthMenu({ createdAt, currentMonth, showTip }: Pro
                       <Link
                         key={key}
                         href={`/recap/${key}`}
+                        transitionTypes={['nav-forward']}
                         onClick={() => setOpen(false)}
                         className="text-center text-sm text-gray-900 bg-primary-light rounded-xl py-2 active:opacity-60 transition-opacity"
                       >

@@ -103,7 +103,7 @@ export default async function ProfilePage({
             />
           )}
           <RecapDevTestButton />
-          <Link href="/settings" aria-label={t('settings.title')} title={t('settings.title')} className="flex min-h-11 min-w-11 items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50"><Gear aria-hidden="true" size={22} /></Link>
+          <Link href="/settings" transitionTypes={['nav-forward']} aria-label={t('settings.title')} title={t('settings.title')} className="flex min-h-11 min-w-11 items-center justify-center text-gray-400 hover:text-gray-600 active:opacity-50"><Gear aria-hidden="true" size={22} /></Link>
           <form action={handleSignOut}>
             <button type="submit" className="text-sm text-gray-400 hover:text-gray-600 active:opacity-50">{t('profile.signOut')}</button>
           </form>

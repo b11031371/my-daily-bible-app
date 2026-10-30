@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient, getUser } from '@/lib/supabase/server'
 import { getServerI18n } from '@/lib/i18n/server'
 import { formatMonth } from '@/lib/utils'
@@ -96,7 +97,7 @@ export default async function GroupDetailPage({ params, searchParams }: Props) {
     <div className="max-w-lg mx-auto px-4 pt-4 pb-8 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <a href="/community?tab=groups" className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</a>
+        <Link href="/community?tab=groups" transitionTypes={['nav-back']} className="text-gray-400 hover:text-gray-600 active:opacity-50 text-lg">‹</Link>
         <h1 className="text-base font-semibold text-gray-900 flex-1 truncate">{group.name}</h1>
       </div>
 

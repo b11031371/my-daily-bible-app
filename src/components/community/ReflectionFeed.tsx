@@ -492,6 +492,7 @@ export default function ReflectionFeed({ reflections, currentUserId, currentUser
               </div>
               <Link
                 href={`/notes/${date}#reflection`}
+                transitionTypes={['nav-forward']}
                 className="text-xs text-gray-400 hover:text-gray-600 active:opacity-50 shrink-0 ml-2"
               >
                 {t('community.goToNote')}
